@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "mcvmcomputers",
+  "version": "${version}",
+
+  "name": "VM Computers",
+  "description": "Build computers that actually work using the VirtualBox API!",
+  "authors": [
+    "DeltaTwoForce"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/mcvmcomputers/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mcvmcomputers.MCVmComputersMod"
+    ]
+  },
+  "mixins": [
+    "mcvmcomputers.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.15.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

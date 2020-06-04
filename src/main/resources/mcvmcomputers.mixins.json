@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "mcvmcomputers.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "GameloopMixin",
+    "ClientPlayNetworkMixin",
+    "MouseMixin",
+    "KeyboardMixin",
+    "HeldItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

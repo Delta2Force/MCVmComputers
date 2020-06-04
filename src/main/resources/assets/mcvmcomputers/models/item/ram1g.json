@@ -1,0 +1,63 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "mcvmcomputers:item/ramstick/pins",
+		"1": "mcvmcomputers:item/ramstick/body",
+		"particle": "mcvmcomputers:item/ramstick/pins"
+	},
+	"elements": [
+		{
+			"from": [5.25, 0, 7.9],
+			"to": [10.75, 0.5, 8.15],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0.25, 8.025]},
+			"faces": {
+				"north": {"uv": [0, 0, 6, 1], "texture": "#0"},
+				"east": {"uv": [0, 4, 1, 5], "texture": "#0"},
+				"south": {"uv": [0, 1, 6, 2], "texture": "#0"},
+				"west": {"uv": [1, 4, 2, 5], "texture": "#0"},
+				"up": {"uv": [6, 3, 0, 2], "texture": "#0"},
+				"down": {"uv": [6, 3, 0, 4], "texture": "#0"}
+			}
+		},
+		{
+			"from": [4.75, 0.5, 7.75],
+			"to": [11.25, 2, 8.25],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 1.25, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 7, 2], "texture": "#1"},
+				"east": {"uv": [0, 6, 1, 8], "texture": "#1"},
+				"south": {"uv": [0, 2, 7, 4], "texture": "#1"},
+				"west": {"uv": [1, 6, 2, 8], "texture": "#1"},
+				"up": {"uv": [7, 5, 0, 4], "texture": "#1"},
+				"down": {"uv": [7, 5, 0, 6], "texture": "#1"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [0, 6.75, 0]
+		},
+		"thirdperson_lefthand": {
+			"translation": [0, 6.75, 0]
+		},
+		"firstperson_righthand": {
+			"translation": [0, 8.75, 0]
+		},
+		"firstperson_lefthand": {
+			"translation": [0, 8.75, 0]
+		},
+		"ground": {
+			"translation": [0, 4.5, 0]
+		},
+		"gui": {
+			"rotation": [30, 41, 0],
+			"translation": [0, 6, 0]
+		},
+		"head": {
+			"translation": [0, 14.25, 0]
+		},
+		"fixed": {
+			"translation": [0, 6.75, 0]
+		}
+	}
+}
