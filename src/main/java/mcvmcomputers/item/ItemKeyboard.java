@@ -11,14 +11,14 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class ItemKeyboard extends Item{
+public class ItemKeyboard extends OrderableItem{
 	public ItemKeyboard(Settings settings) {
-		super(settings);
+		super(settings, 4);
 	}
 	
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		if(!world.isClient) {
+		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
 			EntityKeyboard ek = new EntityKeyboard(world, 
 									MCVmComputersMod.thePreviewEntity.getX(),

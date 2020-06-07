@@ -9,10 +9,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class ItemNewHarddrive extends Item{
+public class ItemNewHarddrive extends OrderableItem{
 
 	public ItemNewHarddrive(Settings settings) {
-		super(settings);
+		super(settings, 6);
 	}
 	
 	@Override

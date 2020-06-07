@@ -11,14 +11,14 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class ItemPCCaseSidepanel extends Item{
+public class ItemPCCaseSidepanel extends OrderableItem{
 	public ItemPCCaseSidepanel(Settings settings) {
-		super(settings);
+		super(settings, 6);
 	}
 	
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		if(!world.isClient) {
+		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
 			EntityPC ek = new EntityPC(world, 
 								MCVmComputersMod.thePreviewEntity.getX(),

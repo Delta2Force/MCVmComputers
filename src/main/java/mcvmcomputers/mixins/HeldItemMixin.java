@@ -24,7 +24,6 @@ import net.minecraft.util.math.Quaternion;
 
 @Mixin(HeldItemRenderer.class)
 public class HeldItemMixin {
-	private static final OrderingTabletModel ORDERING_TABLET = new OrderingTabletModel();
 	private float time = 0f;
 	
 	@Shadow
@@ -32,16 +31,15 @@ public class HeldItemMixin {
 	
 	@Inject(at = @At("HEAD"), method = "renderFirstPersonItem()V")
 	private void renderItemHead(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-		//MCVmComputersMod.TempStaticRenderHead(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light, ci);
 		if(!item.isEmpty()) {
 			if(item.getItem() instanceof ItemOrderingTablet) {
 				time += tickDelta;
 				matrices.push();
 				matrices.translate(0, -equipProgress*2, 0);
 					matrices.push();
-						matrices.translate(0, 0, 0.45);
+						MCVmComputersMod.translation(matrices);
 						matrices.multiply(new Quaternion(-90, 0, 0, true));
-						ORDERING_TABLET.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(new Identifier("mcvmcomputers", "textures/entity/tablet.png"))), light, OverlayTexture.DEFAULT_UV, 0, 0, 0, 1);
+						MCVmComputersMod.tabletOS.ORDERING_TABLET.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(new Identifier("mcvmcomputers", "textures/entity/tablet.png"))), light, OverlayTexture.DEFAULT_UV, 0, 0, 0, 1);
 						MCVmComputersMod.renderDisplay(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
 					matrices.pop();
 					matrices.push();

@@ -4,7 +4,8 @@
     "itemGroup.mcvmcomputers.peripherals": "VM Computers: Peripherals",
     "itemGroup.mcvmcomputers.others": "VM Computers: Others",
     "item.mcvmcomputers.pc_case_sidepanel": "PC case with glass sidepanel",
-    "item.mcvmcomputers.motherboard": "Motherboard",
+    "item.mcvmcomputers.motherboard": "32-bit Motherboard",
+    "item.mcvmcomputers.motherboard64": "64-bit Motherboard",
     "item.mcvmcomputers.harddrive": "Hard Drive",
     "item.mcvmcomputers.ram1g": "1GB RAM stick",
     "item.mcvmcomputers.ram2g": "2GB RAM stick",
@@ -20,9 +21,8 @@
     "item.mcvmcomputers.keyboard": "Keyboard",
     "item.mcvmcomputers.mouse": "Mouse",
     "item.mcvmcomputers.ordering_tablet": "Ordering Tablet",
-    "mcvmcomputers.motherboard_not_present": "You need 1x Motherboard in your Inventory to do that!",
-    "mcvmcomputers.harddrive_not_present": "You need 1x Hard Drive in your Inventory to do that!",
-    "mcvmcomputers.cpu_not_present": "You need 1x CPU in your Inventory to do that!",
-    "mcvmcomputers.gpu_not_present": "You need 1x GPU in your Inventory to do that!",
+    "mcvmcomputers.motherboard_not_present": "You need that Motherboard in your Inventory to do that!",
+    "mcvmcomputers.cpu_not_present": "You need that CPU in your Inventory to do that!",
+    "mcvmcomputers.gpu_not_present": "You need a GPU in your Inventory to do that!",
     "mcvmcomputers.ram_not_present": "You need the sort of RAM you want to add in your Inventory to do that!"
 }

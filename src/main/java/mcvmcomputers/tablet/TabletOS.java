@@ -3,63 +3,83 @@ package mcvmcomputers.tablet;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.GradientPaint;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.glfw.GLFW;
+
+import mcvmcomputers.entities.model.OrderingTabletModel;
+import mcvmcomputers.item.ItemList;
+import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.sound.SoundList;
+import mcvmcomputers.sound.TabletSoundInstance;
+import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.AbstractSoundInstance;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
 public class TabletOS {
+	//Rendering variables
 	public NativeImage renderedImage;
-	public State tabletState = State.LOOKING_FOR_SATELLITE;
 	public NativeImageBackedTexture nibt;
 	public Identifier textureIdentifier;
 	public ByteArrayInputStream byteArrayInputStream;
 	
-	private final Font font;
-	private float totalTimeRadar;
+	//Shop variables
+	private float shopPx; //OffsetX, kind of like a camera
+	private float shopPy; //OffsetY, ^
+	private float shopGradientEndValue = 1f;
+	private int shopIndex; //used for first page
+	private int shopExtraIndex; //used for everything but first page
+	private ShopState shopState;
+	private ShopState renderExtraShopState; //for transitions
+	private boolean arrowDownPressed = false;    //
+	private boolean arrowUpPressed = false;		 // Used for 'tapping' input.
+	private boolean arrowLeftPressed = false;	 // (e.g. GetKeyDown in Unity)
+	private boolean arrowRightPressed = false;	 //
+	private SoundInstance shopIntroSound;
+	private SoundInstance shopMusicSound;
+	private ArrayList<OrderableItem> shoppingCart;
+	private static final List<OrderableItem> PC_PARTS = Arrays.asList(ItemList.PC_CASE, ItemList.PC_CASE_SIDEPANEL, ItemList.ITEM_MOTHERBOARD, ItemList.ITEM_MOTHERBOARD64, ItemList.ITEM_RAM1G, ItemList.ITEM_RAM2G, ItemList.ITEM_RAM4G, ItemList.ITEM_CPU2, ItemList.ITEM_CPU4, ItemList.ITEM_CPU6, ItemList.ITEM_GPU, ItemList.ITEM_NEW_HARDDRIVE, ItemList.ITEM_CRTSCREEN, ItemList.ITEM_FLATSCREEN);
+	private static final List<OrderableItem> PERIPHERALS = Arrays.asList(ItemList.ITEM_KEYBOARD, ItemList.ITEM_MOUSE);
 	
+	
+	//Radar variables
 	private SoundInstance radarSound;
-	private MinecraftClient mcc = MinecraftClient.getInstance();
-	private ArrayList<Float> radarRadius; 
+	private ArrayList<Float> radarRadius; //radius of circles when looking at radar
+	private float totalTimeRadar;
+	private BufferedImage lastRadarImage; //last rendered image for transition from radar to store
+	private boolean satelliteVisible = false;
+	public final OrderingTabletModel ORDERING_TABLET = new OrderingTabletModel();
 	
-	public float deltaTime;
-	public long lastDeltaTimeTime;
-	
+	//General variables
+	private float deltaTime;
+	private long lastDeltaTimeTime;
 	public boolean tabletOn = false;
+	private final Font font;
+	public State tabletState = State.LOOKING_FOR_SATELLITE;
+	private MinecraftClient mcc = MinecraftClient.getInstance();
 	
 	public TabletOS() throws FontFormatException, IOException {
-		radarSound = new AbstractSoundInstance(SoundList.RADAR_SOUND, SoundCategory.MASTER) {
-			@Override
-			public boolean isRepeatable() {
-				return true;
-			}
-			
-			@Override
-			public boolean shouldAlwaysPlay() {
-				return true;
-			}
-			
-			@Override
-			public float getVolume() {
-				return 0.15F * this.sound.getVolume();
-			}
-		};
+		radarSound = new TabletSoundInstance(SoundList.RADAR_SOUND, false);
+		shopIntroSound = new TabletSoundInstance(SoundList.SHOPINTRO_SOUND, false);
+		shopMusicSound = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_FAR, 0.6f, 0.4f);
 		font = Font.createFont(Font.PLAIN, mcc.getResourceManager().getResource(new Identifier("mcvmcomputers", "font/tabletfont.ttf")).getInputStream());
-		renderedImage = new NativeImage(1, 1, true);
 		radarRadius = new ArrayList<Float>();
 	}
 	
@@ -67,12 +87,21 @@ public class TabletOS {
 		radarRadius.clear();
 		totalTimeRadar = 0;
 		radarRadius.add(0f);
-		mcc.getSoundManager().play(radarSound);
-		tabletState = State.LOOKING_FOR_SATELLITE;
+		if(tabletState != State.SHOP && tabletState != State.DISPLAY_ORDER) {
+			mcc.getSoundManager().play(radarSound);
+			tabletState = State.LOOKING_FOR_SATELLITE;
+		}
 	}
 	public void tabletUnequipped() {
-		mcc.getSoundManager().stop(radarSound);
-		tabletState = State.NONE;
+		if(tabletState == State.LOOKING_FOR_SATELLITE) {
+			mcc.getSoundManager().stop(radarSound);
+		}else if(tabletState == State.SHOP_INTRO) {
+			mcc.getSoundManager().stop(shopIntroSound);
+			tabletState = State.SHOP;
+		}else if(tabletState == State.SHOP) {
+			mcc.getSoundManager().stop(shopMusicSound);
+		}
+		tabletState = State.LOOKING_FOR_SATELLITE;
 	}
 	
 	public void render() {
@@ -100,7 +129,7 @@ public class TabletOS {
 				for(int i = 0;i<radarRadius.size();i++) {
 					float f = radarRadius.get(i)+deltaTime*50;
 					radarRadius.set(i, f);
-					if(f >= 400) {
+					if(f >= 420) {
 						removeIndices.add(f);
 					}
 				}
@@ -108,28 +137,254 @@ public class TabletOS {
 					radarRadius.remove(f);
 				}
 				removeIndices.clear();
-				float time = ((float)mcc.world.getSkyAngle(deltaTime)*6f);
+				float time = ((float)mcc.world.getSkyAngle(deltaTime)*5f);
+				time %= 1f;
+				boolean canSee = time < 0.22249603 || time > 0.78432274;
+				satelliteVisible = canSee;
 				g2d.setColor(Color.BLACK);
 				g2d.fillRect(0, 0, 256, 256);
 				g2d.setColor(Color.white);
-				g2d.setFont(font.deriveFont(20f));
-				g2d.drawString("Scanning for Satellite...", 54, 40);
-				g2d.drawString("Approximate Location displayed.", 26, 53);
 				g2d.fillRect(64, 168, 128, 1);
+				g2d.setFont(font.deriveFont(20f));
+				if(canSee) {
+					g2d.drawString("Satellite found!", 78, 40);
+					g2d.drawString("Connect to 'store' using ENTER", 26, 54);
+					
+					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					g2d.setColor(Color.gray);
+					g2d.fillOval((int)(128 + (96*Math.cos((time*6.3)-1.65))), (int)(168 + (32*Math.sin((time*6.3)-1.65))), 16, 16);
+					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+				}else {
+					g2d.drawString("Scanning for Satellite...", 54, 40);
+					g2d.drawString("Please check throughout the day", 17, 54);
+				}
 				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2d.setColor(Color.yellow);
-				g2d.drawOval((int)(128 + (96*Math.cos((time*6.3)-1.65))), (int)(168 + (32*Math.sin((time*6.3)-1.65))), 16, 16);
 				g2d.setColor(Color.gray);
 				for(Float f : radarRadius) {
 					g2d.drawOval(Math.round(128 - f/2), Math.round(160 - f/2), Math.round(f), Math.round(f));
 				}
-				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-				g2d.setColor(Color.yellow);
-				g2d.fillRect(4, 236, 16, 16);
-				g2d.drawString("Approximate Location", 24, 248 );
-				g2d.setColor(Color.green);
-				g2d.fillRect(4, 216, 16, 16);
-				g2d.drawString("Real Location", 24, 228 );
+				lastRadarImage = bi;
+			}
+		}else if(tabletState == State.SHOP_INTRO) {
+			if(!mcc.getSoundManager().isPlaying(shopIntroSound)) {
+				mcc.getSoundManager().play(shopIntroSound);
+			}
+			g2d.drawImage(lastRadarImage, 0, 0, null);
+			totalTimeRadar += deltaTime;
+			float firstPercentage = Math.min(1f, totalTimeRadar/0.091f);
+			float secondPercentage = Math.min(1f, (totalTimeRadar-0.091f)/0.122f);
+			float thirdPercentage = Math.min(1f, (totalTimeRadar-0.213f)/0.108f);
+			float fourthPercentage = Math.min(1f, (totalTimeRadar-0.321f)/0.14f);
+			float fifthPercentage = Math.min(1f, (totalTimeRadar-0.461f)/0.103f);
+			float[] percentages = new float[] {firstPercentage, secondPercentage, thirdPercentage, fourthPercentage, fifthPercentage};
+			if(totalTimeRadar > 2) {
+				mcc.getSoundManager().stop(shopIntroSound);
+				shoppingCart = new ArrayList<OrderableItem>();
+				tabletState = State.SHOP;
+				shopState = ShopState.MENU;
+				shopGradientEndValue = 1f;
+				shopPy = 500;
+				shopPx = 0;
+			}
+			//for(int x = 0;x<16;x++) {
+				for(int y = 0;y<5;y++) {
+					float val = percentages[y];
+					int by = (int) ((y*52)+(52*(val-1f)));
+					for(int yy = 0;yy<52;yy++) {
+						float c = (((y*52)+yy)/260f)*.9f;
+						float vav = val;
+						if(val < 0) { vav = 0f; }
+						g2d.setColor(new Color(0f, Math.min(1f, c+.1f), Math.min(1f, c+.1f), vav));
+						g2d.fillRect(0, by+yy, 256, 1);
+						if(y == 4) {
+						    g2d.setColor(new Color(1f,1f,1f));
+							g2d.setFont(font.deriveFont(60f));
+							g2d.drawString("Store", 75, 140+(40*(val-1f)));
+						}
+					}
+				}
+			//}
+		}else if(tabletState == State.SHOP) {
+			if(!mcc.getSoundManager().isPlaying(shopMusicSound)) {
+				mcc.getSoundManager().play(shopMusicSound);
+			}
+			shopGradientEndValue = MVCUtils.lerp(shopGradientEndValue, 0.3f, deltaTime*2.5f);
+			
+			GradientPaint gp = new GradientPaint(0, 0, new Color(0f,0.1f,0.1f), 0, 256, new Color(0f,shopGradientEndValue,shopGradientEndValue));
+			Paint p = g2d.getPaint();
+			g2d.setPaint(gp);
+			g2d.fillRect(0, 0, 256, 256);
+			g2d.setPaint(p);
+			g2d.setFont(font.deriveFont(60f));
+			g2d.drawString("Store", 75-shopPx, 640-shopPy);
+			
+			g2d.setFont(font.deriveFont(32f));
+			g2d.drawString("VMcorp Store", 4-shopPx, 20-shopPy);
+			
+			g2d.setFont(font.deriveFont(46f));
+			g2d.drawString("Parts, Screens", 24-shopPx, 60-shopPy);
+			g2d.drawString("Peripherals", 24-shopPx, 90-shopPy);
+			g2d.drawString("Shopping cart", 24-shopPx, 120-shopPy);
+			
+			g2d.drawString(">", 6-shopPx, (60+(30*shopIndex))-shopPy);
+			
+			g2d.setFont(font.deriveFont(16f));
+			g2d.drawString("(" + shoppingCart.size() + " items)", 200-shopPx, 130-shopPy);
+			g2d.drawString("Navigate using arrow keys,", 58-shopPx, 140-shopPy);
+			g2d.drawString("select with right arrow.", 68-shopPx, 150-shopPy);
+			g2d.drawString("Items are sponsored by Solar System ZA-83. By", 4-shopPx, 210-shopPy);
+			g2d.drawString("purchasing from this store you agree to", 4-shopPx, 220-shopPy);
+			g2d.drawString("transfer ownership of your planet to Solar", 4-shopPx, 230-shopPy);
+			g2d.drawString("System ZA-83 and the corporations residing in", 4-shopPx, 240-shopPy);
+			g2d.drawString("it including VMcorp if requested.", 4-shopPx, 250-shopPy);
+			
+			if(shopState == ShopState.PC_PARTS || renderExtraShopState == ShopState.PC_PARTS) {
+				int offY = 20;
+				for(OrderableItem oi : PC_PARTS) {
+					int offX = 0;
+					g2d.setFont(font.deriveFont(23f)); offY += 20;
+					g2d.drawString(oi.getName().asString(), (270+offX)-shopPx, offY-shopPy);
+					g2d.setFont(font.deriveFont(16f)); offY += 10; offX = 10;
+					int inCart = 0;
+					for(OrderableItem io : shoppingCart) {
+						if(io.equals(oi)) {
+							inCart++;
+						}
+					}
+					if(inCart > 0) {
+						g2d.drawString(oi.getPrice() + " Iron Ingots | " + inCart + " in cart", (270+offX)-shopPx, offY-shopPy);
+					}else {
+						g2d.drawString(oi.getPrice() + " Iron Ingots", (270+offX)-shopPx, offY-shopPy);
+					}
+				}
+				g2d.setFont(font.deriveFont(32f));
+				g2d.drawString("PC parts", 260-shopPx, 20-shopPy);
+				g2d.setFont(font.deriveFont(23f));
+				int ry = (40+(shopExtraIndex*30));
+				float targetShopPy = shopPy;
+				if(ry + 60 > shopPy+256) {
+					targetShopPy = ry - 186;
+				}
+				if(ry-50 < shopPy) {
+					targetShopPy = ry - 60;
+				}
+				if(targetShopPy < 0) {
+					targetShopPy = 0;
+				}else if(targetShopPy > 190) {
+					targetShopPy = 190;
+				}
+				if(shopState == ShopState.PC_PARTS) {
+					shopPx = MVCUtils.lerp(shopPx, 256, deltaTime*5f);
+					shopPy = MVCUtils.lerp(shopPy, targetShopPy, deltaTime*5f);
+				}
+				g2d.drawString(">", 260-shopPx, ry-shopPy);
+				g2d.setFont(font.deriveFont(16f));
+				g2d.drawString("Navigate using arrows,", 390-shopPx, 15-shopPy);
+				g2d.drawString("Select using right,", 413-shopPx, 25-shopPy);
+				g2d.drawString("Exit using left", 432-shopPx, 35-shopPy);
+			}else if(shopState == ShopState.SHOPPING_CART || renderExtraShopState == ShopState.SHOPPING_CART) {
+				int offY = 30;
+				int sum = 0;
+				for(OrderableItem oi : shoppingCart) {
+					int offX = 0;
+					g2d.setFont(font.deriveFont(23f)); offY += 20;
+					g2d.drawString(oi.getName().asString(), (270+offX)-shopPx, offY-shopPy);
+					g2d.setFont(font.deriveFont(16f)); offY += 10; offX = 10;
+					g2d.drawString(oi.getPrice() + " Iron Ingots | right to remove", (270+offX)-shopPx, offY-shopPy);
+					sum += oi.getPrice();
+				}
+				if(shoppingCart.size() == 0) {
+					g2d.setFont(font.deriveFont(23f));
+					g2d.setColor(Color.gray);
+					g2d.drawString("Your cart is empty. Fill it up", 276-shopPx, 45-shopPy);
+					g2d.drawString("so you can order something!", 274-shopPx, 60-shopPy);
+					g2d.setColor(Color.white);
+				}
+				int offX = 0;
+				offY += 30;
+				g2d.setFont(font.deriveFont(23f)); offY += 20;
+				g2d.drawString("Purchase", (270+offX)-shopPx, offY-shopPy);
+				g2d.setFont(font.deriveFont(16f)); offY += 10; offX = 10;
+				g2d.drawString(sum + " Iron Ingots | right to order", (270+offX)-shopPx, offY-shopPy);
+				
+				g2d.setFont(font.deriveFont(32f));
+				g2d.drawString("Your cart", 260-shopPx, 20-shopPy);
+				g2d.setFont(font.deriveFont(23f));
+				int in = shopExtraIndex;
+				if(in == shoppingCart.size()) {
+					in++;
+				}
+				int ry = (50+(in*30));
+				float targetShopPy = shopPy;
+				if(ry + 80 > shopPy+256) {
+					targetShopPy = ry - 166;
+				}
+				if(ry-70 < shopPy) {
+					targetShopPy = ry - 80;
+				}
+				if(targetShopPy < 0) {
+					targetShopPy = 0;
+				}else if(targetShopPy > offY - 248) {
+					targetShopPy = offY - 248;
+				}
+				if(shopState == ShopState.SHOPPING_CART) {
+					shopPx = MVCUtils.lerp(shopPx, 256, deltaTime*5f);
+					shopPy = MVCUtils.lerp(shopPy, targetShopPy, deltaTime*5f);
+				}
+				g2d.drawString(">", 260-shopPx, ry-shopPy);
+				g2d.setFont(font.deriveFont(16f));
+				g2d.drawString("(" + shoppingCart.size() + " items)", 260-shopPx, 30-shopPy);
+				g2d.drawString("Navigate using arrows,", 390-shopPx, 15-shopPy);
+				g2d.drawString("Exit using left", 432-shopPx, 25-shopPy);
+			}else if(shopState == ShopState.PERIPHERALS || renderExtraShopState == ShopState.PERIPHERALS) {
+				int offY = 20;
+				for(OrderableItem oi : PERIPHERALS) {
+					int offX = 0;
+					g2d.setFont(font.deriveFont(23f)); offY += 20;
+					g2d.drawString(oi.getName().asString(), (270+offX)-shopPx, offY-shopPy);
+					g2d.setFont(font.deriveFont(16f)); offY += 10; offX = 10;
+					int inCart = 0;
+					for(OrderableItem io : shoppingCart) {
+						if(io.equals(oi)) {
+							inCart++;
+						}
+					}
+					if(inCart > 0) {
+						g2d.drawString(oi.getPrice() + " Iron Ingots | " + inCart + " in cart", (270+offX)-shopPx, offY-shopPy);
+					}else {
+						g2d.drawString(oi.getPrice() + " Iron Ingots", (270+offX)-shopPx, offY-shopPy);
+					}
+				}
+				g2d.setFont(font.deriveFont(32f));
+				g2d.drawString("Peripherals", 260-shopPx, 20-shopPy);
+				g2d.setFont(font.deriveFont(23f));
+				int ry = (40+(shopExtraIndex*30));
+				float targetShopPy = shopPy;
+				if(ry + 60 > shopPy+256) {
+					targetShopPy = ry - 186;
+				}
+				if(ry-50 < shopPy) {
+					targetShopPy = ry - 60;
+				}
+				if(targetShopPy < 0) {
+					targetShopPy = 0;
+				}else if(targetShopPy > 190) {
+					targetShopPy = 190;
+				}
+				if(shopState == ShopState.PERIPHERALS) {
+					shopPx = MVCUtils.lerp(shopPx, 256, deltaTime*5f);
+					shopPy = MVCUtils.lerp(shopPy, targetShopPy, deltaTime*5f);
+				}
+				g2d.drawString(">", 260-shopPx, ry-shopPy);
+				g2d.setFont(font.deriveFont(16f));
+				g2d.drawString("Navigate using arrows,", 390-shopPx, 15-shopPy);
+				g2d.drawString("Select using right,", 413-shopPx, 25-shopPy);
+				g2d.drawString("Exit using left", 432-shopPx, 35-shopPy);
+			}
+			
+			if(shopState == ShopState.MENU) {
+				shopPx = MVCUtils.lerp(shopPx, 0, deltaTime*5f);
+				shopPy = MVCUtils.lerp(shopPy, 0, deltaTime*5f);
 			}
 		}
 		
@@ -143,7 +398,147 @@ public class TabletOS {
 		
 	}
 	
+	private boolean pressed(int key) {
+		return GLFW.glfwGetKey(mcc.getWindow().getHandle(), key) == GLFW.GLFW_PRESS;
+	}
+	
+	private void update() {
+		//System.out.println(mcc.getSoundManager().isPlaying(shopMusicSound));
+		if(tabletOn) {
+			ORDERING_TABLET.setButtons(pressed(GLFW.GLFW_KEY_UP), pressed(GLFW.GLFW_KEY_DOWN), pressed(GLFW.GLFW_KEY_LEFT), pressed(GLFW.GLFW_KEY_RIGHT), pressed(GLFW.GLFW_KEY_ENTER), deltaTime*20f);
+			if(tabletState == State.LOOKING_FOR_SATELLITE && satelliteVisible) {
+				if(pressed(GLFW.GLFW_KEY_ENTER)) {
+					totalTimeRadar = 0;
+					tabletState = State.SHOP_INTRO;
+					mcc.getSoundManager().stop(radarSound);
+				}
+			}
+			if(tabletState == State.SHOP) {
+				if(pressed(GLFW.GLFW_KEY_LEFT)) {
+					if(!arrowLeftPressed) {
+						arrowLeftPressed = true;
+						if(shopState == ShopState.PC_PARTS) {
+							shopState = ShopState.MENU;
+							renderExtraShopState = ShopState.PC_PARTS;
+						}else if(shopState == ShopState.SHOPPING_CART) {
+							shopState = ShopState.MENU;
+							renderExtraShopState = ShopState.SHOPPING_CART;
+						}else if(shopState == ShopState.PERIPHERALS) {
+							shopState = ShopState.MENU;
+							renderExtraShopState = ShopState.PERIPHERALS;
+						}
+					}
+				}else {
+					if(arrowLeftPressed) {
+						arrowLeftPressed = false;
+					}
+				}
+				
+				if(pressed(GLFW.GLFW_KEY_DOWN)) {
+					if(!arrowDownPressed) {
+						arrowDownPressed = true;
+						if(shopState == ShopState.MENU) {
+							shopIndex += 1;
+							if(shopIndex > 2) {
+								shopIndex = 0;
+							}
+						}else if(shopState == ShopState.PC_PARTS) {
+							shopExtraIndex += 1;
+							if(shopExtraIndex >= PC_PARTS.size()) {
+								shopExtraIndex = 0;
+							}
+						}else if(shopState == ShopState.SHOPPING_CART) {
+							shopExtraIndex += 1;
+							if(shopExtraIndex > shoppingCart.size()) {
+								shopExtraIndex = 0;
+							}
+						}else if(shopState == ShopState.PERIPHERALS) {
+							shopExtraIndex += 1;
+							if(shopExtraIndex >= PERIPHERALS.size()) {
+								shopExtraIndex = 0;
+							}
+						}
+					}
+				}else {
+					if(arrowDownPressed) {
+						arrowDownPressed = false;
+					}
+				}
+				
+				if(pressed(GLFW.GLFW_KEY_UP)) {
+					if(!arrowUpPressed) {
+						arrowUpPressed = true;
+						if(shopState == ShopState.MENU) {
+							shopIndex -= 1;
+							if(shopIndex < 0) {
+								shopIndex = 2;
+							}
+						}else if(shopState == ShopState.PC_PARTS) {
+							shopExtraIndex -= 1;
+							if(shopExtraIndex < 0) {
+								shopExtraIndex = PC_PARTS.size()-1;
+							}
+						}else if(shopState == ShopState.SHOPPING_CART) {
+							shopExtraIndex -= 1;
+							if(shopExtraIndex < 0) {
+								shopExtraIndex = shoppingCart.size();
+							}
+						}else if(shopState == ShopState.PERIPHERALS) {
+							shopExtraIndex -= 1;
+							if(shopExtraIndex < 0) {
+								shopExtraIndex = PERIPHERALS.size()-1;
+							}
+						}
+					}
+				}else {
+					if(arrowUpPressed) {
+						arrowUpPressed = false;
+					}
+				}
+				
+				if(pressed(GLFW.GLFW_KEY_RIGHT)) {
+					if(!arrowRightPressed) {
+						arrowRightPressed = true;
+						if(shopState == ShopState.MENU) {
+							shopExtraIndex = 0; 
+							if(shopIndex == 0) {
+								shopState = ShopState.PC_PARTS;
+								renderExtraShopState = ShopState.PC_PARTS;
+							}else if(shopIndex == 1) {
+								shopState = ShopState.PERIPHERALS;
+								renderExtraShopState = ShopState.PERIPHERALS;
+							}else {
+								shopState = ShopState.SHOPPING_CART;
+								renderExtraShopState = ShopState.SHOPPING_CART;
+							}
+						}else if(shopState == ShopState.PC_PARTS) {
+							shoppingCart.add(PC_PARTS.get(shopExtraIndex));
+						}else if(shopState == ShopState.PERIPHERALS) {
+							shoppingCart.add(PERIPHERALS.get(shopExtraIndex));
+						}else if(shopState == ShopState.SHOPPING_CART) {
+							if(shopExtraIndex != shoppingCart.size()){
+								shoppingCart.remove(shopExtraIndex);
+							}else {
+								if(shoppingCart.size() > 0) {
+									
+								}
+							}
+						}
+					}
+				}else {
+					if(arrowRightPressed) {
+						arrowRightPressed = false;
+					}
+				}
+			}
+		}
+	}
+	
 	public void generateTexture() {
+		if(!tabletOn) {
+			return;
+		}
+		this.update();
 		if(byteArrayInputStream == null) {
 			return;
 		}
@@ -164,7 +559,11 @@ public class TabletOS {
 		byteArrayInputStream = null;
 	}
 	
+	public enum ShopState{
+		MENU, PC_PARTS, PERIPHERALS, SHOPPING_CART
+	}
+	
 	public enum State{
-		NONE, LOOKING_FOR_SATELLITE, SATELLITE_FOUND, DOWNLOADING, SHOP_INTRO, MENU, PC_PARTS, SCREENS, PERIPHERALS, OTHERS, SHOPPING_CART, DISPLAY_ORDER
+		LOOKING_FOR_SATELLITE, SHOP_INTRO, SHOP, SHOP_OUTRO, DISPLAY_ORDER
 	}
 }

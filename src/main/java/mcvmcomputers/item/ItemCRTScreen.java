@@ -11,14 +11,14 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class ItemCRTScreen extends Item{
+public class ItemCRTScreen extends OrderableItem{
 	public ItemCRTScreen(Settings settings) {
-		super(settings);
+		super(settings, 10);
 	}
 	
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		if(!world.isClient) {
+		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
 			EntityCRTScreen ek = new EntityCRTScreen(world, 
 									MCVmComputersMod.thePreviewEntity.getX(),

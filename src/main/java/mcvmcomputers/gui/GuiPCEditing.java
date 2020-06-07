@@ -180,6 +180,23 @@ public class GuiPCEditing extends Screen{
 		}
 	}
 	
+	private void removeMotherboard() {
+		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
+		if(pc_case.getMotherboardInstalled()) {
+			if(pc_case.get64Bit()) {
+				serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ItemList.ITEM_MOTHERBOARD64)));
+			}else {
+				serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ItemList.ITEM_MOTHERBOARD)));
+			}
+			serverPCCase.setMotherboardInstalled(false);
+			removeCPU();
+			removeRamStick(0);
+			removeRamStick(1);
+			removeHardDrive();
+			removeGPU();
+		}
+	}
+	
 	private void addCPU(Item cpuItem, int dividedBy) {
 		PlayerEntity serverPlayer = this.minecraft.getServer().getPlayerManager().getPlayerList().get(0);
 		if(serverPlayer.inventory.contains(new ItemStack(cpuItem))) {
@@ -222,6 +239,13 @@ public class GuiPCEditing extends Screen{
 			serverPCCase.setHardDriveFileName("");
 		}
 	}
+	private void removeGPU() {
+		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
+		if(pc_case.getGpuInstalled()) {
+			serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ItemList.ITEM_GPU)));
+			serverPCCase.setGpuInstalled(false);
+		}
+	}
 	
 	private void addRamStick(Item ramItem, int gigs) {
 		PlayerEntity serverPlayer = this.minecraft.getServer().getPlayerManager().getPlayerList().get(0);
@@ -248,6 +272,8 @@ public class GuiPCEditing extends Screen{
 				ramStickItem = ItemList.ITEM_RAM2G;
 			}else if(pc_case.getGigsOfRamInSlot0() == 4) {
 				ramStickItem = ItemList.ITEM_RAM4G;
+			}else {
+				return;
 			}
 			serverPCCase.setGigsOfRamInSlot0(0);
 			serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ramStickItem)));
@@ -258,6 +284,8 @@ public class GuiPCEditing extends Screen{
 				ramStickItem = ItemList.ITEM_RAM2G;
 			}else if(pc_case.getGigsOfRamInSlot1() == 4) {
 				ramStickItem = ItemList.ITEM_RAM4G;
+			}else {
+				return;
 			}
 			serverPCCase.setGigsOfRamInSlot1(0);
 			serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ramStickItem)));
@@ -276,6 +304,8 @@ public class GuiPCEditing extends Screen{
 		case 6:
 			cpuItem = ItemList.ITEM_CPU6;
 			break;
+		default:
+			return;
 		}
 		serverPCCase.setCpuDividedBy(0);
 		serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(cpuItem)));
@@ -303,6 +333,17 @@ public class GuiPCEditing extends Screen{
 					panelX = -panelX;
 				}
 				if(pc_case.getMotherboardInstalled()) {
+					this.addButton(new ButtonWidget(this.width/2-70, this.height / 2 - 70, 10, 10, "x", (btn) -> this.removeMotherboard()));
+					RenderSystem.disableDepthTest();
+					RenderSystem.pushMatrix();
+					RenderSystem.translatef(0, 0, 200);
+					if(pc_case.get64Bit()) {
+						this.font.draw("64-bit", this.width/2 - 66, this.height/2 - 56, -1);
+					}else {
+						this.font.draw("32-bit", this.width/2 - 66, this.height/2 - 56, -1);
+					}
+					RenderSystem.popMatrix();
+					RenderSystem.enableDepthTest();
 					if(pc_case.getCpuDividedBy() == 0) {
 						RenderSystem.disableDepthTest();
 						RenderSystem.pushMatrix();
@@ -425,8 +466,8 @@ public class GuiPCEditing extends Screen{
 						this.addButton(new ButtonWidget(this.width/2 + 37, this.height / 2 - 70, 10, 10, "x", (btn) -> this.removeRamStick(1)));
 					}
 				}else {
-					ButtonWidget thirtytwo = new ButtonWidget(this.width/2 - 50, this.height / 2 - 7, 100, 14, "Add 32-bit Motherboard", (btn) -> this.addMotherboard(false));
-					ButtonWidget sixtyfour = new ButtonWidget(this.width/2 - 50, this.height / 2 - 7, 100, 14, "Add 64-bit Motherboard", (btn) -> this.addMotherboard(true));
+					ButtonWidget thirtytwo = new ButtonWidget(this.width/2 - 64, this.height / 2 - 23, 128, 14, "Add 32-bit Motherboard", (btn) -> this.addMotherboard(false));
+					ButtonWidget sixtyfour = new ButtonWidget(this.width/2 - 64, this.height / 2 - 7, 128, 14, "Add 64-bit Motherboard", (btn) -> this.addMotherboard(true));
 					
 					if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_MOTHERBOARD))) {
 						thirtytwo.active = false;
@@ -434,6 +475,9 @@ public class GuiPCEditing extends Screen{
 					if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_MOTHERBOARD64))) {
 						sixtyfour.active = false;
 					}
+					
+					this.addButton(thirtytwo);
+					this.addButton(sixtyfour);
 				}
 			}else {
 				boolean turnedOn = (MCVmComputersMod.vmTurningOn && MCVmComputersMod.vmEntityID == pc_case.getEntityId()) || (MCVmComputersMod.vmTurnedOn && MCVmComputersMod.vmEntityID == pc_case.getEntityId());

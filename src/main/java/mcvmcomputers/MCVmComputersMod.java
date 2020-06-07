@@ -1,5 +1,6 @@
 package mcvmcomputers;
 
+import java.awt.Color;
 import java.awt.FontFormatException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -23,21 +24,27 @@ import mcvmcomputers.entities.render.KeyboardRender;
 import mcvmcomputers.entities.render.MouseRender;
 import mcvmcomputers.entities.render.PCRender;
 import mcvmcomputers.item.ItemList;
+import mcvmcomputers.item.ItemOrderingTablet;
 import mcvmcomputers.tablet.TabletOS;
 import mcvmcomputers.tablet.TabletOrder;
 import mcvmcomputers.sound.SoundList;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
@@ -135,6 +142,10 @@ public class MCVmComputersMod implements ModInitializer{
 	        vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(15728640).next();
 	        matrices.pop();
 		}
+	}
+	
+	public static void translation(MatrixStack matrices) {
+		matrices.translate(0, 0.1, 0.38);
 	}
 	
 	public void onInitialize() {

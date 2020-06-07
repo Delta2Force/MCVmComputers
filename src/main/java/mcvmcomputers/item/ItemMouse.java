@@ -11,14 +11,14 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class ItemMouse extends Item{
+public class ItemMouse extends OrderableItem{
 	public ItemMouse(Settings settings) {
-		super(settings);
+		super(settings, 4);
 	}
 	
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		if(!world.isClient) {
+		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
 			EntityMouse ek = new EntityMouse(world, 
 								MCVmComputersMod.thePreviewEntity.getX(),

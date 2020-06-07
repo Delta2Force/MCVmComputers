@@ -3,5 +3,15 @@
 		"sounds": [
 			"mcvmcomputers:radar"
 		]
+	},
+	"shopintro": {
+		"sounds":[
+			"mcvmcomputers:shopintro"
+		]
+	},
+	"shopmusic": {
+		"sounds":[
+			"mcvmcomputers:shopmusic"
+		]
 	}
 }
