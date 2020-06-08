@@ -37,9 +37,9 @@ public class HeldItemMixin {
 				matrices.push();
 				matrices.translate(0, -equipProgress*2, 0);
 					matrices.push();
-						MCVmComputersMod.translation(matrices);
+						matrices.translate(0, 0.1, 0.38);
 						matrices.multiply(new Quaternion(-90, 0, 0, true));
-						MCVmComputersMod.tabletOS.ORDERING_TABLET.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(new Identifier("mcvmcomputers", "textures/entity/tablet.png"))), light, OverlayTexture.DEFAULT_UV, 0, 0, 0, 1);
+						MCVmComputersMod.tabletOS.orderingTabletModel.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(new Identifier("mcvmcomputers", "textures/entity/tablet.png"))), light, OverlayTexture.DEFAULT_UV, 0, 0, 0, 1);
 						MCVmComputersMod.renderDisplay(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
 					matrices.pop();
 					matrices.push();

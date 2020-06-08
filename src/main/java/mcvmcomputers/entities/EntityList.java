@@ -15,6 +15,7 @@ public class EntityList {
 	public static EntityType<Entity> CRT_SCREEN;
 	public static EntityType<Entity> FLATSCREEN;
 	public static EntityType<Entity> PC;
+	public static EntityType<Entity> DELIVERY_CHEST;
 
 	public static void init() {
 		ITEM_PREVIEW = Registry.register(Registry.ENTITY_TYPE,
@@ -41,5 +42,9 @@ public class EntityList {
 					new Identifier("mcvmcomputers", "pc"),
 					FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityPC::new)
 					.size(new EntityDimensions(0.375f, 0.6875f, true)).trackable(60, 2,true).build());
+		DELIVERY_CHEST = Registry.register(Registry.ENTITY_TYPE, 
+							new Identifier("mcvmcomputers", "delivery_chest"),
+							FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityDeliveryChest::new)
+							.size(new EntityDimensions(1f, 2f, true)).trackable(600, 2,true).build());
 	}
 }

@@ -2,10 +2,10 @@ package mcvmcomputers.tablet;
 
 import java.util.List;
 
-import net.minecraft.item.Item;
+import mcvmcomputers.item.OrderableItem;
 
 public class TabletOrder {
-	public List<Item> items;
+	public List<OrderableItem> items;
 	public OrderStatus currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON;
 	public int price;
 	

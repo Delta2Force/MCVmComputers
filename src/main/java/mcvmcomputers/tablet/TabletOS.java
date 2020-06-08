@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.glfw.GLFW;
 
+import mcvmcomputers.MCVmComputersMod;
 import mcvmcomputers.entities.model.OrderingTabletModel;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.OrderableItem;
@@ -32,6 +33,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.dimension.DimensionType;
 
 public class TabletOS {
 	//Rendering variables
@@ -54,10 +56,11 @@ public class TabletOS {
 	private boolean arrowRightPressed = false;	 //
 	private SoundInstance shopIntroSound;
 	private SoundInstance shopMusicSound;
+	private SoundInstance shopOutroSound;
 	private ArrayList<OrderableItem> shoppingCart;
 	private static final List<OrderableItem> PC_PARTS = Arrays.asList(ItemList.PC_CASE, ItemList.PC_CASE_SIDEPANEL, ItemList.ITEM_MOTHERBOARD, ItemList.ITEM_MOTHERBOARD64, ItemList.ITEM_RAM1G, ItemList.ITEM_RAM2G, ItemList.ITEM_RAM4G, ItemList.ITEM_CPU2, ItemList.ITEM_CPU4, ItemList.ITEM_CPU6, ItemList.ITEM_GPU, ItemList.ITEM_NEW_HARDDRIVE, ItemList.ITEM_CRTSCREEN, ItemList.ITEM_FLATSCREEN);
 	private static final List<OrderableItem> PERIPHERALS = Arrays.asList(ItemList.ITEM_KEYBOARD, ItemList.ITEM_MOUSE);
-	
+	private BufferedImage lastShopImage;
 	
 	//Radar variables
 	private SoundInstance radarSound;
@@ -65,7 +68,7 @@ public class TabletOS {
 	private float totalTimeRadar;
 	private BufferedImage lastRadarImage; //last rendered image for transition from radar to store
 	private boolean satelliteVisible = false;
-	public final OrderingTabletModel ORDERING_TABLET = new OrderingTabletModel();
+	public final OrderingTabletModel orderingTabletModel = new OrderingTabletModel();
 	
 	//General variables
 	private float deltaTime;
@@ -76,8 +79,9 @@ public class TabletOS {
 	private MinecraftClient mcc = MinecraftClient.getInstance();
 	
 	public TabletOS() throws FontFormatException, IOException {
-		radarSound = new TabletSoundInstance(SoundList.RADAR_SOUND, false);
-		shopIntroSound = new TabletSoundInstance(SoundList.SHOPINTRO_SOUND, false);
+		radarSound = new TabletSoundInstance(SoundList.RADAR_SOUND);
+		shopIntroSound = new TabletSoundInstance(SoundList.SHOPINTRO_SOUND);
+		shopOutroSound = new TabletSoundInstance(SoundList.SHOPOUTRO_SOUND);
 		shopMusicSound = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_FAR, 0.6f, 0.4f);
 		font = Font.createFont(Font.PLAIN, mcc.getResourceManager().getResource(new Identifier("mcvmcomputers", "font/tabletfont.ttf")).getInputStream());
 		radarRadius = new ArrayList<Float>();
@@ -98,6 +102,10 @@ public class TabletOS {
 		}else if(tabletState == State.SHOP_INTRO) {
 			mcc.getSoundManager().stop(shopIntroSound);
 			tabletState = State.SHOP;
+		}else if(tabletState == State.SHOP_OUTRO) {
+			mcc.getSoundManager().stop(shopOutroSound);
+			mcc.getSoundManager().stop(shopMusicSound);
+			tabletState = State.DISPLAY_ORDER;
 		}else if(tabletState == State.SHOP) {
 			mcc.getSoundManager().stop(shopMusicSound);
 		}
@@ -146,6 +154,7 @@ public class TabletOS {
 				g2d.setColor(Color.white);
 				g2d.fillRect(64, 168, 128, 1);
 				g2d.setFont(font.deriveFont(20f));
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 				if(canSee) {
 					g2d.drawString("Satellite found!", 78, 40);
 					g2d.drawString("Connect to 'store' using ENTER", 26, 54);
@@ -179,6 +188,7 @@ public class TabletOS {
 			float[] percentages = new float[] {firstPercentage, secondPercentage, thirdPercentage, fourthPercentage, fifthPercentage};
 			if(totalTimeRadar > 2) {
 				mcc.getSoundManager().stop(shopIntroSound);
+				lastRadarImage = null;
 				shoppingCart = new ArrayList<OrderableItem>();
 				tabletState = State.SHOP;
 				shopState = ShopState.MENU;
@@ -386,6 +396,31 @@ public class TabletOS {
 				shopPx = MVCUtils.lerp(shopPx, 0, deltaTime*5f);
 				shopPy = MVCUtils.lerp(shopPy, 0, deltaTime*5f);
 			}
+			
+			lastShopImage = bi;
+		}else if(tabletState == State.SHOP_OUTRO) {
+			totalTimeRadar += deltaTime;
+			float firstPercentage = Math.max(0f, Math.min(1f, (totalTimeRadar-0.802f)/0.123f));
+			float secondPercentage = Math.max(0f, Math.min(1f, (totalTimeRadar-0.925f)/0.124f));
+			float thirdPercentage = Math.max(0f, Math.min(1f, (totalTimeRadar-1.049f)/0.118f));
+			float fourthPercentage = Math.max(0f, Math.min(1f, (totalTimeRadar-1.167f)/0.117f));
+			float fifthPercentage = Math.max(0f, Math.min(1f, (totalTimeRadar-1.284f)/0.18f));
+			
+			if(fifthPercentage == 1f && mcc.getSoundManager().isPlaying(shopOutroSound)) {
+				mcc.getSoundManager().stop(shopOutroSound);
+				mcc.getSoundManager().stop(shopMusicSound);
+				tabletState = State.DISPLAY_ORDER;
+			}
+			
+			int oneImage = 51;
+			
+			g2d.drawImage(lastShopImage.getSubimage(0, 0  , 256, oneImage), (int) (256 * firstPercentage), 0,          null);
+			g2d.drawImage(lastShopImage.getSubimage(0, oneImage, 256, oneImage), (int) (256 * secondPercentage),oneImage,   null);
+			g2d.drawImage(lastShopImage.getSubimage(0, oneImage*2, 256, oneImage), (int) (256 * thirdPercentage), oneImage*2, null);
+			g2d.drawImage(lastShopImage.getSubimage(0, oneImage*3, 256, oneImage), (int) (256 * fourthPercentage),oneImage*3, null);
+			g2d.drawImage(lastShopImage.getSubimage(0, oneImage*4, 256, oneImage), (int) (256 * fifthPercentage), oneImage*4, null);
+		}else if(tabletState == State.DISPLAY_ORDER) {
+			
 		}
 		
 		try {
@@ -406,7 +441,7 @@ public class TabletOS {
 		//System.out.println(mcc.getSoundManager().isPlaying(shopMusicSound));
 		
 		if(tabletOn) {
-			ORDERING_TABLET.setButtons(pressed(GLFW.GLFW_KEY_UP), pressed(GLFW.GLFW_KEY_DOWN), pressed(GLFW.GLFW_KEY_LEFT), pressed(GLFW.GLFW_KEY_RIGHT), pressed(GLFW.GLFW_KEY_ENTER), deltaTime*20f);
+			orderingTabletModel.setButtons(pressed(GLFW.GLFW_KEY_UP), pressed(GLFW.GLFW_KEY_DOWN), pressed(GLFW.GLFW_KEY_LEFT), pressed(GLFW.GLFW_KEY_RIGHT), pressed(GLFW.GLFW_KEY_ENTER), mcc.getTickDelta());
 			if(tabletState == State.LOOKING_FOR_SATELLITE && satelliteVisible) {
 				if(pressed(GLFW.GLFW_KEY_ENTER)) {
 					totalTimeRadar = 0;
@@ -521,7 +556,18 @@ public class TabletOS {
 								shoppingCart.remove(shopExtraIndex);
 							}else {
 								if(shoppingCart.size() > 0) {
+									int sum = 0;
+									for(OrderableItem oi : shoppingCart) {
+										sum += oi.getPrice();
+									}
 									
+									MCVmComputersMod.currentOrder = new TabletOrder();
+									MCVmComputersMod.currentOrder.items = this.shoppingCart.subList(0, this.shoppingCart.size());
+									MCVmComputersMod.currentOrder.price = sum;
+									
+									tabletState = State.SHOP_OUTRO;
+									totalTimeRadar = 0;
+									mcc.getSoundManager().play(shopOutroSound);
 								}
 							}
 						}
@@ -537,9 +583,9 @@ public class TabletOS {
 	
 	public void generateTexture() {
 		if(!tabletOn) {
-			ORDERING_TABLET.rotateButtons(2F, deltaTime);
+			orderingTabletModel.rotateButtons(2F, deltaTime);
 		}else {
-			ORDERING_TABLET.rotateButtons(-0.7854F, deltaTime/1.4f);
+			orderingTabletModel.rotateButtons(-0.7854F, deltaTime/1.4f);
 		}
 		if(!tabletOn) {
 			return;

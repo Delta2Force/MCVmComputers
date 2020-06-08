@@ -18,6 +18,7 @@ import org.virtualbox_6_1.VirtualBoxManager;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.entities.EntityList;
 import mcvmcomputers.entities.render.CRTScreenRender;
+import mcvmcomputers.entities.render.DeliveryChestRender;
 import mcvmcomputers.entities.render.FlatScreenRender;
 import mcvmcomputers.entities.render.ItemPreviewRender;
 import mcvmcomputers.entities.render.KeyboardRender;
@@ -144,10 +145,6 @@ public class MCVmComputersMod implements ModInitializer{
 		}
 	}
 	
-	public static void translation(MatrixStack matrices) {
-		matrices.translate(0, 0.1, 0.38);
-	}
-	
 	public void onInitialize() {
 		ItemList.init();
 		EntityList.init();
@@ -165,6 +162,8 @@ public class MCVmComputersMod implements ModInitializer{
 				(entityRenderDispatcher, context) -> new FlatScreenRender(entityRenderDispatcher));
 		EntityRendererRegistry.INSTANCE.register(EntityList.PC,
 				(entityRenderDispatcher, context) -> new PCRender(entityRenderDispatcher));
+		EntityRendererRegistry.INSTANCE.register(EntityList.DELIVERY_CHEST,
+				(entityRenderDispatcher, context) -> new DeliveryChestRender(entityRenderDispatcher));
 	}
 
 }

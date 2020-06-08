@@ -5,11 +5,9 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 
 public class TabletSoundInstance extends AbstractSoundInstance{
-	final boolean streamed;
 	
-	public TabletSoundInstance(SoundEvent soundId, boolean streamed) {
+	public TabletSoundInstance(SoundEvent soundId) {
 		super(soundId, SoundCategory.MASTER);
-		this.streamed = streamed;
 	}
 	
 	@Override
@@ -20,10 +18,6 @@ public class TabletSoundInstance extends AbstractSoundInstance{
 	@Override
 	public boolean shouldAlwaysPlay() {
 		return true;
-	}
-	
-	public boolean isStreamed() {
-		return streamed;
 	}
 	
 	@Override
