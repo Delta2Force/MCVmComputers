@@ -27,7 +27,8 @@ public class OrderingTabletModel extends EntityModel<Entity> {
 		tablet.setTextureOffset(12, 20).addCuboid(5.0F, -2.0F, -5.0F, 1.0F, 1.0F, 10.0F, 0.0F, false);
 		tablet.setTextureOffset(0, 19).addCuboid(-6.0F, -2.0F, -5.0F, 1.0F, 1.0F, 10.0F, 0.0F, false);
 		tablet.setTextureOffset(0, 0).addCuboid(-6.0F, -1.0F, -6.0F, 12.0F, 1.0F, 12.0F, 0.0F, false);
-
+		
+		/*
 		buttons = new ModelPart(this);
 		buttons.setPivot(0.0F, -3.4F, -7.1F);
 		tablet.addChild(buttons);
@@ -58,6 +59,38 @@ public class OrderingTabletModel extends EntityModel<Entity> {
 		enter.setPivot(2.4F, -0.5F, -0.0657F);
 		buttons.addChild(enter);
 		enter.setTextureOffset(0, 0).addCuboid(-1.0F, -0.5F, -1.5F, 2.0F, 1.0F, 3.0F, 0.0F, false);
+		*/
+		
+		buttons = new ModelPart(this);
+		buttons.setPivot(0.0F, -2.0F, -6.0F);
+		tablet.addChild(buttons);
+		setRotationAngle(buttons, -0.7854F, 0.0F, 0.0F);
+		buttons.setTextureOffset(0, 13).addCuboid(-6.0F, -0.6979F, -4.3F, 12.0F, 1.0F, 5.0F, 0.0F, false);
+
+		up = new ModelPart(this);
+		up.setPivot(-2.5F, -0.9F, -0.8243F);
+		buttons.addChild(up);
+		up.setTextureOffset(4, 6).addCuboid(-0.5F, -0.4F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+
+		down = new ModelPart(this);
+		down.setPivot(-2.5F, -0.8393F, -2.792F);
+		buttons.addChild(down);
+		down.setTextureOffset(0, 6).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+
+		left = new ModelPart(this);
+		left.setPivot(-3.5F, -0.8393F, -1.8021F);
+		buttons.addChild(left);
+		left.setTextureOffset(4, 4).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+
+		right = new ModelPart(this);
+		right.setPivot(-1.5F, -0.8393F, -1.8021F);
+		buttons.addChild(right);
+		right.setTextureOffset(0, 4).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+
+		enter = new ModelPart(this);
+		enter.setPivot(3.0F, -1.1222F, -1.8021F);
+		buttons.addChild(enter);
+		enter.setTextureOffset(0, 0).addCuboid(-1.0F, -0.5F, -1.5F, 2.0F, 1.0F, 3.0F, 0.0F, false);
 	}
 
 	@Override
@@ -73,34 +106,38 @@ public class OrderingTabletModel extends EntityModel<Entity> {
 	
 	public void setButtons(boolean up, boolean down, boolean left, boolean right, boolean enter, float deltaTime) {
 		if(up) {
-			this.up.pivotY = MVCUtils.lerp(this.up.pivotY, -0.2F, deltaTime);
-		}else {
 			this.up.pivotY = MVCUtils.lerp(this.up.pivotY, -0.5F, deltaTime);
+		}else {
+			this.up.pivotY = MVCUtils.lerp(this.up.pivotY, -0.9F, deltaTime);
 		}
 		
 		if(down) {
-			this.down.pivotY = MVCUtils.lerp(this.down.pivotY, -0.2F, deltaTime);
+			this.down.pivotY = MVCUtils.lerp(this.down.pivotY, -0.4393F, deltaTime);
 		}else {
-			this.down.pivotY = MVCUtils.lerp(this.down.pivotY, -0.5F, deltaTime);
+			this.down.pivotY = MVCUtils.lerp(this.down.pivotY, -0.8393F, deltaTime);
 		}
 		
 		if(left) {
-			this.left.pivotY = MVCUtils.lerp(this.left.pivotY, -0.2F, deltaTime);
+			this.left.pivotY = MVCUtils.lerp(this.left.pivotY, -0.4393F, deltaTime);
 		}else {
-			this.left.pivotY = MVCUtils.lerp(this.left.pivotY, -0.5F, deltaTime);
+			this.left.pivotY = MVCUtils.lerp(this.left.pivotY, -0.8393F, deltaTime);
 		}
 		
 		if(right) {
-			this.right.pivotY = MVCUtils.lerp(this.right.pivotY, -0.2F, deltaTime);
+			this.right.pivotY = MVCUtils.lerp(this.right.pivotY, -0.4393F, deltaTime);
 		}else {
-			this.right.pivotY = MVCUtils.lerp(this.right.pivotY, -0.5F, deltaTime);
+			this.right.pivotY = MVCUtils.lerp(this.right.pivotY, -0.8393F, deltaTime);
 		}
 		
 		if(enter) {
-			this.enter.pivotY = MVCUtils.lerp(this.enter.pivotY, -0.2F, deltaTime);
-		}else {
 			this.enter.pivotY = MVCUtils.lerp(this.enter.pivotY, -0.5F, deltaTime);
+		}else {
+			this.enter.pivotY = MVCUtils.lerp(this.enter.pivotY, -1.1222F, deltaTime);
 		}
+	}
+	
+	public void rotateButtons(float rotX, float deltaTime) {
+		this.buttons.pitch = MVCUtils.lerp(this.buttons.pitch, rotX, deltaTime);
 	}
 
 	@Override

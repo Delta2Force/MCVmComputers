@@ -205,7 +205,7 @@ public class TabletOS {
 				}
 			//}
 		}else if(tabletState == State.SHOP) {
-			if(!mcc.getSoundManager().isPlaying(shopMusicSound)) {
+			if(!mcc.getSoundManager().isPlaying(shopMusicSound) && tabletOn) {
 				mcc.getSoundManager().play(shopMusicSound);
 			}
 			shopGradientEndValue = MVCUtils.lerp(shopGradientEndValue, 0.3f, deltaTime*2.5f);
@@ -231,7 +231,7 @@ public class TabletOS {
 			g2d.setFont(font.deriveFont(16f));
 			g2d.drawString("(" + shoppingCart.size() + " items)", 200-shopPx, 130-shopPy);
 			g2d.drawString("Navigate using arrow keys,", 58-shopPx, 140-shopPy);
-			g2d.drawString("select with right arrow.", 68-shopPx, 150-shopPy);
+			g2d.drawString("select with enter.", 83-shopPx, 150-shopPy);
 			g2d.drawString("Items are sponsored by Solar System ZA-83. By", 4-shopPx, 210-shopPy);
 			g2d.drawString("purchasing from this store you agree to", 4-shopPx, 220-shopPy);
 			g2d.drawString("transfer ownership of your planet to Solar", 4-shopPx, 230-shopPy);
@@ -280,7 +280,7 @@ public class TabletOS {
 				g2d.drawString(">", 260-shopPx, ry-shopPy);
 				g2d.setFont(font.deriveFont(16f));
 				g2d.drawString("Navigate using arrows,", 390-shopPx, 15-shopPy);
-				g2d.drawString("Select using right,", 413-shopPx, 25-shopPy);
+				g2d.drawString("Select using enter,", 409-shopPx, 25-shopPy);
 				g2d.drawString("Exit using left", 432-shopPx, 35-shopPy);
 			}else if(shopState == ShopState.SHOPPING_CART || renderExtraShopState == ShopState.SHOPPING_CART) {
 				int offY = 30;
@@ -290,7 +290,7 @@ public class TabletOS {
 					g2d.setFont(font.deriveFont(23f)); offY += 20;
 					g2d.drawString(oi.getName().asString(), (270+offX)-shopPx, offY-shopPy);
 					g2d.setFont(font.deriveFont(16f)); offY += 10; offX = 10;
-					g2d.drawString(oi.getPrice() + " Iron Ingots | right to remove", (270+offX)-shopPx, offY-shopPy);
+					g2d.drawString(oi.getPrice() + " Iron Ingots | enter to remove", (270+offX)-shopPx, offY-shopPy);
 					sum += oi.getPrice();
 				}
 				if(shoppingCart.size() == 0) {
@@ -305,7 +305,7 @@ public class TabletOS {
 				g2d.setFont(font.deriveFont(23f)); offY += 20;
 				g2d.drawString("Purchase", (270+offX)-shopPx, offY-shopPy);
 				g2d.setFont(font.deriveFont(16f)); offY += 10; offX = 10;
-				g2d.drawString(sum + " Iron Ingots | right to order", (270+offX)-shopPx, offY-shopPy);
+				g2d.drawString(sum + " Iron Ingots | enter to order", (270+offX)-shopPx, offY-shopPy);
 				
 				g2d.setFont(font.deriveFont(32f));
 				g2d.drawString("Your cart", 260-shopPx, 20-shopPy);
@@ -316,11 +316,11 @@ public class TabletOS {
 				}
 				int ry = (50+(in*30));
 				float targetShopPy = shopPy;
-				if(ry + 80 > shopPy+256) {
-					targetShopPy = ry - 166;
+				if(ry + 60 > shopPy+256) {
+					targetShopPy = ry - 186;
 				}
-				if(ry-70 < shopPy) {
-					targetShopPy = ry - 80;
+				if(ry-50 < shopPy) {
+					targetShopPy = ry - 60;
 				}
 				if(targetShopPy < 0) {
 					targetShopPy = 0;
@@ -378,7 +378,7 @@ public class TabletOS {
 				g2d.drawString(">", 260-shopPx, ry-shopPy);
 				g2d.setFont(font.deriveFont(16f));
 				g2d.drawString("Navigate using arrows,", 390-shopPx, 15-shopPy);
-				g2d.drawString("Select using right,", 413-shopPx, 25-shopPy);
+				g2d.drawString("Select using enter,", 409-shopPx, 25-shopPy);
 				g2d.drawString("Exit using left", 432-shopPx, 35-shopPy);
 			}
 			
@@ -404,6 +404,7 @@ public class TabletOS {
 	
 	private void update() {
 		//System.out.println(mcc.getSoundManager().isPlaying(shopMusicSound));
+		
 		if(tabletOn) {
 			ORDERING_TABLET.setButtons(pressed(GLFW.GLFW_KEY_UP), pressed(GLFW.GLFW_KEY_DOWN), pressed(GLFW.GLFW_KEY_LEFT), pressed(GLFW.GLFW_KEY_RIGHT), pressed(GLFW.GLFW_KEY_ENTER), deltaTime*20f);
 			if(tabletState == State.LOOKING_FOR_SATELLITE && satelliteVisible) {
@@ -496,7 +497,7 @@ public class TabletOS {
 					}
 				}
 				
-				if(pressed(GLFW.GLFW_KEY_RIGHT)) {
+				if(pressed(GLFW.GLFW_KEY_ENTER)) {
 					if(!arrowRightPressed) {
 						arrowRightPressed = true;
 						if(shopState == ShopState.MENU) {
@@ -535,6 +536,11 @@ public class TabletOS {
 	}
 	
 	public void generateTexture() {
+		if(!tabletOn) {
+			ORDERING_TABLET.rotateButtons(2F, deltaTime);
+		}else {
+			ORDERING_TABLET.rotateButtons(-0.7854F, deltaTime/1.4f);
+		}
 		if(!tabletOn) {
 			return;
 		}

@@ -127,7 +127,7 @@ public class GameloopMixin {
 		if(vboxWebSrv != null) {
 			try {
 				while(vboxWebSrv.getInputStream().available() > 0) {
-					discardAllBytes.write(vboxWebSrv.getInputStream().read());
+					discardAllBytes.write(vboxWebSrv.getInputStream().read()); //Not doing this made the web service time out.
 				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
