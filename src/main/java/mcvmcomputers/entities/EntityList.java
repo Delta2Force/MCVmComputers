@@ -45,6 +45,6 @@ public class EntityList {
 		DELIVERY_CHEST = Registry.register(Registry.ENTITY_TYPE, 
 							new Identifier("mcvmcomputers", "delivery_chest"),
 							FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityDeliveryChest::new)
-							.size(new EntityDimensions(1f, 2f, true)).trackable(600, 2,true).build());
+							.size(new EntityDimensions(1f, 2f, true)).trackable(600, 1,true).build());
 	}
 }

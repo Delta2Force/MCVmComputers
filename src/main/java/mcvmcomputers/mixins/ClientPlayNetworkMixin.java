@@ -21,7 +21,10 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.util.thread.ThreadExecutor;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkMixin {
@@ -67,4 +70,30 @@ public class ClientPlayNetworkMixin {
 	         }
 	      }
 	}
+	
+	public void onEntityPosition(EntityPositionS2CPacket packet) {
+	      NetworkThreadUtils.forceMainThread(packet, this.client.getNetworkHandler(), (ThreadExecutor)this.client);
+	      Entity entity = this.world.getEntityById(packet.getId());
+	      if(entity instanceof EntityDeliveryChest) {
+	    	  return;
+	      }
+	      if (entity != null) {
+	         double d = packet.getX();
+	         double e = packet.getY();
+	         double f = packet.getZ();
+	         entity.updateTrackedPosition(d, e, f);
+	         if (!entity.isLogicalSideForUpdatingMovement()) {
+	            float g = (float)(packet.getYaw() * 360) / 256.0F;
+	            float h = (float)(packet.getPitch() * 360) / 256.0F;
+	            if (Math.abs(entity.getX() - d) < 0.03125D && Math.abs(entity.getY() - e) < 0.015625D && Math.abs(entity.getZ() - f) < 0.03125D) {
+	               entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), g, h, 3, true);
+	            } else {
+	               entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
+	            }
+
+	            entity.onGround = packet.isOnGround();
+	         }
+
+	      }
+	   }
 }

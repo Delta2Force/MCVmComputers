@@ -241,7 +241,6 @@ public class GameloopMixin {
 		if(vmUpdateThread != null) {
 			vmUpdateThread.interrupt();
 		}
-		
 		if(tabletThread != null) {
 			tabletThread.interrupt();
 		}

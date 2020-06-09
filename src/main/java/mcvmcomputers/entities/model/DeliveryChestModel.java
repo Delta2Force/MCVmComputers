@@ -37,11 +37,13 @@ public class DeliveryChestModel extends EntityModel<Entity> {
 	private final NativeImage baseTexture;
 	private final MinecraftClient mcc;
 	
-	private static final Random TEX_RANDOM = new Random();
+	public static final Random TEX_RANDOM = new Random();
 	
 	private NativeImage ni;
 	private NativeImageBackedTexture nibt;
 	private Identifier texId;
+	
+	public boolean fireYes = true;
 
 	public DeliveryChestModel() throws IOException {
 		this.mcc = MinecraftClient.getInstance();
@@ -147,14 +149,18 @@ public class DeliveryChestModel extends EntityModel<Entity> {
 	}
 	
 	private int randomColor() {
-		Color r = new Color(0,0,255);
-		Color y = new Color(0,128,255);
-		Color o = new Color(0, 255, 255);
-		r = new Color(r.getRed(), r.getGreen(), r.getBlue(), TEX_RANDOM.nextInt(256));
-		y = new Color(y.getRed(), y.getGreen(), y.getBlue(), TEX_RANDOM.nextInt(256));
-		o = new Color(o.getRed(), o.getGreen(), o.getBlue(), TEX_RANDOM.nextInt(256));
-		int[] sel = new int[] {r.getRGB(), y.getRGB(), o.getRGB()};
-		return sel[TEX_RANDOM.nextInt(sel.length)];
+		if(fireYes) {
+			Color r = new Color(0,0,255);
+			Color y = new Color(0,128,255);
+			Color o = new Color(0, 255, 255);
+			r = new Color(r.getRed(), r.getGreen(), r.getBlue(), TEX_RANDOM.nextInt(256));
+			y = new Color(y.getRed(), y.getGreen(), y.getBlue(), TEX_RANDOM.nextInt(256));
+			o = new Color(o.getRed(), o.getGreen(), o.getBlue(), TEX_RANDOM.nextInt(256));
+			int[] sel = new int[] {r.getRGB(), y.getRGB(), o.getRGB()};
+			return sel[TEX_RANDOM.nextInt(sel.length)];
+		}else {
+			return new Color(0f,0f,0f,0f).getRGB();
+		}
 	}
 
 	@Override
@@ -163,7 +169,6 @@ public class DeliveryChestModel extends EntityModel<Entity> {
 
 	@Override
 	public void render(MatrixStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
-		this.generateTexture();
 		model.render(matrixStack, buffer, packedLight, packedOverlay);
 	}
 	

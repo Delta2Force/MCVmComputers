@@ -1,5 +1,6 @@
 package mcvmcomputers.entities.render;
 
+import java.awt.Color;
 import java.io.IOException;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -7,17 +8,25 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mcvmcomputers.MCVmComputersMod;
 import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.entities.model.DeliveryChestModel;
+import mcvmcomputers.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap.Type;
+import net.minecraft.world.World;
+
+import static mcvmcomputers.MCVmComputersMod.*;
 
 public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	private DeliveryChestModel deliveryChestModel;
@@ -54,40 +63,149 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 		deliveryChestModel.setRotationAngle(deliveryChestModel.uleg3, 0, 0, entity.uLeg23Rot);
 		
 		deliveryChestModel.setRotationAngle(deliveryChestModel.opening, entity.openingRot, 0, 0);
+		
+		deliveryChestModel.fireYes = entity.fire;
+	}
+	
+	private void changeRotations(EntityDeliveryChest entity) {
+		if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
+			EntityDeliveryChest serverEntity = null;
+			for(ServerWorld sw : MinecraftClient.getInstance().getServer().getWorlds()) {
+				if(sw.getEntityById(entity.getEntityId()) != null) {
+					serverEntity = (EntityDeliveryChest) sw.getEntityById(entity.getEntityId());
+					Vec3d v = new Vec3d(MVCUtils.lerp(serverEntity.getX(), entity.getTargetX(), deltaTime/2f), MVCUtils.lerp(serverEntity.getY(), entity.getTargetY(), deltaTime/2f), MVCUtils.lerp(serverEntity.getZ(), entity.getTargetZ(), deltaTime/2f));
+					entity.updatePosition(v.x, v.y, v.z);
+					serverEntity.updatePosition(v.x, v.y, v.z);
+				}
+			}
+			//entity.updatePosition(serverEntity.getX(), serverEntity.getY(), serverEntity.getZ());
+			
+			double dist = serverEntity.getPos().distanceTo(new Vec3d(entity.getTargetX(),entity.getTargetY(),entity.getTargetZ()));
+			if(dist < 0) {
+				dist = -dist;
+			}
+			double prog = Math.min(dist / 40f, 1f);
+			
+			prog -= 2;
+			prog = -prog;
+			
+			entity.renderRot = (float) (90f + (45f * prog));
+			
+			if(dist > 25) {
+				entity.fire = false;
+			}else {
+				entity.fire = true;
+			}
+			
+			if(dist < 3) {
+				entity.upLeg01Rot = MVCUtils.lerp(entity.upLeg01Rot, 0f, deltaTime);
+				entity.upLeg23Rot = MVCUtils.lerp(entity.upLeg23Rot, 0f, deltaTime);
+				entity.uLeg01Rot = MVCUtils.lerp(entity.uLeg01Rot, 0f, deltaTime);
+				entity.uLeg23Rot = MVCUtils.lerp(entity.uLeg23Rot, 0f, deltaTime);
+			}
+			if (dist < 0.1) {
+				entity.openingRot = MVCUtils.lerp(entity.openingRot, -2F, deltaTime);
+				entity.fire = false;
+				entity.updatePosition(entity.getTargetX(), entity.getTargetY(), entity.getTargetZ());
+				serverEntity.updatePosition(entity.getTargetX(), entity.getTargetY(), entity.getTargetZ());
+			}
+		}else if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
+			EntityDeliveryChest serverEntity = null;
+			for(ServerWorld sw : MinecraftClient.getInstance().getServer().getWorlds()) {
+				if(sw.getEntityById(entity.getEntityId()) != null) {
+					serverEntity = (EntityDeliveryChest) sw.getEntityById(entity.getEntityId());
+					entity.takeOffSpeed = MVCUtils.lerp(entity.takeOffSpeed, 5f, deltaTime/180f);
+					Vec3d v = new Vec3d(serverEntity.getX(),serverEntity.getY()+entity.takeOffSpeed, serverEntity.getZ());
+					entity.updatePosition(v.x, v.y, v.z);
+					serverEntity.updatePosition(v.x, v.y, v.z);
+				}
+			}
+			entity.updatePosition(serverEntity.getX(), serverEntity.getY(), serverEntity.getZ());
+			
+			entity.upLeg01Rot = MVCUtils.lerp(entity.upLeg01Rot, 3f, deltaTime);
+			entity.upLeg23Rot = MVCUtils.lerp(entity.upLeg23Rot, 3.3f, deltaTime);
+			entity.uLeg01Rot = MVCUtils.lerp(entity.uLeg01Rot, -2.7f, deltaTime);
+			entity.uLeg23Rot = MVCUtils.lerp(entity.uLeg23Rot, -2.7f, deltaTime);
+			entity.openingRot = MVCUtils.lerp(entity.openingRot, 0f, deltaTime);
+			entity.fire = true;
+			
+			if(entity.getY() > 250) {
+				entity.kill();
+			}
+		}
+	}
+	
+	private void smokeParticle(World w, Vec3d pos, int amount) {
+		for(int i = 0;i<amount;i++) {
+			if(amount == 3) {
+				w.addParticle(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, (DeliveryChestModel.TEX_RANDOM.nextFloat()*0.5f)-.25f, DeliveryChestModel.TEX_RANDOM.nextFloat()*-.3F, (DeliveryChestModel.TEX_RANDOM.nextFloat()*.5f)-.25f);
+			}else {
+				w.addParticle(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, (DeliveryChestModel.TEX_RANDOM.nextFloat()*2f)-1f, DeliveryChestModel.TEX_RANDOM.nextFloat()*.3F, (DeliveryChestModel.TEX_RANDOM.nextFloat()*2f)-1f);
+			}
+		}
+	}
+	
+	private void doParticlesForFire(EntityDeliveryChest entity) {
+		smokeParticle(entity.world, entity.getPosVector(), 3);
+		
+		Vec3d ground = new Vec3d(entity.getX(), entity.world.getTopY(Type.MOTION_BLOCKING, entity.getBlockPos().getX(), entity.getBlockPos().getZ()), entity.getZ());
+		double dist = ground.distanceTo(entity.getPosVector());
+		if(dist < 0) {
+			dist = -dist;
+		}
+		
+		if(dist < 5) {
+			if(dist > 4 && dist < 5) {
+				smokeParticle(entity.world, ground, 1);
+			}
+			else if(dist > 3 && dist < 4) {
+				smokeParticle(entity.world, ground, 2);
+			}
+			else if(dist > 2 && dist < 3) {
+				smokeParticle(entity.world, ground, 4);
+			}
+			else if(dist > 1 && dist < 2) {
+				smokeParticle(entity.world, ground, 8);
+			}
+			else if(dist > 0 && dist < 1) {
+				smokeParticle(entity.world, ground, 16);
+			}
+		}
+	}
+	
+	@Override
+	public boolean shouldRender(EntityDeliveryChest entity, Frustum visibleRegion, double cameraX, double cameraY, double cameraZ) {
+		return true;
 	}
 	
 	@Override
 	public void render(EntityDeliveryChest entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 		this.checkModel();
+		this.changeRotations(entity);
 		this.applyRotations(entity);
-		Vec3d v = new Vec3d(MVCUtils.lerp(entity.getX(), entity.getTargetX(), MCVmComputersMod.deltaTime), MVCUtils.lerp(entity.getY(), entity.getTargetY(), MCVmComputersMod.deltaTime), MVCUtils.lerp(entity.getZ(), entity.getTargetZ(), MCVmComputersMod.deltaTime));
-		
-		entity.setPos(v.x,v.y,v.z);
-		EntityDeliveryChest serverEntity = null;
-		for(ServerWorld sw : MinecraftClient.getInstance().getServer().getWorlds()) {
-			if(sw.getEntityById(entity.getEntityId()) != null) {
-				serverEntity = (EntityDeliveryChest) sw.getEntityById(entity.getEntityId());
-				serverEntity.setPos(v.x, v.y, v.z);
-			}
-		}
-		
-		double dist = entity.getPos().distanceTo(new Vec3d(entity.getTargetX(),entity.getTargetY(),entity.getTargetZ()));
-		if(dist < 0) {
-			dist = -dist;
-		}
-		System.out.println(dist); // <- Do rotation, it rotates the delivery chest based on distance -> renderRot
-		
-		if(dist < 10) {
-			entity.upLeg01Rot = MVCUtils.lerp(entity.upLeg01Rot, 3f, MCVmComputersMod.deltaTime);
-			entity.upLeg23Rot = MVCUtils.lerp(entity.upLeg23Rot, 3.3f, MCVmComputersMod.deltaTime);
-			entity.uLeg01Rot = MVCUtils.lerp(entity.uLeg01Rot, -2.4f, MCVmComputersMod.deltaTime);
-			entity.uLeg01Rot = MVCUtils.lerp(entity.uLeg01Rot, 2.7f, MCVmComputersMod.deltaTime);
+		if(entity.fire) {
+			this.doParticlesForFire(entity);
 		}
 		
 		matrices.push();
 			matrices.multiply(new Quaternion(entity.renderRot, 0, 0, true));
 			matrices.translate(0, -1.5, 0);
 			deliveryChestModel.render(matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+			matrices.push();
+				matrices.multiply(new Quaternion(-90, 0, 0, true));
+				matrices.scale(0.02f, 0.02f, 0.02f);
+				matrices.translate(-15.63, -15.63, 6.22);
+				matrices.push();   
+					matrices.scale(0.4f, 0.4f, 0.4f);
+					matrices.translate(0, -5, 0);
+					this.getFontRenderer().draw("Please insert", 6, 25, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+					String s = ""+currentOrder.price;
+					this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 33, new Color(0.4f,0.4f,1f,1f).getRGB(), false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+					this.getFontRenderer().draw("Iron Ingots", 10, 41, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+					this.getFontRenderer().draw("by clicking", 13, 50, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+					this.getFontRenderer().draw("this chest", 14, 59, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+				matrices.pop();
+			matrices.pop();
 		matrices.pop();
 		
 		super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
