@@ -4,6 +4,8 @@ import mcvmcomputers.MCVmComputersMod;
 import mcvmcomputers.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.MovingSoundInstance;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -39,7 +41,8 @@ public class EntityDeliveryChest extends Entity{
 	public float uLeg23Rot = -2.7f;
 	public float openingRot = 0f;
 	public float takeOffSpeed = 0f;
-	public boolean fire = true;
+	public boolean fire = false;
+	public SoundInstance rocketSound;
 	
 	private boolean trackedOnce = false;
 	

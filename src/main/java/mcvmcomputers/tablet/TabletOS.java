@@ -113,7 +113,7 @@ public class TabletOS {
 		}else if(tabletState == State.SHOP) {
 			mcc.getSoundManager().stop(shopMusicSound);
 		}
-		tabletState = State.LOOKING_FOR_SATELLITE;
+		//tabletState = State.LOOKING_FOR_SATELLITE;
 	}
 	
 	public void render() {
@@ -415,10 +415,14 @@ public class TabletOS {
 				mcc.getSoundManager().stop(shopOutroSound);
 				mcc.getSoundManager().stop(shopMusicSound);
 				tabletState = State.DISPLAY_ORDER;
+				shopPy = 256;
 				totalTimeRadar = 0f;
 			}
 			
 			int oneImage = 51;
+			
+			g2d.setColor(Color.darkGray.darker().darker().darker());
+			g2d.fillRect(0, 0, 256, 256);
 			
 			g2d.drawImage(lastShopImage.getSubimage(0, 0, 256, oneImage), (int) (256 * firstPercentage), 0, null);
 			g2d.drawImage(lastShopImage.getSubimage(0, oneImage, 256, oneImage), (int) (256 * secondPercentage),oneImage, null);
@@ -426,14 +430,54 @@ public class TabletOS {
 			g2d.drawImage(lastShopImage.getSubimage(0, oneImage*3, 256, oneImage), (int) (256 * fourthPercentage),oneImage*3, null);
 			g2d.drawImage(lastShopImage.getSubimage(0, oneImage*4, 256, oneImage), (int) (256 * fifthPercentage), oneImage*4, null);
 		}else if(tabletState == State.DISPLAY_ORDER) {
-			totalTimeRadar += deltaTime;
+			shopPy = MVCUtils.lerp(shopPy, 0, deltaTime*2);
+			g2d.setColor(Color.darkGray.darker().darker().darker());
+			g2d.fillRect(0, 0, 256, 256);
+			
+			g2d.setColor(Color.white);
+			g2d.fillRect(64, (int)(190-shopPy), 128, 3);
+			
+			float satelliteAngle = ((float)mcc.world.getSkyAngle(deltaTime)*5f);
+			satelliteAngle %= 1f;
+			boolean canSee = satelliteAngle < 0.22249603 || satelliteAngle > 0.78432274;
+			
+			if(canSee) {
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2d.setColor(Color.gray);
+				int satX = (int)(128 + (96*Math.cos((satelliteAngle*6.3)-1.65)));
+				int satY = (int)((190 + (32*Math.sin((satelliteAngle*6.3)-1.65)))-shopPy);
+				g2d.fillOval(satX, satY, 16, 16);
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+				g2d.setFont(font.deriveFont(16f));
+				g2d.drawString("Satellite", satX-12, satY-1);
+			}
+			
 			if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON) {
+				g2d.setFont(font.deriveFont(43f));
+				g2d.setColor(Color.white);
+				g2d.drawString("Payment chest", 32, 64-shopPy);
 				g2d.setFont(font.deriveFont(32f));
-				g2d.drawString("Sending payment chest", 12, 32);
-				g2d.drawString("Arrival in: " + ((int)Math.ceil(-(totalTimeRadar-10f))) + " seconds", 12, 52);
-	//			if(totalTimeRadar > 10f) {
-					MCVmComputersMod.currentOrder.currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVED;
-	//			}
+				g2d.setColor(Color.gray);
+				g2d.drawString("arriving soon", 87, 80-shopPy);
+				
+				g2d.setFont(font.deriveFont(16f));
+				g2d.setColor(Color.white);
+				g2d.drawString("A chest will be delivered soon which", 36, 100-shopPy);
+				g2d.drawString("you will fill with your payment.", 36, 109-shopPy);
+				g2d.drawString("The satellite needs to be over you", 36, 118-shopPy);
+				g2d.drawString("for this to work.", 36, 127-shopPy);
+				g2d.setColor(Color.red);
+				g2d.drawString("The tablet needs to be turned on", 36, 136-shopPy);
+				g2d.drawString("while the satellite is over you.", 36, 145-shopPy);
+				
+				if(canSee) {
+					totalTimeRadar += deltaTime;
+//					if(totalTimeRadar > 10f) {
+//						MCVmComputersMod.currentOrder.currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVED;
+//					}
+				}else {
+					totalTimeRadar = 0;
+				}
 			}
 			else if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
 				if(mcc.world.isSkyVisible(mcc.player.getBlockPos()) && !MCVmComputersMod.currentOrder.entitySpawned) {

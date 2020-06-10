@@ -18,5 +18,10 @@
 		"sounds":[
 			"mcvmcomputers:shopmusic"
 		]
+	},
+	"rocket": {
+		"sounds":[
+			"mcvmcomputers:rocket"
+		]
 	}
 }

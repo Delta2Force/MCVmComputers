@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mcvmcomputers.MCVmComputersMod;
 import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.entities.model.DeliveryChestModel;
+import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
@@ -16,10 +17,14 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.sound.EntityTrackingSoundInstance;
+import net.minecraft.client.sound.MovingSoundInstance;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
@@ -27,6 +32,7 @@ import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 
 import static mcvmcomputers.MCVmComputersMod.*;
+import static mcvmcomputers.utils.MVCUtils.*;
 
 public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	private DeliveryChestModel deliveryChestModel;
@@ -68,12 +74,64 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	}
 	
 	private void changeRotations(EntityDeliveryChest entity) {
+		if(entity.fire) {
+			if(entity.rocketSound == null) {
+				entity.rocketSound = new MovingSoundInstance(SoundList.ROCKET_SOUND, SoundCategory.MASTER) {
+					@Override
+					public void tick() {
+						this.x = (float) entity.getX();
+						this.y = (float) entity.getY();
+						this.z = (float) entity.getZ();
+						
+						Vec3d v = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
+						double dist = v.distanceTo(MinecraftClient.getInstance().player.getPos());
+						if(dist < 0) {
+							dist = -dist;
+						}
+						dist = Math.min(dist, 40)/40.0;
+						dist = 1 - dist;
+						
+						this.volume = (float) dist;
+					}
+					@Override
+					public boolean shouldAlwaysPlay() {
+						return false;
+					}
+					@Override
+					public AttenuationType getAttenuationType() {
+						return AttenuationType.LINEAR;
+					}
+					
+					@Override
+					public boolean isLooping() {
+						return true;
+					}
+					
+					@Override
+					public boolean isRepeatable() {
+						return true;
+					}
+					
+					@Override
+					public int getRepeatDelay() {
+						return 0;
+					}
+				};
+				MinecraftClient.getInstance().getSoundManager().play(entity.rocketSound);
+			}
+		}else {
+			if(entity.rocketSound != null) {
+				System.out.println("stopped");
+				MinecraftClient.getInstance().getSoundManager().stop(entity.rocketSound);
+				entity.rocketSound = null;
+			}
+		}
 		if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
 			EntityDeliveryChest serverEntity = null;
 			for(ServerWorld sw : MinecraftClient.getInstance().getServer().getWorlds()) {
 				if(sw.getEntityById(entity.getEntityId()) != null) {
 					serverEntity = (EntityDeliveryChest) sw.getEntityById(entity.getEntityId());
-					Vec3d v = new Vec3d(MVCUtils.lerp(serverEntity.getX(), entity.getTargetX(), deltaTime/2f), MVCUtils.lerp(serverEntity.getY(), entity.getTargetY(), deltaTime/2f), MVCUtils.lerp(serverEntity.getZ(), entity.getTargetZ(), deltaTime/2f));
+					Vec3d v = new Vec3d(lerp(serverEntity.getX(), entity.getTargetX(), deltaTime/2f), lerp(serverEntity.getY(), entity.getTargetY(), deltaTime/2f), lerp(serverEntity.getZ(), entity.getTargetZ(), deltaTime/2f));
 					entity.updatePosition(v.x, v.y, v.z);
 					serverEntity.updatePosition(v.x, v.y, v.z);
 				}
@@ -98,13 +156,13 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 			}
 			
 			if(dist < 3) {
-				entity.upLeg01Rot = MVCUtils.lerp(entity.upLeg01Rot, 0f, deltaTime);
-				entity.upLeg23Rot = MVCUtils.lerp(entity.upLeg23Rot, 0f, deltaTime);
-				entity.uLeg01Rot = MVCUtils.lerp(entity.uLeg01Rot, 0f, deltaTime);
-				entity.uLeg23Rot = MVCUtils.lerp(entity.uLeg23Rot, 0f, deltaTime);
+				entity.upLeg01Rot = lerp(entity.upLeg01Rot, 0f, deltaTime);
+				entity.upLeg23Rot = lerp(entity.upLeg23Rot, 0f, deltaTime);
+				entity.uLeg01Rot = lerp(entity.uLeg01Rot, 0f, deltaTime);
+				entity.uLeg23Rot = lerp(entity.uLeg23Rot, 0f, deltaTime);
 			}
 			if (dist < 0.1) {
-				entity.openingRot = MVCUtils.lerp(entity.openingRot, -2F, deltaTime);
+				entity.openingRot = lerp(entity.openingRot, -2F, deltaTime);
 				entity.fire = false;
 				entity.updatePosition(entity.getTargetX(), entity.getTargetY(), entity.getTargetZ());
 				serverEntity.updatePosition(entity.getTargetX(), entity.getTargetY(), entity.getTargetZ());
@@ -114,7 +172,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 			for(ServerWorld sw : MinecraftClient.getInstance().getServer().getWorlds()) {
 				if(sw.getEntityById(entity.getEntityId()) != null) {
 					serverEntity = (EntityDeliveryChest) sw.getEntityById(entity.getEntityId());
-					entity.takeOffSpeed = MVCUtils.lerp(entity.takeOffSpeed, 5f, deltaTime/180f);
+					entity.takeOffSpeed = lerp(entity.takeOffSpeed, 5f, deltaTime/180f);
 					Vec3d v = new Vec3d(serverEntity.getX(),serverEntity.getY()+entity.takeOffSpeed, serverEntity.getZ());
 					entity.updatePosition(v.x, v.y, v.z);
 					serverEntity.updatePosition(v.x, v.y, v.z);
@@ -122,14 +180,20 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 			}
 			entity.updatePosition(serverEntity.getX(), serverEntity.getY(), serverEntity.getZ());
 			
-			entity.upLeg01Rot = MVCUtils.lerp(entity.upLeg01Rot, 3f, deltaTime);
-			entity.upLeg23Rot = MVCUtils.lerp(entity.upLeg23Rot, 3.3f, deltaTime);
-			entity.uLeg01Rot = MVCUtils.lerp(entity.uLeg01Rot, -2.7f, deltaTime);
-			entity.uLeg23Rot = MVCUtils.lerp(entity.uLeg23Rot, -2.7f, deltaTime);
-			entity.openingRot = MVCUtils.lerp(entity.openingRot, 0f, deltaTime);
+			entity.upLeg01Rot = lerp(entity.upLeg01Rot, 3f, deltaTime);
+			entity.upLeg23Rot = lerp(entity.upLeg23Rot, 3.3f, deltaTime);
+			entity.uLeg01Rot = lerp(entity.uLeg01Rot, -2.7f, deltaTime);
+			entity.uLeg23Rot = lerp(entity.uLeg23Rot, -2.7f, deltaTime);
+			entity.openingRot = lerp(entity.openingRot, 0f, deltaTime);
 			entity.fire = true;
 			
 			if(entity.getY() > 250) {
+				if(entity.rocketSound != null) {
+					if(MinecraftClient.getInstance().getSoundManager().isPlaying(entity.rocketSound)) {
+						MinecraftClient.getInstance().getSoundManager().stop(entity.rocketSound);
+						entity.rocketSound = null;
+					}
+				}
 				entity.kill();
 			}
 		}
