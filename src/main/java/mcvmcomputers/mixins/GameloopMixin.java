@@ -70,7 +70,7 @@ public class GameloopMixin {
 	@Shadow
 	private RenderTickCounter renderTickCounter;
 	
-	@Inject(at = @At("HEAD"), method = "run()V")
+	@Inject(at = @At("HEAD"), method = "run")
 	private void run(CallbackInfo info) {
 		MinecraftClient mcc = MinecraftClient.getInstance();
 		mcc.openScreen(new GuiSetup());
@@ -90,7 +90,7 @@ public class GameloopMixin {
 		}
 	}
 	
-	@Inject(at = @At("HEAD"), method = "render()V")
+	@Inject(at = @At("HEAD"), method = "render")
 	private void render(CallbackInfo info) {
 		if(lastDeltaTimeTime == 0) {
 			lastDeltaTimeTime = System.currentTimeMillis();
@@ -229,7 +229,7 @@ public class GameloopMixin {
 		}
 	}
 	
-	@Inject(at = @At("HEAD"), method = "close()V")
+	@Inject(at = @At("HEAD"), method = "close")
 	private void close(CallbackInfo info) {
 		System.out.println("Stopping VM Computers Mod...");
 		if(vmTextureNativeImage != null) {

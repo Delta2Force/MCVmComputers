@@ -34,7 +34,7 @@ public class ClientPlayNetworkMixin {
 	@Shadow
 	private MinecraftClient client;
 	
-	@Inject(at = @At("TAIL"), method = "onEntitySpawn()V")
+	@Inject(at = @At("TAIL"), method = "onEntitySpawn")
 	public void onEntitySpawn(EntitySpawnS2CPacket packet, CallbackInfo ci) {
 		EntityType<?> entityType = packet.getEntityTypeId();
 		double d = packet.getX();

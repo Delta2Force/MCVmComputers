@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '0.2.7-SNAPSHOT'
 	id 'maven-publish'
+	id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -19,10 +20,22 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	 
-	
+	implementation files('lib/vboxjws.jar')
+	shadow files('lib/vboxjws.jar')
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 }
+
+shadowJar {
+	 configurations = [project.configurations.shadow]
+	 baseName = 'shadow'
+}
+
+remapJar{
+	input = file("build/libs/shadow-${project.mod_version}-all.jar")
+}
+
+tasks.remapJar.dependsOn shadowJar
 
 processResources {
 	inputs.property "version", project.version

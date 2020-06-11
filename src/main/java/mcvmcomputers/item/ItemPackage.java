@@ -1,5 +1,8 @@
 package mcvmcomputers.item;
 
+import java.util.List;
+
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,6 +45,11 @@ public class ItemPackage extends Item{
 			}
 		}
 		return new LiteralText("Invalid package, dispose").formatted(Formatting.RED);
+	}
+	
+	@Override
+	public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+		tooltip.add(new LiteralText("Open package using right click").formatted(Formatting.GRAY));
 	}
 	
 	public static ItemStack createPackage(Identifier id) {

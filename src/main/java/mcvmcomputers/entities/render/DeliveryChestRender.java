@@ -121,12 +121,11 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 			}
 		}else {
 			if(entity.rocketSound != null) {
-				System.out.println("stopped");
 				MinecraftClient.getInstance().getSoundManager().stop(entity.rocketSound);
 				entity.rocketSound = null;
 			}
 		}
-		if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
+		if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED || currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
 			EntityDeliveryChest serverEntity = null;
 			for(ServerWorld sw : MinecraftClient.getInstance().getServer().getWorlds()) {
 				if(sw.getEntityById(entity.getEntityId()) != null) {
@@ -167,7 +166,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 				entity.updatePosition(entity.getTargetX(), entity.getTargetY(), entity.getTargetZ());
 				serverEntity.updatePosition(entity.getTargetX(), entity.getTargetY(), entity.getTargetZ());
 			}
-		}else if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
+		}else if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING  || currentOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
 			EntityDeliveryChest serverEntity = null;
 			for(ServerWorld sw : MinecraftClient.getInstance().getServer().getWorlds()) {
 				if(sw.getEntityById(entity.getEntityId()) != null) {
@@ -194,6 +193,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 						entity.rocketSound = null;
 					}
 				}
+				MCVmComputersMod.currentOrder.entitySpawned = false;
 				entity.kill();
 			}
 		}
@@ -202,6 +202,8 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	private void smokeParticle(World w, Vec3d pos, int amount) {
 		for(int i = 0;i<amount;i++) {
 			if(amount == 3) {
+				w.addParticle(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, (DeliveryChestModel.TEX_RANDOM.nextFloat()*0.5f)-.25f, DeliveryChestModel.TEX_RANDOM.nextFloat()*-.3F, (DeliveryChestModel.TEX_RANDOM.nextFloat()*.5f)-.25f);
+			}else if(amount==6){
 				w.addParticle(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, (DeliveryChestModel.TEX_RANDOM.nextFloat()*0.5f)-.25f, DeliveryChestModel.TEX_RANDOM.nextFloat()*-.3F, (DeliveryChestModel.TEX_RANDOM.nextFloat()*.5f)-.25f);
 			}else {
 				w.addParticle(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, (DeliveryChestModel.TEX_RANDOM.nextFloat()*2f)-1f, DeliveryChestModel.TEX_RANDOM.nextFloat()*.3F, (DeliveryChestModel.TEX_RANDOM.nextFloat()*2f)-1f);
@@ -211,6 +213,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	
 	private void doParticlesForFire(EntityDeliveryChest entity) {
 		smokeParticle(entity.world, entity.getPosVector(), 3);
+		smokeParticle(entity.world, entity.getPosVector(), 6);
 		
 		Vec3d ground = new Vec3d(entity.getX(), entity.world.getTopY(Type.MOTION_BLOCKING, entity.getBlockPos().getX(), entity.getBlockPos().getZ()), entity.getZ());
 		double dist = ground.distanceTo(entity.getPosVector());
@@ -261,13 +264,24 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 				matrices.translate(-15.63, -15.63, 6.22);
 				matrices.push();   
 					matrices.scale(0.4f, 0.4f, 0.4f);
-					matrices.translate(0, -5, 0);
-					this.getFontRenderer().draw("Please insert", 6, 25, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-					String s = ""+currentOrder.price;
-					this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 33, new Color(0.4f,0.4f,1f,1f).getRGB(), false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-					this.getFontRenderer().draw("Iron Ingots", 10, 41, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-					this.getFontRenderer().draw("by clicking", 13, 50, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-					this.getFontRenderer().draw("this chest", 14, 59, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+					if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED || currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
+						matrices.translate(0, -5, 0);
+						this.getFontRenderer().draw("Please insert", 6, 25, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+						String s = ""+currentOrder.price;
+						this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 33, new Color(0.4f,0.4f,1f,1f).getRGB(), false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+						this.getFontRenderer().draw("Iron Ingots", 10, 41, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+						this.getFontRenderer().draw("by clicking", 13, 50, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+						this.getFontRenderer().draw("this chest", 14, 59, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+					}else if(currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED || currentOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
+						String s = currentOrder.items.size() + " items";
+						this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 20, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,1f,0.2f).getRGB(), light);
+						matrices.push();
+							matrices.translate(0.5, 0, 0);
+							this.getFontRenderer().draw("in chest", 19, 30, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+						matrices.pop();
+						this.getFontRenderer().draw("Collect by", 14, 44, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+						this.getFontRenderer().draw("clicking", 21, 52, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+					}
 				matrices.pop();
 			matrices.pop();
 		matrices.pop();

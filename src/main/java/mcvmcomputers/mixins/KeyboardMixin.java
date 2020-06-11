@@ -13,7 +13,7 @@ import net.minecraft.client.MinecraftClient;
 
 @Mixin(Keyboard.class)
 public class KeyboardMixin {
-	@Inject(at = @At("HEAD"), method = "onKey()V")
+	@Inject(at = @At("HEAD"), method = "onKey")
 	public void onKey(long window, int key, int scancode, int i, int j, CallbackInfo ci) {
 		MinecraftClient mcc = MinecraftClient.getInstance();
 		 if (window == mcc.getWindow().getHandle() && MCVmComputersMod.vmTurnedOn) {

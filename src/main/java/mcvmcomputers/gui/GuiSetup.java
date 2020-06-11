@@ -132,7 +132,7 @@ public class GuiSetup extends Screen{
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						status = COLOR_CHAR + "cFailed! Error will be printed to log.\n" + COLOR_CHAR + "cMaybe vboxwebsrv is already running? In that case,\n" + COLOR_CHAR + "cclose it using your Task Manager.\n\n"+"Settings menu in " + i + " seconds.";
+						status = COLOR_CHAR + "cFailed! Error will be printed to log.\n" + COLOR_CHAR + "cMaybe vboxwebsrv is already running? In that case,\n" + COLOR_CHAR + "cclose it using your Task Manager. If it's a VirtualBox" + COLOR_CHAR + "cproblem, start it and look at the error.\n\n"+"Settings menu in " + i + " seconds.";
 					}
 					onlyStatusMessage = false;
 					init();
@@ -177,6 +177,10 @@ public class GuiSetup extends Screen{
 			this.font.draw(str, this.width/2 - this.font.getStringWidth(str)/2, this.height/2 - 60, -1);
 			String stri = "or your package manager. If you need to restart, do it and come back.";
 			this.font.draw(stri, this.width/2 - this.font.getStringWidth(stri)/2, this.height/2 - 50, -1);
+			String strin = "WARNING! This might cause VirtualBox to stop working, resulting in you having";
+			this.font.draw(strin, this.width/2 - this.font.getStringWidth(strin)/2, this.height/2 - 36, -1);
+			String string = "to reset your preferences. (If that happens, just google how to reset)";
+			this.font.draw(string, this.width/2 - this.font.getStringWidth(string)/2, this.height/2 - 26, -1);
 			this.font.draw("Maximum RAM used by VM:", this.width/2 - 160, this.height/2-10, -1);
 			this.font.draw("VM Video Memory:", this.width/2 + 10, this.height/2-10, -1);
 			String s = "Set these values in " + COLOR_CHAR + "lmegabytes." + COLOR_CHAR + "r 1 GB = 1024 MB. NaN = Not a Number.";

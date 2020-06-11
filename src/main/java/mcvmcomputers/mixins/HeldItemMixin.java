@@ -29,7 +29,7 @@ public class HeldItemMixin {
 	@Shadow
 	private void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Arm arm) {}
 	
-	@Inject(at = @At("HEAD"), method = "renderFirstPersonItem()V")
+	@Inject(at = @At("HEAD"), method = "renderFirstPersonItem")
 	private void renderItemHead(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
 		if(!item.isEmpty()) {
 			if(item.getItem() instanceof ItemOrderingTablet) {
@@ -55,7 +55,7 @@ public class HeldItemMixin {
 		matrices.push();
 	}
 	
-	@Inject(at = @At("TAIL"), method = "renderFirstPersonItem()V")
+	@Inject(at = @At("TAIL"), method = "renderFirstPersonItem")
 	private void renderItemTail(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
 		matrices.pop();
 	}

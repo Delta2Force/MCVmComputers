@@ -1,6 +1,7 @@
 package mcvmcomputers.entities;
 
 import mcvmcomputers.MCVmComputersMod;
+import mcvmcomputers.item.ItemPackage;
 import mcvmcomputers.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
@@ -8,6 +9,7 @@ import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -22,6 +24,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class EntityDeliveryChest extends Entity{
@@ -117,23 +120,28 @@ public class EntityDeliveryChest extends Entity{
 				
 				if(is != null) {
 					if(is.getItem().equals(Items.IRON_INGOT)) {
-						if(is.getCount() >= MCVmComputersMod.currentOrder.price) {
-							MCVmComputersMod.currentOrder.price = 0;
-							MCVmComputersMod.currentOrder.currentStatus = OrderStatus.PAYMENT_CHEST_RECEIVING;
-							is.decrement(MCVmComputersMod.currentOrder.price);
-						}else {
-							MCVmComputersMod.currentOrder.price -= is.getCount();
-							is.decrement(is.getCount());
-						}
+						MCVmComputersMod.currentOrder.price -= is.getCount();
+						is.decrement(is.getCount());
 						flag = true;
 					}
 				}
 				
 				if(!flag) {
 					player.sendMessage(new LiteralText("You need to click the chest with ingots in your hand!").formatted(Formatting.RED));
+				}else {
+					if(MCVmComputersMod.currentOrder.price < 0) {
+						is.increment(MCVmComputersMod.currentOrder.price * -1);
+						MCVmComputersMod.currentOrder.currentStatus = OrderStatus.PAYMENT_CHEST_RECEIVING;
+					}
 				}
 				
 				return flag;
+			}else if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
+				player.world.spawnEntity(new ItemEntity(player.world, this.getX(), this.getY()+1.5, this.getZ(), ItemPackage.createPackage(Registry.ITEM.getId(MCVmComputersMod.currentOrder.items.get(0)))));
+				MCVmComputersMod.currentOrder.items.remove(0);
+				if(MCVmComputersMod.currentOrder.items.size() == 0) {
+					MCVmComputersMod.currentOrder.currentStatus = OrderStatus.ORDER_CHEST_RECEIVED;
+				}
 			}
 		}
 		

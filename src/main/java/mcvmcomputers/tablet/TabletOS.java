@@ -60,10 +60,16 @@ public class TabletOS {
 	private SoundInstance shopIntroSound;
 	private SoundInstance shopMusicSound;
 	private SoundInstance shopOutroSound;
+	private SoundInstance displayOrderMusicSound;
 	private ArrayList<OrderableItem> shoppingCart;
 	private static final List<OrderableItem> PC_PARTS = Arrays.asList(ItemList.PC_CASE, ItemList.PC_CASE_SIDEPANEL, ItemList.ITEM_MOTHERBOARD, ItemList.ITEM_MOTHERBOARD64, ItemList.ITEM_RAM1G, ItemList.ITEM_RAM2G, ItemList.ITEM_RAM4G, ItemList.ITEM_CPU2, ItemList.ITEM_CPU4, ItemList.ITEM_CPU6, ItemList.ITEM_GPU, ItemList.ITEM_NEW_HARDDRIVE);
 	private static final List<OrderableItem> PERIPHERALS = Arrays.asList(ItemList.ITEM_KEYBOARD, ItemList.ITEM_MOUSE, ItemList.ITEM_CRTSCREEN, ItemList.ITEM_FLATSCREEN);
 	private BufferedImage lastShopImage;
+	
+	//Delivery variables
+	private float chestX;
+	private float chestY;
+	private boolean drawChest;
 	
 	//Radar variables
 	private SoundInstance radarSound;
@@ -86,12 +92,12 @@ public class TabletOS {
 		shopIntroSound = new TabletSoundInstance(SoundList.SHOPINTRO_SOUND);
 		shopOutroSound = new TabletSoundInstance(SoundList.SHOPOUTRO_SOUND);
 		shopMusicSound = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_FAR, 0.6f, 0.2f);
+		displayOrderMusicSound = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_STRAD, 0.6f, 0.2f);
 		font = Font.createFont(Font.PLAIN, mcc.getResourceManager().getResource(new Identifier("mcvmcomputers", "font/tabletfont.ttf")).getInputStream());
 		radarRadius = new ArrayList<Float>();
 	}
 	
 	public void tabletTakenOut() {
-		shopMusicSound = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_FAR, 0.6f, 0.2f);
 		radarRadius.clear();
 		totalTimeRadar = 0;
 		radarRadius.add(0f);
@@ -112,8 +118,9 @@ public class TabletOS {
 			tabletState = State.DISPLAY_ORDER;
 		}else if(tabletState == State.SHOP) {
 			mcc.getSoundManager().stop(shopMusicSound);
+		}else if(tabletState == State.DISPLAY_ORDER) {
+			mcc.getSoundManager().stop(displayOrderMusicSound);
 		}
-		//tabletState = State.LOOKING_FOR_SATELLITE;
 	}
 	
 	public void render() {
@@ -430,6 +437,10 @@ public class TabletOS {
 			g2d.drawImage(lastShopImage.getSubimage(0, oneImage*3, 256, oneImage), (int) (256 * fourthPercentage),oneImage*3, null);
 			g2d.drawImage(lastShopImage.getSubimage(0, oneImage*4, 256, oneImage), (int) (256 * fifthPercentage), oneImage*4, null);
 		}else if(tabletState == State.DISPLAY_ORDER) {
+			if(!mcc.getSoundManager().isPlaying(displayOrderMusicSound) && tabletOn) {
+				mcc.getSoundManager().play(displayOrderMusicSound);
+			}
+			
 			shopPy = MVCUtils.lerp(shopPy, 0, deltaTime*2);
 			g2d.setColor(Color.darkGray.darker().darker().darker());
 			g2d.fillRect(0, 0, 256, 256);
@@ -440,17 +451,8 @@ public class TabletOS {
 			float satelliteAngle = ((float)mcc.world.getSkyAngle(deltaTime)*5f);
 			satelliteAngle %= 1f;
 			boolean canSee = satelliteAngle < 0.22249603 || satelliteAngle > 0.78432274;
-			
-			if(canSee) {
-				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2d.setColor(Color.gray);
-				int satX = (int)(128 + (96*Math.cos((satelliteAngle*6.3)-1.65)));
-				int satY = (int)((190 + (32*Math.sin((satelliteAngle*6.3)-1.65)))-shopPy);
-				g2d.fillOval(satX, satY, 16, 16);
-				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-				g2d.setFont(font.deriveFont(16f));
-				g2d.drawString("Satellite", satX-12, satY-1);
-			}
+			int satX = (int)(128 + (96*Math.cos((satelliteAngle*6.3)-1.65)));
+			int satY = (int)((190 + (32*Math.sin((satelliteAngle*6.3)-1.65)))-shopPy);
 			
 			if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON) {
 				g2d.setFont(font.deriveFont(43f));
@@ -466,25 +468,182 @@ public class TabletOS {
 				g2d.drawString("you will fill with your payment.", 36, 109-shopPy);
 				g2d.drawString("The satellite needs to be over you", 36, 118-shopPy);
 				g2d.drawString("for this to work.", 36, 127-shopPy);
-				g2d.setColor(Color.red);
-				g2d.drawString("The tablet needs to be turned on", 36, 136-shopPy);
-				g2d.drawString("while the satellite is over you.", 36, 145-shopPy);
 				
 				if(canSee) {
 					totalTimeRadar += deltaTime;
-//					if(totalTimeRadar > 10f) {
-//						MCVmComputersMod.currentOrder.currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVED;
-//					}
+					if(totalTimeRadar > 10f) {
+						totalTimeRadar = 0f;
+						this.drawChest = true;
+						this.chestX = satX+8;
+						this.chestY = satY+8;
+						MCVmComputersMod.currentOrder.currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVED;
+					}
 				}else {
 					totalTimeRadar = 0;
 				}
-			}
-			else if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
-				if(mcc.world.isSkyVisible(mcc.player.getBlockPos()) && !MCVmComputersMod.currentOrder.entitySpawned) {
-					EntityDeliveryChest edc = new EntityDeliveryChest(mcc.getServer().getWorld(DimensionType.OVERWORLD), new Vec3d(mcc.player.getPos().x, mcc.player.getPos().y, mcc.player.getPos().z));
-					mcc.getServer().getWorld(DimensionType.OVERWORLD).spawnEntity(edc);
-					MCVmComputersMod.currentOrder.entitySpawned = true;
+			}else if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
+				if(this.drawChest) {
+					g2d.setFont(font.deriveFont(43f));
+					g2d.setColor(Color.white);
+					g2d.drawString("Payment chest", 32, 64-shopPy);
+					g2d.setFont(font.deriveFont(32f));
+					g2d.setColor(Color.gray);
+					g2d.drawString("arriving soon", 87, 80-shopPy);
+					
+					g2d.setFont(font.deriveFont(16f));
+					g2d.setColor(Color.white);
+					g2d.drawString("A chest will be delivered soon which", 36, 100-shopPy);
+					g2d.drawString("you will fill with your payment.", 36, 109-shopPy);
+					g2d.drawString("The satellite needs to be over you", 36, 118-shopPy);
+					g2d.drawString("for this to work.", 36, 127-shopPy);
+					this.chestX = MVCUtils.lerp(chestX, 128, deltaTime);
+					this.chestY = MVCUtils.lerp(chestY, 189, deltaTime);
+					
+					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					g2d.setColor(Color.white);
+					g2d.fillOval((int)chestX, (int)chestY, 4, 4);
+					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+					
+					if(chestY > 187 && chestY < 191 && chestX > 126 && chestX < 130) {
+						if(mcc.world.isSkyVisible(mcc.player.getBlockPos()) && !MCVmComputersMod.currentOrder.entitySpawned) {
+							EntityDeliveryChest edc = new EntityDeliveryChest(mcc.getServer().getWorld(DimensionType.OVERWORLD), new Vec3d(mcc.player.getPos().x, mcc.player.getPos().y, mcc.player.getPos().z));
+							mcc.getServer().getWorld(DimensionType.OVERWORLD).spawnEntity(edc);
+							MCVmComputersMod.currentOrder.entitySpawned = true;
+							this.drawChest = false;
+						}
+					}
+				}else{
+					g2d.setFont(font.deriveFont(43f));
+					g2d.setColor(Color.white);
+					g2d.drawString("Payment chest", 32, 64-shopPy);
+					g2d.setFont(font.deriveFont(32f));
+					g2d.setColor(Color.gray);
+					g2d.drawString("arrived", 150, 80-shopPy);
+					
+					g2d.setFont(font.deriveFont(16f));
+					g2d.setColor(Color.white);
+					g2d.drawString("Fill it up with ingots and it will", 36, 100-shopPy);
+					g2d.drawString("automatically be sent back! Don't", 36, 109-shopPy);
+					g2d.drawString("worry about the booster, it won't", 36, 118-shopPy);
+					g2d.drawString("kill you.", 36, 127-shopPy);
 				}
+			}else if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
+				if(!MCVmComputersMod.currentOrder.entitySpawned) {
+					this.chestX = MVCUtils.lerp(chestX, satX+8, deltaTime);
+					this.chestY = MVCUtils.lerp(chestY, satY+8, deltaTime);
+				}
+				
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2d.setColor(Color.white);
+				g2d.fillOval((int)chestX, (int)chestY, 4, 4);
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+				
+				g2d.setFont(font.deriveFont(43f));
+				g2d.setColor(Color.white);
+				g2d.drawString("Payment chest", 32, 64-shopPy);
+				g2d.setFont(font.deriveFont(32f));
+				g2d.setColor(Color.gray);
+				g2d.drawString("being received", 77, 80-shopPy);
+				
+				g2d.setFont(font.deriveFont(16f));
+				g2d.setColor(Color.white);
+				g2d.drawString("We are receiving your payment.", 36, 100-shopPy);
+				
+				if(chestX > satX+6 && chestX < satX + 10 && chestY > satY+6 && chestY < satY+10) {
+					MCVmComputersMod.currentOrder.currentStatus = OrderStatus.ORDER_CHEST_ARRIVAL_SOON;
+					totalTimeRadar = 0;
+				}
+			}else if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVAL_SOON) {
+				g2d.setFont(font.deriveFont(43f));
+				g2d.setColor(Color.white);
+				g2d.drawString("Ordered items", 34, 64-shopPy);
+				g2d.setFont(font.deriveFont(32f));
+				g2d.setColor(Color.gray);
+				g2d.drawString("arriving soon", 84, 80-shopPy);
+				
+				g2d.setFont(font.deriveFont(16f));
+				g2d.setColor(Color.white);
+				g2d.drawString("Your items will arrive soon! A chest", 36, 100-shopPy);
+				g2d.drawString("will land and you will collect your", 36, 109-shopPy);
+				g2d.drawString("packages from it.", 36, 118-shopPy);
+				
+				if(canSee) {
+					totalTimeRadar += deltaTime;
+					if(totalTimeRadar > 10f) {
+						totalTimeRadar = 0f;
+						this.drawChest = true;
+						this.chestX = satX+8;
+						this.chestY = satY+8;
+						MCVmComputersMod.currentOrder.currentStatus = OrderStatus.ORDER_CHEST_ARRIVED;
+					}
+				}else {
+					totalTimeRadar = 0;
+				}
+			}else if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
+				if(this.drawChest) {
+					g2d.setFont(font.deriveFont(43f));
+					g2d.setColor(Color.white);
+					g2d.drawString("Ordered items", 34, 64-shopPy);
+					g2d.setFont(font.deriveFont(32f));
+					g2d.setColor(Color.gray);
+					g2d.drawString("arriving soon", 84, 80-shopPy);
+					
+					g2d.setFont(font.deriveFont(16f));
+					g2d.setColor(Color.white);
+					g2d.drawString("Your items will arrive soon! A chest", 36, 100-shopPy);
+					g2d.drawString("will land and you will collect your", 36, 109-shopPy);
+					g2d.drawString("packages from it.", 36, 118-shopPy);
+					this.chestX = MVCUtils.lerp(chestX, 128, deltaTime);
+					this.chestY = MVCUtils.lerp(chestY, 189, deltaTime);
+					
+					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					g2d.setColor(Color.white);
+					g2d.fillOval((int)chestX, (int)chestY, 4, 4);
+					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+					
+					if(chestY > 187 && chestY < 191 && chestX > 126 && chestX < 130) {
+						if(mcc.world.isSkyVisible(mcc.player.getBlockPos()) && !MCVmComputersMod.currentOrder.entitySpawned) {
+							EntityDeliveryChest edc = new EntityDeliveryChest(mcc.getServer().getWorld(DimensionType.OVERWORLD), new Vec3d(mcc.player.getPos().x, mcc.player.getPos().y, mcc.player.getPos().z));
+							mcc.getServer().getWorld(DimensionType.OVERWORLD).spawnEntity(edc);
+							MCVmComputersMod.currentOrder.entitySpawned = true;
+							this.drawChest = false;
+						}
+					}
+				}else{
+					g2d.setFont(font.deriveFont(43f));
+					g2d.setColor(Color.white);
+					g2d.drawString("Ordered items", 34, 64-shopPy);
+					g2d.setFont(font.deriveFont(32f));
+					g2d.setColor(Color.gray);
+					g2d.drawString("arrived", 145, 80-shopPy);
+					
+					g2d.setFont(font.deriveFont(16f));
+					g2d.setColor(Color.white);
+					g2d.drawString("Your items are at your location!", 36, 100-shopPy);
+					g2d.drawString("Collect your packages.", 36, 109-shopPy);
+				}
+			}else if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
+				totalTimeRadar += deltaTime;
+				g2d.setColor(Color.white);
+				g2d.setFont(font.deriveFont(43f));
+				g2d.drawString("Thank you!", 51, 100);
+				
+				if(totalTimeRadar > 3) {
+					tabletState = State.LOOKING_FOR_SATELLITE;
+					if(tabletOn) {
+						mcc.getSoundManager().stop(displayOrderMusicSound);
+						mcc.getSoundManager().play(radarSound);
+					}
+				}
+			}
+			
+			if(canSee) {
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2d.setColor(Color.gray);
+				g2d.fillOval(satX, satY, 16, 16);
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+				g2d.setFont(font.deriveFont(16f));
+				g2d.drawString("Satellite", satX-12, satY-1);
 			}
 		}
 		

@@ -15,14 +15,13 @@ import net.minecraft.util.registry.Registry;
 
 public class ItemList {
 	public static final ItemGroup MOD_ITEM_GROUP_PARTS = FabricItemGroupBuilder.build(new Identifier("mcvmcomputers", "parts"), () -> new ItemStack(Blocks.WHITE_STAINED_GLASS));
-	public static final ItemGroup MOD_ITEM_GROUP_SCREENS = FabricItemGroupBuilder.build(new Identifier("mcvmcomputers", "screens"), () -> new ItemStack(Blocks.WHITE_STAINED_GLASS));
 	public static final ItemGroup MOD_ITEM_GROUP_PERIPHERALS = FabricItemGroupBuilder.build(new Identifier("mcvmcomputers", "peripherals"), () -> new ItemStack(Blocks.WHITE_STAINED_GLASS));
 	public static final ItemGroup MOD_ITEM_GROUP_OTHERS = FabricItemGroupBuilder.build(new Identifier("mcvmcomputers", "others"), () -> new ItemStack(Blocks.WHITE_STAINED_GLASS));
 	public static final OrderableItem PC_CASE_SIDEPANEL = new ItemPCCaseSidepanel(new Settings().group(MOD_ITEM_GROUP_PARTS));
 	public static final OrderableItem ITEM_MOTHERBOARD = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 4);
 	public static final OrderableItem ITEM_MOTHERBOARD64 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 8);
-	public static final OrderableItem ITEM_FLATSCREEN = new ItemFlatScreen(new Settings().group(MOD_ITEM_GROUP_SCREENS));
-	public static final OrderableItem ITEM_CRTSCREEN = new ItemCRTScreen(new Settings().group(MOD_ITEM_GROUP_SCREENS));
+	public static final OrderableItem ITEM_FLATSCREEN = new ItemFlatScreen(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
+	public static final OrderableItem ITEM_CRTSCREEN = new ItemCRTScreen(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
 	public static final OrderableItem ITEM_NEW_HARDDRIVE = new ItemNewHarddrive(new Settings().group(MOD_ITEM_GROUP_PARTS));
 	public static final Item ITEM_HARDDRIVE = new ItemHarddrive(new Settings().rarity(Rarity.EPIC));
 	public static final OrderableItem ITEM_KEYBOARD = new ItemKeyboard(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
