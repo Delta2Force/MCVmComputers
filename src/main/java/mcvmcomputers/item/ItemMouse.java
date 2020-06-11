@@ -5,6 +5,8 @@ import mcvmcomputers.entities.EntityMouse;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -28,6 +30,14 @@ public class ItemMouse extends OrderableItem{
 											MCVmComputersMod.thePreviewEntity.getY(),
 											user.getPosVector().z));
 			world.spawnEntity(ek);
+		}
+		
+		if(world.isClient) {
+			world.playSound(MCVmComputersMod.thePreviewEntity.getX(),
+					MCVmComputersMod.thePreviewEntity.getY(),
+					MCVmComputersMod.thePreviewEntity.getZ(),
+					SoundEvents.BLOCK_METAL_HIT,
+					SoundCategory.BLOCKS, 1, 1, true);
 		}
 		
 		return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, user.getStackInHand(hand));

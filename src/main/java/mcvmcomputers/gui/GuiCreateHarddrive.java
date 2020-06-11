@@ -139,7 +139,7 @@ public class GuiCreateHarddrive extends Screen{
 				return;
 			}
 			if(i > 0) {
-				if(i*1024*1024 < 0) {
+				if(i*1024*1024 < 0) { //Buffer overflow
 					status = COLOR_CHAR + "cNumber too big. (max " + Long.MAX_VALUE/1024L/1024L + ")";
 					return;
 				}
