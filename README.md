@@ -1,5 +1,5 @@
 # VM Computers
-###### I spend my whole quarantine working on this.
+###### I spent my whole quarantine working on this.
 #### Made with the SDK of and tested with VirtualBox 6.1.8
 ## How to use
 ### Ordering
@@ -9,19 +9,19 @@
 ![Tablet1](https://i.imgur.com/hWRK8wb.png)
 #### 3) The rest is self-explanatory.
 ### Creating a Hard Drive / Importing an ISO
-ISOs are located in `[minecraft folder]/vm_computers/isos`. Place your ISOs in there and you will be able to select them in the PC case menu. Hard Drives are created using the "New Harddrive" item. Right click while holding it to open the Hard Drive menu. You can choose to use an existing hard drive (located in `[minecraft folder]/vm_computers/vhds`) or to create a new one.
+ISOs are located at `[minecraft folder]/vm_computers/isos`. Place your ISOs in there and you will be able to select them in the PC case menu. Hard Drives are created using the "New hard drive" item. Right click while holding it to open the hard drive menu. You can either use an existing hard drive (located in `[minecraft folder]/vm_computers/vhds`) or create a new one.
 ### Building the Computer
-##### You need a pc case, a motherboard, RAM, a CPU, a GPU and a screen. The keyboard and mouse are only decoration, and you can start the VM without a hard drive or ISO inserted.
-##### To insert a hard drive, you need to have one created using the "New Harddrive" item.
+##### You need a PC case, a motherboard, RAM, a CPU, a GPU and a screen. The keyboard and mouse are only decorative and you can start the VM without a hard drive or ISO inserted.
+##### To insert a hard drive, you need to create one using the "New hard drive" item.
 #### 1) Place down the case.
 ![case](https://i.imgur.com/8Wgqtcb.png)
 #### 2) Right click it.
 ![editor](https://i.imgur.com/OPRi9xa.png)
 ###### I legally own Windows 98 and Windows XP.
-#### 3) Select an ISO from the list. (optionally)
+#### 3) Select an ISO from the list. (optional)
 #### 4) Open the case.
 ![opened](https://i.imgur.com/sXYTRuc.png)
-###### The buttons are greyed out if you don't own the mentioned item.
+###### The buttons are greyed out if you don't own the according item.
 #### 5) I hope that the rest is self-explanatory.
 ### Using the computer
-Right click the screen while the computer is turned on (which you do in the pc case menu) and your input is focused to the VM. Key combinations do still work on your host computer, e.g. if you press Alt+F4 the game will close.
+Right click the screen while the computer is turned on (which you do in the pc case menu) and your input is focused to the VM. Key combinations do still work on your host computer, e.g. if you press Alt+F4 the game will close. To unfocus, do the key combination mentioned at the top left corner.
