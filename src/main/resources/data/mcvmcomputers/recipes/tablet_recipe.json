@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ODO",
+    "LGC",
+    "OBO"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "L": {
+      "item": "minecraft:clock"
+    },
+    "D": {
+      "item": "minecraft:daylight_detector"
+    },
+    "B": {
+      "item": "minecraft:stone_button"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    }
+  },
+  "result": {
+    "item": "mcvmcomputers:ordering_tablet",
+    "count": 1
+  }
+}

@@ -33,7 +33,7 @@ public class ItemList {
 	public static final OrderableItem ITEM_CPU4 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 8);
 	public static final OrderableItem ITEM_CPU6 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 6);
 	public static final OrderableItem ITEM_GPU = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 12);
-	public static final Item ITEM_TABLET = new ItemOrderingTablet(new Settings().group(MOD_ITEM_GROUP_OTHERS));
+	public static final Item ITEM_TABLET = new ItemOrderingTablet(new Settings().group(MOD_ITEM_GROUP_OTHERS).maxCount(1));
 	public static final Item ITEM_PACKAGE = new ItemPackage(new Settings().rarity(Rarity.EPIC));
 	public static final OrderableItem PC_CASE = new ItemPCCase(new Settings().group(MOD_ITEM_GROUP_PARTS));
 	public static final Item PC_CASE_NO_PANEL = new Item(new Settings().rarity(Rarity.EPIC));
