@@ -2,8 +2,15 @@ package mcvmcomputers.utils;
 
 import static mcvmcomputers.MCVmComputersMod.*;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
+
+import javax.imageio.ImageIO;
 
 import org.virtualbox_6_1.BitmapFormat;
 import org.virtualbox_6_1.GuestMonitorStatus;
@@ -17,13 +24,35 @@ import org.virtualbox_6_1.MachineState;
 
 import mcvmcomputers.gui.GuiFocus;
 import net.minecraft.client.MinecraftClient;
+import net.propero.rdp.ConnectionException;
+import net.propero.rdp.RdesktopFrame;
+import net.propero.rdp.Rdp;
+import net.propero.rdp.rdp5.Rdp5;
+import net.propero.rdp.rdp5.VChannels;
 
 public class VMRunnable implements Runnable{
+	public static Rdp5 rdp;
+	public static BufferedImage bi;
+	
 	@Override
 	public void run() {
 		MinecraftClient mcc = MinecraftClient.getInstance();
+		bi = new BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB);
+		rdp = new Rdp5(new VChannels());
+		rdp.registerDrawingSurface(null); //<- draw somewhere
+		try {
+			rdp.connect("", InetAddress.getByName("127.0.0.1"), Rdp.RDP_LOGON_AUTO, "", "", "", "");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (ConnectionException e) {
+			e.printStackTrace();
+		}
 		while(true) {
 			try {
+				if(!rdp.isConnected()) {
+					vmUpdateThread = null;
+					return;
+				}
 				double deltaX = 0;
 				double deltaY = 0;
 				
@@ -73,17 +102,14 @@ public class VMRunnable implements Runnable{
 					Holder<Integer> yOrigin = new Holder<Integer>();
 					Holder<GuestMonitorStatus> status = new Holder<GuestMonitorStatus>();
 					console.getDisplay().getScreenResolution(0L, width, height, bitsPP, xOrigin, yOrigin, status);
-					Long w = width.value;
-					Long h = height.value;
-					byte[] image = null;
-					try {
-						image = console.getDisplay().takeScreenShotToArray(0L, w, h, BitmapFormat.PNG);
-					}catch(Exception ex) {
-						ns.unlockMachine();
-						continue;
+					int w = Math.toIntExact(width.value);
+					int h = Math.toIntExact(height.value);
+					if(w != bi.getWidth() || h != bi.getHeight()) {
+						bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 					}
-					ns.unlockMachine();
-					vmTextureBytes = new ByteArrayInputStream(image);
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ImageIO.write(bi, "PNG", baos);
+					vmTextureBytes = new ByteArrayInputStream(baos.toByteArray());
 			}catch(Exception ex) {} //TERRIBLE PRACTICE BTW
 		}
 	}
