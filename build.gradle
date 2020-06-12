@@ -28,11 +28,9 @@ dependencies {
 
 shadowJar {
 	 configurations = [project.configurations.shadow]
-	 baseName = 'shadow'
-}
-
-remapJar{
-	input = file("build/libs/shadow-${project.mod_version}-all.jar")
+	 baseName = "${project.archives_base_name}"
+	 classifier = 'dev'
+	 archiveVersion = "${project.mod_version}"
 }
 
 tasks.remapJar.dependsOn shadowJar
