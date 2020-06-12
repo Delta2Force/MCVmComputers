@@ -639,6 +639,7 @@ public class GuiPCEditing extends Screen{
 					edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 					edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
 					edit.getGraphicsAdapter().setVRAMSize((long)MCVmComputersMod.videoMem);
+					edit.getVRDEServer().setEnabled(true);
 					edit.addStorageController("SATA Controller", StorageBus.SATA);
 					edit.addStorageController("IDE Controller", StorageBus.IDE);
 					if(!pc_case.getHardDriveFileName().isEmpty()) {
