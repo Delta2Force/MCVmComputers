@@ -107,6 +107,8 @@ public class TabletOS {
 		}
 	}
 	public void tabletUnequipped() {
+		lastDeltaTimeTime = 0;
+		deltaTime = 0;
 		if(tabletState == State.LOOKING_FOR_SATELLITE) {
 			mcc.getSoundManager().stop(radarSound);
 		}else if(tabletState == State.SHOP_INTRO) {
@@ -207,7 +209,6 @@ public class TabletOS {
 				shopPy = 500;
 				shopPx = 0;
 			}
-			//for(int x = 0;x<16;x++) {
 				for(int y = 0;y<5;y++) {
 					float val = percentages[y];
 					int by = (int) ((y*52)+(52*(val-1f)));
@@ -224,7 +225,6 @@ public class TabletOS {
 						}
 					}
 				}
-			//}
 		}else if(tabletState == State.SHOP) {
 			if(!mcc.getSoundManager().isPlaying(shopMusicSound) && tabletOn) {
 				mcc.getSoundManager().play(shopMusicSound);
@@ -292,8 +292,8 @@ public class TabletOS {
 				}
 				if(targetShopPy < 0) {
 					targetShopPy = 0;
-				}else if(targetShopPy > 190) {
-					targetShopPy = 190;
+				}else if(targetShopPy > 135) {
+					targetShopPy = 135;
 				}
 				if(shopState == ShopState.PC_PARTS) {
 					shopPx = MVCUtils.lerp(shopPx, 256, deltaTime*5f);
