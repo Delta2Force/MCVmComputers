@@ -3,6 +3,7 @@ package mcvmcomputers.gui;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VirtualBoxManager;
 
@@ -74,19 +75,36 @@ public class GuiSetup extends Screen{
 			MCVmComputersMod.vboxWebSrv.destroy();
 		}
 		
-		ProcessBuilder vboxConfig = new ProcessBuilder("vboxmanage", "setproperty", "websrvauthlibrary", "null");
-		try {
-			vboxConfig.start();
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		if(SystemUtils.IS_OS_WINDOWS) {
+			ProcessBuilder vboxConfig = new ProcessBuilder("C:\\Program Files\\Oracle\\VirtualBox\\vboxmanage.exe", "setproperty", "websrvauthlibrary", "null");
+			try {
+				vboxConfig.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+			ProcessBuilder vboxWebSrv = new ProcessBuilder("C:\\Program Files\\Oracle\\VirtualBox\\vboxwebsrv.exe", "--timeout", "0");
+			try {
+				MCVmComputersMod.vboxWebSrv = vboxWebSrv.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}else {
+			ProcessBuilder vboxConfig = new ProcessBuilder("vboxmanage", "setproperty", "websrvauthlibrary", "null");
+			try {
+				vboxConfig.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+			ProcessBuilder vboxWebSrv = new ProcessBuilder("vboxwebsrv", "--timeout", "0");
+			try {
+				MCVmComputersMod.vboxWebSrv = vboxWebSrv.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 		
-		ProcessBuilder vboxWebSrv = new ProcessBuilder("vboxwebsrv", "--timeout", "0");
-		try {
-			MCVmComputersMod.vboxWebSrv = vboxWebSrv.start();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		Runnable runnable = new Runnable() {
 		    public void run() {
 		    	MCVmComputersMod.vboxWebSrv.destroy();
