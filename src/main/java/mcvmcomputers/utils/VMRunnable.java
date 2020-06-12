@@ -1,9 +1,8 @@
 package mcvmcomputers.utils;
 
-
+import static mcvmcomputers.MCVmComputersMod.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.virtualbox_6_1.BitmapFormat;
@@ -16,12 +15,8 @@ import org.virtualbox_6_1.ISession;
 import org.virtualbox_6_1.LockType;
 import org.virtualbox_6_1.MachineState;
 
-import mcvmcomputers.MCVmComputersMod;
 import mcvmcomputers.gui.GuiFocus;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.text.LiteralText;
 
 public class VMRunnable implements Runnable{
 	@Override
@@ -32,49 +27,44 @@ public class VMRunnable implements Runnable{
 				double deltaX = 0;
 				double deltaY = 0;
 				
-				deltaX = MCVmComputersMod.mouseCurX - MCVmComputersMod.mouseLastX;
-				deltaY = MCVmComputersMod.mouseCurY - MCVmComputersMod.mouseLastY;
-				MCVmComputersMod.mouseLastX = MCVmComputersMod.mouseCurX;
-				MCVmComputersMod.mouseLastY = MCVmComputersMod.mouseCurY;
+				deltaX = mouseCurX - mouseLastX;
+				deltaY = mouseCurY - mouseLastY;
+				mouseLastX = mouseCurX;
+				mouseLastY = mouseCurY;
 				
-				IMachine m = MCVmComputersMod.vb.findMachine("VmComputersVm");
+				IMachine m = vb.findMachine("VmComputersVm");
 				if(m.getState() == MachineState.PoweredOff) {
-					if(!MCVmComputersMod.vmTurningOff && MCVmComputersMod.vmTurnedOn) {
-						IProgress pr = m.launchVMProcess(MCVmComputersMod.vbManager.getSessionObject(), "headless", Arrays.asList());
+					if(!vmTurningOff && vmTurnedOn) {
+						IProgress pr = m.launchVMProcess(vbManager.getSessionObject(), "headless", Arrays.asList());
 						pr.waitForCompletion(-1);
 					}else {
-						MCVmComputersMod.vmUpdateThread = null;
+						vmUpdateThread = null;
 						return;
 					}
 				}
-					ISession ns = MCVmComputersMod.vbManager.getSessionObject();
+					ISession ns = vbManager.getSessionObject();
 					m.lockMachine(ns, LockType.Shared);
 					IConsole console = ns.getConsole();
 					if(mcc.currentScreen instanceof GuiFocus) {
 						int val = 0x00;
-						if(MCVmComputersMod.leftMouseButton) {
+						if(leftMouseButton) {
 							val += 0x01;
 						}
-						if(MCVmComputersMod.middleMouseButton) {
+						if(middleMouseButton) {
 							val += 0x04;
 						}
-						if(MCVmComputersMod.rightMouseButton) {
+						if(rightMouseButton) {
 							val += 0x02;
 						}
-						console.getMouse().putMouseEvent((int)deltaX, (int)deltaY, MCVmComputersMod.mouseDeltaScroll, 0, val);
+						console.getMouse().putMouseEvent((int)deltaX, (int)deltaY, mouseDeltaScroll, 0, val);
 					}
-					if(MCVmComputersMod.releaseKeys) {
-						console.getKeyboard().putScancode(0x1d + 0x80);
-						console.getKeyboard().putScancode(0xe0);
-						console.getKeyboard().putScancode(0x1d + 0x80);
-						console.getKeyboard().putScancode(0x0e + 0x80);
-						MCVmComputersMod.vmKeyboardScancodes.clear();
-						MCVmComputersMod.releaseKeys = false;
+					if(releaseKeys) {
+						console.getKeyboard().putScancodes(Arrays.asList(0x1d + 0x80, 0xe0, 0x1d + 0x80, 0x0e + 0x80));
+						vmKeyboardScancodes.clear();
+						releaseKeys = false;
 					}else {
-						for(int i : MCVmComputersMod.vmKeyboardScancodes) {
-							console.getKeyboard().putScancode(i);
-						}
-						MCVmComputersMod.vmKeyboardScancodes.clear();
+						console.getKeyboard().putScancodes(vmKeyboardScancodes);
+						vmKeyboardScancodes.clear();
 					}
 					Holder<Long> width = new Holder<Long>();
 					Holder<Long> height = new Holder<Long>();
@@ -93,7 +83,7 @@ public class VMRunnable implements Runnable{
 						continue;
 					}
 					ns.unlockMachine();
-					MCVmComputersMod.vmTextureBytes = new ByteArrayInputStream(image);
+					vmTextureBytes = new ByteArrayInputStream(image);
 			}catch(Exception ex) {} //TERRIBLE PRACTICE BTW
 		}
 	}
