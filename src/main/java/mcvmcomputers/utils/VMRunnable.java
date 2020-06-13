@@ -2,7 +2,6 @@ package mcvmcomputers.utils;
 
 import static mcvmcomputers.MCVmComputersMod.*;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,7 +11,6 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import org.virtualbox_6_1.BitmapFormat;
 import org.virtualbox_6_1.GuestMonitorStatus;
 import org.virtualbox_6_1.Holder;
 import org.virtualbox_6_1.IConsole;
@@ -25,21 +23,20 @@ import org.virtualbox_6_1.MachineState;
 import mcvmcomputers.gui.GuiFocus;
 import net.minecraft.client.MinecraftClient;
 import net.propero.rdp.ConnectionException;
-import net.propero.rdp.RdesktopFrame;
+import net.propero.rdp.RdesktopCanvas_Localised;
 import net.propero.rdp.Rdp;
 import net.propero.rdp.rdp5.Rdp5;
 import net.propero.rdp.rdp5.VChannels;
 
 public class VMRunnable implements Runnable{
 	public static Rdp5 rdp;
-	public static BufferedImage bi;
 	
 	@Override
 	public void run() {
 		MinecraftClient mcc = MinecraftClient.getInstance();
-		bi = new BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB);
 		rdp = new Rdp5(new VChannels());
-		rdp.registerDrawingSurface(null); //<- draw somewhere
+		RdesktopCanvas_Localised canvas = new RdesktopCanvas_Localised(800, 800);
+		rdp.registerDrawingSurface(canvas);
 		try {
 			rdp.connect("", InetAddress.getByName("127.0.0.1"), Rdp.RDP_LOGON_AUTO, "", "", "", "");
 		} catch (UnknownHostException e) {
@@ -104,12 +101,10 @@ public class VMRunnable implements Runnable{
 					console.getDisplay().getScreenResolution(0L, width, height, bitsPP, xOrigin, yOrigin, status);
 					int w = Math.toIntExact(width.value);
 					int h = Math.toIntExact(height.value);
-					if(w != bi.getWidth() || h != bi.getHeight()) {
-						bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+					if(w != canvas.getWidth() || h != canvas.getHeight()) {
+						canvas.changeResolution(w, h);
 					}
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					ImageIO.write(bi, "PNG", baos);
-					vmTextureBytes = new ByteArrayInputStream(baos.toByteArray());
+					vmTextureBytes = new ByteArrayInputStream(canvas.getBackstore());
 			}catch(Exception ex) {} //TERRIBLE PRACTICE BTW
 		}
 	}
