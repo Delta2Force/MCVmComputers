@@ -1,6 +1,7 @@
 # VM Computers
 ###### I spent my whole quarantine working on this.
 #### Made with the SDK of and tested with VirtualBox 6.1.8, you need a VirtualBox version that starts with "6.1" for the mod to work.
+#### Install [Fabric](https://fabricmc.net/use/) to load the mod .jar (.jar goes in .minecraft/mods)
 ## How to use
 ### Ordering
 #### 1) Craft yourself an ordering tablet.
