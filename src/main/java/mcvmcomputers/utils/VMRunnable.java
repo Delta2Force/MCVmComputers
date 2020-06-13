@@ -53,7 +53,7 @@ public class VMRunnable implements Runnable{
 			@Override
 			public void run() {
 				try {
-					rdp.mainLoop(null, null);
+					rdp.mainLoop(null, null); //<- cant be null
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (RdesktopException e) {
