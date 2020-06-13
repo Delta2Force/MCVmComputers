@@ -150,7 +150,7 @@ public class GuiSetup extends Screen{
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						status = COLOR_CHAR + "cFailed! Error will be printed to log.\n" + COLOR_CHAR + "cMaybe vboxwebsrv is already running? In that case,\n" + COLOR_CHAR + "cclose it using your Task Manager. If it's a VirtualBox" + COLOR_CHAR + "cproblem, start it and look at the error.\n\n"+"Settings menu in " + i + " seconds.";
+						status = COLOR_CHAR + "cFailed! Error will be printed to log.\n" + COLOR_CHAR + "cMaybe vboxwebsrv is already running? In that case,\n" + COLOR_CHAR + "cclose it using your Task Manager. If it's a VirtualBox\n" + COLOR_CHAR + "cproblem, start it and look at the error.\n\n"+"Settings menu in " + i + " seconds.";
 					}
 					onlyStatusMessage = false;
 					init();
