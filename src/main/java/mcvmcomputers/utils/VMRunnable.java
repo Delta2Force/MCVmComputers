@@ -49,11 +49,12 @@ public class VMRunnable implements Runnable{
 		} catch (ConnectionException e) {
 			e.printStackTrace();
 		}
+		boolean[] deactivated = new boolean[1];
 		Thread rdpThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					rdp.mainLoop(null, null); //<- cant be null
+					rdp.mainLoop(deactivated, new int[1]); //<- cant be null
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (RdesktopException e) {
@@ -70,8 +71,10 @@ public class VMRunnable implements Runnable{
 		}
 		while(true) {
 			try {
-				if(!rdp.isConnected()) {
+				if(!rdp.isConnected() || deactivated[0]) {
 					vmUpdateThread = null;
+					rdp.disconnect();
+					rdpThread.interrupt();
 					return;
 				}
 				double deltaX = 0;
@@ -89,6 +92,8 @@ public class VMRunnable implements Runnable{
 						pr.waitForCompletion(-1);
 					}else {
 						vmUpdateThread = null;
+						rdp.disconnect();
+						rdpThread.interrupt();
 						return;
 					}
 				}
