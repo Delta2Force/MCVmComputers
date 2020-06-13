@@ -29,17 +29,16 @@ import net.propero.rdp.RdesktopCanvas_Localised;
 import net.propero.rdp.RdesktopException;
 import net.propero.rdp.Rdp;
 import net.propero.rdp.crypto.CryptoException;
-import net.propero.rdp.rdp5.Rdp5;
 import net.propero.rdp.rdp5.VChannels;
 
 public class VMRunnable implements Runnable{
-	public static Rdp5 rdp;
+	public static Rdp rdp;
 	
 	@Override
 	public void run() {
 		while(vmTurningOn) {}
 		MinecraftClient mcc = MinecraftClient.getInstance();
-		rdp = new Rdp5(new VChannels());
+		rdp = new Rdp(new VChannels());
 		RdesktopCanvas_Localised canvas = new RdesktopCanvas_Localised(800, 800);
 		rdp.registerDrawingSurface(canvas);
 		try {
