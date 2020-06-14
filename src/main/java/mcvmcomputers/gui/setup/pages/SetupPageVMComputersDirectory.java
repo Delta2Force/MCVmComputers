@@ -35,7 +35,8 @@ public class SetupPageVMComputersDirectory extends SetupPage{
 			MCVmComputersMod.vhdDirectory = new File(parent, "vhds");
 			if(!MCVmComputersMod.isoDirectory.exists()) {
 				MCVmComputersMod.isoDirectory.mkdir();
-			}else if(!MCVmComputersMod.vhdDirectory.exists()) {
+			}
+			if(!MCVmComputersMod.vhdDirectory.exists()) {
 				MCVmComputersMod.vhdDirectory.mkdir();
 			}
 			try {
