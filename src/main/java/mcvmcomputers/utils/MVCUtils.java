@@ -36,4 +36,9 @@ public class MVCUtils {
 	public static double lerp(double a, double b, double t) {
 		return a + (b-a) * t;
 	}
+	
+	public static final char COLOR_CHAR = (char) (0xfeff00a7);
+	public static String getColorChar(char color) {
+		return COLOR_CHAR + "" + color;
+	}
 }

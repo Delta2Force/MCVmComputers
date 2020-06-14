@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +85,13 @@ public class MCVmComputersMod implements ModInitializer{
 	
 	public static float deltaTime;
 	public static long lastDeltaTimeTime;
+	
+	public static void getVHDNum() throws NumberFormatException, IOException {
+		File f = new File(vhdDirectory.getParentFile(), "vhdnum");
+		if(f.exists()) {
+			latestVHDNum = Integer.parseInt(Files.readAllLines(f.toPath()).get(0));
+		}
+	}
 	
 	public static void increaseVHDNum() throws IOException {
 		latestVHDNum++;

@@ -20,7 +20,7 @@ import org.virtualbox_6_1.MachineState;
 import org.virtualbox_6_1.VBoxException;
 
 import mcvmcomputers.entities.EntityItemPreview;
-import mcvmcomputers.gui.GuiSetup;
+import mcvmcomputers.gui.setup.GuiSetup;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.ItemOrderingTablet;
 import mcvmcomputers.tablet.TabletOS;
