@@ -1,12 +1,8 @@
 package mcvmcomputers.entities.model;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.Random;
-
-import javax.imageio.ImageIO;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;

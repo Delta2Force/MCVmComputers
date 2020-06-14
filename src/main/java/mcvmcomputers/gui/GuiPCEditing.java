@@ -567,6 +567,7 @@ public class GuiPCEditing extends Screen{
 		serverPCCase.setIsoFileName(name);
 	}
 	
+	/* (Might use for Guest Additions)
 	private void insertISO(File f) {
 		System.out.println(f.getPath());
 		if((MCVmComputersMod.vmTurningOn || MCVmComputersMod.vmTurnedOn) && MCVmComputersMod.vmEntityID == pc_case.getEntityId()) {
@@ -576,6 +577,7 @@ public class GuiPCEditing extends Screen{
 		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
 		serverPCCase.setIsoFileName("Additions");
 	}
+	*/
 	
 	public void turnOffPC(ButtonWidget wdgt) {
 		//this.minecraft.openScreen(null);

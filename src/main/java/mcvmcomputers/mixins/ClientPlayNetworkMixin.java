@@ -72,7 +72,7 @@ public class ClientPlayNetworkMixin {
 	}
 	
 	public void onEntityPosition(EntityPositionS2CPacket packet) {
-	      NetworkThreadUtils.forceMainThread(packet, this.client.getNetworkHandler(), (ThreadExecutor)this.client);
+	      NetworkThreadUtils.forceMainThread(packet, this.client.getNetworkHandler(), (ThreadExecutor<?>)this.client);
 	      Entity entity = this.world.getEntityById(packet.getId());
 	      if(entity instanceof EntityDeliveryChest) {
 	    	  return;

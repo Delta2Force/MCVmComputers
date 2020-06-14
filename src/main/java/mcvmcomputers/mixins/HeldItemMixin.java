@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import mcvmcomputers.MCVmComputersMod;
-import mcvmcomputers.entities.model.OrderingTabletModel;
 import mcvmcomputers.item.ItemOrderingTablet;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -24,8 +23,6 @@ import net.minecraft.util.math.Quaternion;
 
 @Mixin(HeldItemRenderer.class)
 public class HeldItemMixin {
-	private float time = 0f;
-	
 	@Shadow
 	private void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Arm arm) {}
 	
@@ -33,7 +30,6 @@ public class HeldItemMixin {
 	private void renderItemHead(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
 		if(!item.isEmpty()) {
 			if(item.getItem() instanceof ItemOrderingTablet) {
-				time += tickDelta;
 				matrices.push();
 				matrices.translate(0, -equipProgress*2, 0);
 					matrices.push();

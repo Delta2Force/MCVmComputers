@@ -3,25 +3,19 @@ package mcvmcomputers.entities.render;
 import java.awt.Color;
 import java.io.IOException;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import mcvmcomputers.MCVmComputersMod;
 import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.entities.model.DeliveryChestModel;
 import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.tablet.TabletOrder.OrderStatus;
-import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.sound.EntityTrackingSoundInstance;
 import net.minecraft.client.sound.MovingSoundInstance;
-import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -36,10 +30,11 @@ import static mcvmcomputers.utils.MVCUtils.*;
 
 public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	private DeliveryChestModel deliveryChestModel;
+	private MinecraftClient mcc;
 	
 	public DeliveryChestRender(EntityRenderDispatcher dispatcher) {
 		super(dispatcher);
-		
+		mcc = MinecraftClient.getInstance();
 	}
 
 	@Override
@@ -84,7 +79,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 						this.z = (float) entity.getZ();
 						
 						Vec3d v = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
-						double dist = v.distanceTo(MinecraftClient.getInstance().player.getPos());
+						double dist = v.distanceTo(mcc.player.getPos());
 						if(dist < 0) {
 							dist = -dist;
 						}

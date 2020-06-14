@@ -20,8 +20,6 @@ public class GuiFocus extends Screen{
 		MCVmComputersMod.releaseKeys = false;
 	}
 	
-	private boolean pressed;
-	
 	@Override
 	public void render(int wmouseX, int wmouseY, float delta) {
 		long window = minecraft.getWindow().getHandle();

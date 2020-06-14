@@ -3,7 +3,6 @@ package mcvmcomputers.item;
 import mcvmcomputers.MCVmComputersMod;
 import mcvmcomputers.entities.EntityKeyboard;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;

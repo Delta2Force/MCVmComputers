@@ -3,9 +3,6 @@ package mcvmcomputers.entities;
 import mcvmcomputers.MCVmComputersMod;
 import mcvmcomputers.item.ItemPackage;
 import mcvmcomputers.tablet.TabletOrder.OrderStatus;
-import mcvmcomputers.utils.MVCUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -19,7 +16,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -46,8 +42,6 @@ public class EntityDeliveryChest extends Entity{
 	public float takeOffSpeed = 0f;
 	public boolean fire = false;
 	public SoundInstance rocketSound;
-	
-	private boolean trackedOnce = false;
 	
 	//z -80 y 80 starting position from target
 	
