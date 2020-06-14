@@ -62,8 +62,7 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	public void renderBackgroundAndMobo() {
-		//tst
-		this.fillGradient(0, 0, this.width, this.height, new Color(0f,0f,0f,0.5f*introScale).getRGB(), new Color(0f,0f,0f,0.5f*introScale).getRGB());
+		this.fillGradient(0, 0, this.width, this.height, new Color(0f,0f,0f,Math.max(0.5f*introScale,0)).getRGB(), new Color(0f,0f,0f,0.5f*introScale).getRGB());
 		RenderSystem.pushMatrix();
 		RenderSystem.enableRescaleNormal();
 	    RenderSystem.enableAlphaTest();
