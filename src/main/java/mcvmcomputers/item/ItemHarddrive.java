@@ -30,6 +30,16 @@ public class ItemHarddrive extends OrderableItem{
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if(world.isClient) {
+			ItemStack is = null;
+			switch(hand) {
+			case MAIN_HAND:
+				is = user.getMainHandStack();
+				break;
+			case OFF_HAND:
+				is = user.getOffHandStack();
+				break;
+			}
+			
 		}
 		return super.use(world, user, hand);
 	}

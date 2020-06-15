@@ -1,5 +1,6 @@
 package mcvmcomputers.client.entities.render;
 
+import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.entities.EntityFlatScreen;
 import mcvmcomputers.item.ItemList;
@@ -36,7 +37,7 @@ public class FlatScreenRender extends EntityRenderer<EntityFlatScreen>{
 		Quaternion look = MVCUtils.lookAt(entity.getPosVector(), entity.getLookAtPos());
 		matrices.multiply(look);
 		MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemList.ITEM_FLATSCREEN), Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
-		if(MainMod.vmTextureIdentifier != null) {
+		if(ClientMod.vmScreenTextures.containsKey(entity.getUuid())) {
 			matrices.push();
 			matrices.scale(0.006f, 0.006f, 0.006f);
 			matrices.multiply(new Quaternion(0f, 0f, 0f, true));
@@ -45,7 +46,7 @@ public class FlatScreenRender extends EntityRenderer<EntityFlatScreen>{
 			matrices.scale(0.8079f, 0.488f, 1f);
 			matrices.translate(10, 5.4f, 7.76f);
 			Matrix4f matrix4f = matrices.peek().getModel();
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getText(MainMod.vmTextureIdentifier));
+			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getText(ClientMod.vmScreenTextures.get(entity.getUuid())));
 			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(light).next();
 	        vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(light).next();
 	        vertexConsumer.vertex(matrix4f, 128.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(light).next();

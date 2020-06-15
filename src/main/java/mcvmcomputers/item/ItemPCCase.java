@@ -2,7 +2,6 @@ package mcvmcomputers.item;
 
 import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
-import mcvmcomputers.entities.EntityMouse;
 import mcvmcomputers.entities.EntityPC;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -33,6 +32,7 @@ public class ItemPCCase extends OrderableItem{
 												hr.getPos().getY(),
 												user.getPosVector().z));
 			world.spawnEntity(ek);
+			MainMod.computers.put(user.getUuid(), ek);
 		}
 		
 		if(world.isClient) {
