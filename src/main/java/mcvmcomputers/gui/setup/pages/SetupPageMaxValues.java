@@ -143,7 +143,7 @@ public class SetupPageMaxValues extends SetupPage{
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						status = MVCUtils.getColorChar('c') + "cFailed! Error will be printed to log.\n" + MVCUtils.getColorChar('c') + "cMaybe vboxwebsrv is already running? In that case,\n" + MVCUtils.getColorChar('c')  + "cclose it using your Task Manager. If it's a VirtualBox" + MVCUtils.getColorChar('c')  + "cproblem, start it and look at the error.\n\n"+"Settings menu in " + i + " seconds.";
+						status = MVCUtils.getColorChar('c') + "Failed! Error will be printed to log.\n" + MVCUtils.getColorChar('c') + "Maybe vboxwebsrv is already running? In that case,\n" + MVCUtils.getColorChar('c')  + "close it using your Task Manager. If it's a VirtualBox\n" + MVCUtils.getColorChar('c')  + "problem, start it and look at the error.\n\n"+"Settings menu in " + i + " seconds.";
 					}
 					onlyStatusMessage = false;
 					init();
