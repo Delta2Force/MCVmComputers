@@ -148,21 +148,6 @@ public class MCVmComputersMod implements ModInitializer{
 		ItemList.init();
 		EntityList.init();
 		SoundList.init();
-		
-		EntityRendererRegistry.INSTANCE.register(EntityList.ITEM_PREVIEW,
-				(entityRenderDispatcher, context) -> new ItemPreviewRender(entityRenderDispatcher));
-		EntityRendererRegistry.INSTANCE.register(EntityList.KEYBOARD,
-				(entityRenderDispatcher, context) -> new KeyboardRender(entityRenderDispatcher));
-		EntityRendererRegistry.INSTANCE.register(EntityList.MOUSE,
-				(entityRenderDispatcher, context) -> new MouseRender(entityRenderDispatcher));
-		EntityRendererRegistry.INSTANCE.register(EntityList.CRT_SCREEN,
-				(entityRenderDispatcher, context) -> new CRTScreenRender(entityRenderDispatcher));
-		EntityRendererRegistry.INSTANCE.register(EntityList.FLATSCREEN,
-				(entityRenderDispatcher, context) -> new FlatScreenRender(entityRenderDispatcher));
-		EntityRendererRegistry.INSTANCE.register(EntityList.PC,
-				(entityRenderDispatcher, context) -> new PCRender(entityRenderDispatcher));
-		EntityRendererRegistry.INSTANCE.register(EntityList.DELIVERY_CHEST,
-				(entityRenderDispatcher, context) -> new DeliveryChestRender(entityRenderDispatcher));
 	}
 
 }

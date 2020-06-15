@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "mcvmcomputers.MCVmComputersMod"
+    ],
+    "client": [
+      "mcvmcomputers.ClientInitializer"
     ]
   },
   "mixins": [
