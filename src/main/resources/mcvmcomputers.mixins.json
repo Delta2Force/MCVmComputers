@@ -4,13 +4,14 @@
   "package": "mcvmcomputers.mixins",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "GameloopMixin",
-    "ClientPlayNetworkMixin",
-    "MouseMixin",
-    "KeyboardMixin",
-    "HeldItemMixin"
   ],
   "client": [
+    "WorldRenderMixin",
+    "HeldItemMixin",
+    "KeyboardMixin",
+    "MouseMixin",
+    "GameloopMixin",
+    "ClientPlayNetworkMixin"
   ],
   "injectors": {
     "defaultRequire": 1
