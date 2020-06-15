@@ -5,24 +5,31 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+import io.netty.buffer.Unpooled;
 import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.client.tablet.TabletOrder;
 import mcvmcomputers.item.OrderableItem;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 
 public class PacketList {
 	//Client-to-server
 	public static final Identifier C2S_ORDER = new Identifier("mcvmcomputers", "c2s_order");
 	public static final Identifier C2S_SCREEN = new Identifier("mcvmcomputers", "c2s_screen");
+	public static final Identifier C2S_TURN_ON_PC = new Identifier("mcvmcomputers", "c2s_turn_on_pc");
+	public static final Identifier C2S_TURN_OFF_PC = new Identifier("mcvmcomputers", "c2s_turn_off_pc");
 	
 	//Server-to-client
 	public static final Identifier S2C_SCREEN = new Identifier("mcvmcomputers", "s2c_screen");
@@ -79,6 +86,20 @@ public class PacketList {
 				TabletOrder to = new TabletOrder();
 				to.items = Arrays.asList(items);
 				MainMod.orders.put(packetContext.getPlayer().getUuid(), to);
+			});
+		});
+		
+		ServerSidePacketRegistry.INSTANCE.register(C2S_SCREEN, (packetContext, attachedData) -> {
+			byte[] screen = attachedData.readByteArray();
+			
+			packetContext.getTaskQueue().execute(() -> {
+				Stream<PlayerEntity> watchingPlayers = PlayerStream.watching(MainMod.computers.get(packetContext.getPlayer().getUuid()));
+				PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+				b.writeByteArray(screen);
+				b.writeUuid(packetContext.getPlayer().getUuid());
+				watchingPlayers.forEach((player) -> {
+					ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_SCREEN, b);
+				});
 			});
 		});
 	}
