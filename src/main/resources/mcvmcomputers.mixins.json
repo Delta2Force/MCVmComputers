@@ -6,7 +6,6 @@
   "mixins": [
   ],
   "client": [
-    "WorldRenderMixin",
     "HeldItemMixin",
     "KeyboardMixin",
     "MouseMixin",
