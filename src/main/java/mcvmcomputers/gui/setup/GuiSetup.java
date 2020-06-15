@@ -1,5 +1,6 @@
 package mcvmcomputers.gui.setup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,7 +65,8 @@ public class GuiSetup extends Screen{
 	@Override
 	public void init() {
 		if(!initialized) {
-			setupPages = Arrays.asList(new SetupPageIntroMessage(this, this.font));
+			setupPages = new ArrayList<>();
+			setupPages.add(new SetupPageIntroMessage(this, this.font));
 			if(SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_MAC) {
 				setupPages.add(new SetupPageVboxDirectory(this, this.font));
 			}
