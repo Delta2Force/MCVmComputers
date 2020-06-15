@@ -35,7 +35,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
 
-public class ClientInitializer implements ClientModInitializer{
+public class ClientMod implements ClientModInitializer{
 	public static final OutputStream discardAllBytes = new OutputStream() { @Override public void write(int b) throws IOException {} };
 	public static Map<UUID, Identifier> vmScreenTextures;
 	public static Map<UUID, NativeImage> vmScreenTextureNI;

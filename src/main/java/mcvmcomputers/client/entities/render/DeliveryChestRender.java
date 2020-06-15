@@ -3,7 +3,7 @@ package mcvmcomputers.client.entities.render;
 import java.awt.Color;
 import java.io.IOException;
 
-import mcvmcomputers.MainInitializer;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.client.entities.model.DeliveryChestModel;
 import mcvmcomputers.client.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.entities.EntityDeliveryChest;
@@ -25,7 +25,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 
-import static mcvmcomputers.ClientInitializer.*;
+import static mcvmcomputers.ClientMod.*;
 import static mcvmcomputers.utils.MVCUtils.*;
 
 public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
@@ -188,7 +188,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 						entity.rocketSound = null;
 					}
 				}
-				MainInitializer.currentOrder.entitySpawned = false;
+				MainInitializer.MainMod.entitySpawned = false;
 				entity.kill();
 			}
 		}

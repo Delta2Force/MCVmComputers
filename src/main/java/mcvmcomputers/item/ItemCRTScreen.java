@@ -1,6 +1,6 @@
 package mcvmcomputers.item;
 
-import mcvmcomputers.MainInitializer;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.entities.EntityCRTScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -22,19 +22,19 @@ public class ItemCRTScreen extends OrderableItem{
 		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
 			EntityCRTScreen ek = new EntityCRTScreen(world, 
-									MainInitializer.thePreviewEntity.getX(),
-									MainInitializer.thePreviewEntity.getY(),
-									MainInitializer.thePreviewEntity.getZ(),
+									MainMod.thePreviewEntity.getX(),
+									MainMod.thePreviewEntity.getY(),
+									MainMod.thePreviewEntity.getZ(),
 									new Vec3d(user.getPosVector().x,
-												MainInitializer.thePreviewEntity.getY(),
+												MainMod.thePreviewEntity.getY(),
 												user.getPosVector().z));
 			world.spawnEntity(ek);
 		}
 		
 		if(world.isClient) {
-			world.playSound(MainInitializer.thePreviewEntity.getX(),
-					MainInitializer.thePreviewEntity.getY(),
-					MainInitializer.thePreviewEntity.getZ(),
+			world.playSound(MainMod.thePreviewEntity.getX(),
+					MainMod.thePreviewEntity.getY(),
+					MainMod.thePreviewEntity.getZ(),
 					SoundEvents.BLOCK_METAL_PLACE,
 					SoundCategory.BLOCKS, 1, 1, true);
 		}

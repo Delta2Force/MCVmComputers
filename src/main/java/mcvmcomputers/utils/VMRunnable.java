@@ -1,6 +1,6 @@
 package mcvmcomputers.utils;
 
-import static mcvmcomputers.ClientInitializer.*;
+import static mcvmcomputers.ClientMod.*;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;

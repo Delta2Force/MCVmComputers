@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
-import mcvmcomputers.ClientInitializer;
-import mcvmcomputers.MainInitializer;
+import mcvmcomputers.ClientMod;
+import mcvmcomputers.MainMod;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.TranslatableText;
 
@@ -21,14 +21,14 @@ public class GuiFocus extends Screen{
 	
 	@Override
 	protected void init() {
-		ClientInitializer.releaseKeys = false;
+		ClientMod.releaseKeys = false;
 		
 		keyString = "";
 		
-		int[] unfocusKeys = new int[] {ClientInitializer.glfwUnfocusKey1,
-									   ClientInitializer.glfwUnfocusKey2,
-									   ClientInitializer.glfwUnfocusKey3,
-									   ClientInitializer.glfwUnfocusKey4};
+		int[] unfocusKeys = new int[] {ClientMod.glfwUnfocusKey1,
+									   ClientMod.glfwUnfocusKey2,
+									   ClientMod.glfwUnfocusKey3,
+									   ClientMod.glfwUnfocusKey4};
 
 		keys = new ArrayList<>();
 		for(int key : unfocusKeys) {
@@ -42,7 +42,7 @@ public class GuiFocus extends Screen{
 			if(plus) {
 				keyString += " + ";
 			}
-			keyString += ClientInitializer.getKeyName(key);
+			keyString += ClientMod.getKeyName(key);
 			plus = true;
 		}
 	}
@@ -57,11 +57,11 @@ public class GuiFocus extends Screen{
 		double mouseY = mY.get();
 		mX.clear();
 		mY.clear();
-		ClientInitializer.mouseCurX = mouseX;
-		ClientInitializer.mouseCurY = mouseY;
-		ClientInitializer.leftMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-		ClientInitializer.middleMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
-		ClientInitializer.rightMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+		ClientMod.mouseCurX = mouseX;
+		ClientMod.mouseCurY = mouseY;
+		ClientMod.leftMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+		ClientMod.middleMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
+		ClientMod.rightMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
 		
 		this.font.draw("Press " + keyString + " to lose focus", 4, 4, -1);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
@@ -83,7 +83,7 @@ public class GuiFocus extends Screen{
 	
 	@Override
 	public void removed() {
-		ClientInitializer.releaseKeys = true;
+		ClientMod.releaseKeys = true;
 	}
 	
 	@Override

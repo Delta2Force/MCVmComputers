@@ -42,7 +42,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 
-import static mcvmcomputers.ClientInitializer.*;
+import static mcvmcomputers.ClientMod.*;
 
 @Mixin(MinecraftClient.class)
 public class GameloopMixin {

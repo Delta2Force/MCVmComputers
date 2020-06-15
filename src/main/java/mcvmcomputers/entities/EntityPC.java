@@ -1,6 +1,6 @@
 package mcvmcomputers.entities;
 
-import mcvmcomputers.MainInitializer;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.client.gui.GuiPCEditing;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
@@ -171,7 +171,7 @@ public class EntityPC extends Entity{
 	@Override
 	public boolean interact(PlayerEntity player, Hand hand) {
 		if(!player.world.isClient) {
-			if(player.isSneaking() && MainInitializer.vmEntityID != this.getEntityId()) {
+			if(player.isSneaking() && MainMod.vmEntityID != this.getEntityId()) {
 				this.kill();
 				if(this.getGlassSidepanel()) {
 					player.world.spawnEntity(new ItemEntity(player.world,

@@ -6,8 +6,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import mcvmcomputers.ClientInitializer;
-import mcvmcomputers.MainInitializer;
+import mcvmcomputers.ClientMod;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemOrderingTablet;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -38,14 +38,14 @@ public class HeldItemMixin {
 					matrices.push();
 						matrices.translate(0, 0.1, 0.38);
 						matrices.multiply(new Quaternion(-90, 0, 0, true));
-						ClientInitializer.tabletOS.orderingTabletModel.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(new Identifier("mcvmcomputers", "textures/entity/tablet.png"))), light, OverlayTexture.DEFAULT_UV, 0, 0, 0, 1);
-						if(ClientInitializer.tabletOS.textureIdentifier != null) {
+						ClientMod.tabletOS.orderingTabletModel.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(new Identifier("mcvmcomputers", "textures/entity/tablet.png"))), light, OverlayTexture.DEFAULT_UV, 0, 0, 0, 1);
+						if(ClientMod.tabletOS.textureIdentifier != null) {
 							matrices.push();
 							matrices.scale(0.19f, 0.19f, 0.19f);
 							matrices.multiply(new Quaternion(-90, 0, 0, true));
 							matrices.translate(-1.65, -1.65, 7.57);
 							Matrix4f matrix4f = matrices.peek().getModel();
-							VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getText(ClientInitializer.tabletOS.textureIdentifier));
+							VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getText(ClientMod.tabletOS.textureIdentifier));
 							vertexConsumer.vertex(matrix4f, 0.0F, 3.3F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(15728640).next();
 					        vertexConsumer.vertex(matrix4f, 3.3F, 3.3F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(15728640).next();
 					        vertexConsumer.vertex(matrix4f, 3.3F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(15728640).next();

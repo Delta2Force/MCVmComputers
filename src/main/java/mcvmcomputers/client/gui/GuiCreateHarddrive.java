@@ -13,8 +13,8 @@ import org.virtualbox_6_1.IMedium;
 import org.virtualbox_6_1.IProgress;
 import org.virtualbox_6_1.MediumVariant;
 
-import mcvmcomputers.ClientInitializer;
-import mcvmcomputers.MainInitializer;
+import mcvmcomputers.ClientMod;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
 import net.minecraft.client.gui.screen.Screen;
@@ -62,7 +62,7 @@ public class GuiCreateHarddrive extends Screen{
 		}else {
 			int lastY = 60;
 			ArrayList<File> files = new ArrayList<>();
-			for(File f : ClientInitializer.vhdDirectory.listFiles()) {
+			for(File f : ClientMod.vhdDirectory.listFiles()) {
 				if(f.getName().endsWith(".vdi")) {
 					files.add(f);
 				}
@@ -102,10 +102,10 @@ public class GuiCreateHarddrive extends Screen{
 	private void createNew(ButtonWidget wdgt) {
 		if(!status.startsWith(COLOR_CHAR + "c")) {
 			Long size = Long.parseLong(hddSize.getText())*1024L*1024L;
-			int i = ClientInitializer.latestVHDNum;
-			File vhd = new File(ClientInitializer.vhdDirectory, "vhd" + i + ".vdi");
+			int i = ClientMod.latestVHDNum;
+			File vhd = new File(ClientMod.vhdDirectory, "vhd" + i + ".vdi");
 			
-			IMedium hdd = ClientInitializer.vb.createMedium("vdi", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
+			IMedium hdd = ClientMod.vb.createMedium("vdi", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
 			IProgress pr = hdd.createBaseStorage(size, Arrays.asList(MediumVariant.Standard));
 			pr.waitForCompletion(-1);
 			
@@ -115,7 +115,7 @@ public class GuiCreateHarddrive extends Screen{
 			spe.giveItemStack(it);
 			
 			try {
-				ClientInitializer.increaseVHDNum();
+				ClientMod.increaseVHDNum();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -125,7 +125,7 @@ public class GuiCreateHarddrive extends Screen{
 	}
 	
 	private void removevhd(String name) {
-		new File(ClientInitializer.vhdDirectory, name).delete();
+		new File(ClientMod.vhdDirectory, name).delete();
 		minecraft.openScreen(null);
 	}
 	

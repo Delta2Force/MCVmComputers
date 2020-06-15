@@ -1,6 +1,6 @@
 package mcvmcomputers.item;
 
-import mcvmcomputers.MainInitializer;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.entities.EntityMouse;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -22,19 +22,19 @@ public class ItemMouse extends OrderableItem{
 		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
 			EntityMouse ek = new EntityMouse(world, 
-								MainInitializer.thePreviewEntity.getX(),
-								MainInitializer.thePreviewEntity.getY(),
-								MainInitializer.thePreviewEntity.getZ(),
+								MainMod.thePreviewEntity.getX(),
+								MainMod.thePreviewEntity.getY(),
+								MainMod.thePreviewEntity.getZ(),
 								new Vec3d(user.getPosVector().x,
-											MainInitializer.thePreviewEntity.getY(),
+											MainMod.thePreviewEntity.getY(),
 											user.getPosVector().z));
 			world.spawnEntity(ek);
 		}
 		
 		if(world.isClient) {
-			world.playSound(MainInitializer.thePreviewEntity.getX(),
-					MainInitializer.thePreviewEntity.getY(),
-					MainInitializer.thePreviewEntity.getZ(),
+			world.playSound(MainMod.thePreviewEntity.getX(),
+					MainMod.thePreviewEntity.getY(),
+					MainMod.thePreviewEntity.getZ(),
 					SoundEvents.BLOCK_METAL_HIT,
 					SoundCategory.BLOCKS, 1, 1, true);
 		}

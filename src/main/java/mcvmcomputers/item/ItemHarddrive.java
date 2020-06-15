@@ -3,7 +3,7 @@ package mcvmcomputers.item;
 import java.io.File;
 import java.util.List;
 
-import mcvmcomputers.MainInitializer;
+import mcvmcomputers.MainMod;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -38,7 +38,7 @@ public class ItemHarddrive extends Item{
 			if(!contains) {
 				is.decrement(1);
 				user.giveItemStack(new ItemStack(ItemList.ITEM_NEW_HARDDRIVE));
-			}else if(!new File(MainInitializer.vhdDirectory, is.getTag().getString("vhdfile")).exists()) {
+			}else if(!new File(MainMod.vhdDirectory, is.getTag().getString("vhdfile")).exists()) {
 				is.decrement(1);
 				user.giveItemStack(new ItemStack(ItemList.ITEM_NEW_HARDDRIVE));
 			}
@@ -51,9 +51,9 @@ public class ItemHarddrive extends Item{
 		if(stack != null) {
 			if(stack.getTag() != null) {
 				if(stack.getTag().contains("vhdfile")) {
-					if(new File(MainInitializer.vhdDirectory, stack.getTag().getString("vhdfile")).exists()) {
+					if(new File(MainMod.vhdDirectory, stack.getTag().getString("vhdfile")).exists()) {
 						tooltip.add(new LiteralText("Hard drive file: " + stack.getTag().getString("vhdfile")).formatted(Formatting.GRAY));
-						tooltip.add(new LiteralText("Used size: " + ((float)new File(MainInitializer.vhdDirectory, stack.getTag().getString("vhdfile")).length())/1024f/1024f).formatted(Formatting.GRAY).append(" MB"));
+						tooltip.add(new LiteralText("Used size: " + ((float)new File(MainMod.vhdDirectory, stack.getTag().getString("vhdfile")).length())/1024f/1024f).formatted(Formatting.GRAY).append(" MB"));
 						return;
 					}else {
 						stack.getTag().remove("vhdfile");
@@ -69,7 +69,7 @@ public class ItemHarddrive extends Item{
 	public Text getName(ItemStack stack) {
 		if(stack.getTag() != null) {
 			if(stack.getTag().contains("vhdfile")) {
-				if(new File(MainInitializer.vhdDirectory, stack.getTag().getString("vhdfile")).exists()) {
+				if(new File(MainMod.vhdDirectory, stack.getTag().getString("vhdfile")).exists()) {
 					return new LiteralText("Hard Drive (").formatted(Formatting.WHITE).append(new LiteralText(stack.getTag().getString("vhdfile")).formatted(Formatting.GREEN).append(new LiteralText(")").formatted(Formatting.WHITE)));
 				}else {
 					stack.getTag().remove("vhdfile");

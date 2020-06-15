@@ -2,7 +2,7 @@ package mcvmcomputers.client.gui.setup.pages;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import static mcvmcomputers.ClientInitializer.*;
+import static mcvmcomputers.ClientMod.*;
 
 import mcvmcomputers.client.gui.setup.GuiSetup;
 

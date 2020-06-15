@@ -19,7 +19,7 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.glfw.GLFW;
 
-import mcvmcomputers.MainInitializer;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.client.entities.model.OrderingTabletModel;
 import mcvmcomputers.client.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.entities.EntityDeliveryChest;
@@ -454,7 +454,7 @@ public class TabletOS {
 			int satX = (int)(128 + (96*Math.cos((satelliteAngle*6.3)-1.65)));
 			int satY = (int)((190 + (32*Math.sin((satelliteAngle*6.3)-1.65)))-shopPy);
 			
-			if(MainInitializer.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON) {
+			if(MainInitializer.MainMod.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON) {
 				g2d.setFont(font.deriveFont(43f));
 				g2d.setColor(Color.white);
 				g2d.drawString("Payment chest", 32, 64-shopPy);
@@ -476,12 +476,12 @@ public class TabletOS {
 						this.drawChest = true;
 						this.chestX = satX+8;
 						this.chestY = satY+8;
-						MainInitializer.currentOrder.currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVED;
+						MainInitializer.MainMod.currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVED;
 					}
 				}else {
 					totalTimeRadar = 0;
 				}
-			}else if(MainInitializer.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
+			}else if(MainInitializer.MainMod.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
 				if(this.drawChest) {
 					g2d.setFont(font.deriveFont(43f));
 					g2d.setColor(Color.white);
@@ -505,10 +505,10 @@ public class TabletOS {
 					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 					
 					if(chestY > 187 && chestY < 191 && chestX > 126 && chestX < 130) {
-						if(mcc.world.isSkyVisible(mcc.player.getBlockPos()) && !MainInitializer.currentOrder.entitySpawned) {
+						if(mcc.world.isSkyVisible(mcc.player.getBlockPos()) && !MainInitializer.MainMod.entitySpawned) {
 							EntityDeliveryChest edc = new EntityDeliveryChest(mcc.getServer().getWorld(DimensionType.OVERWORLD), new Vec3d(mcc.player.getPos().x, mcc.player.getPos().y, mcc.player.getPos().z));
 							mcc.getServer().getWorld(DimensionType.OVERWORLD).spawnEntity(edc);
-							MainInitializer.currentOrder.entitySpawned = true;
+							MainInitializer.MainMod.entitySpawned = true;
 							this.drawChest = false;
 						}
 					}
@@ -527,8 +527,8 @@ public class TabletOS {
 					g2d.drawString("worry about the booster, it won't", 36, 118-shopPy);
 					g2d.drawString("kill you.", 36, 127-shopPy);
 				}
-			}else if(MainInitializer.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
-				if(!MainInitializer.currentOrder.entitySpawned) {
+			}else if(MainInitializer.MainMod.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
+				if(!MainInitializer.MainMod.entitySpawned) {
 					this.chestX = MVCUtils.lerp(chestX, satX+8, deltaTime);
 					this.chestY = MVCUtils.lerp(chestY, satY+8, deltaTime);
 				}
@@ -550,10 +550,10 @@ public class TabletOS {
 				g2d.drawString("We are receiving your payment.", 36, 100-shopPy);
 				
 				if(chestX > satX+6 && chestX < satX + 10 && chestY > satY+6 && chestY < satY+10) {
-					MainInitializer.currentOrder.currentStatus = OrderStatus.ORDER_CHEST_ARRIVAL_SOON;
+					MainInitializer.MainMod.currentStatus = OrderStatus.ORDER_CHEST_ARRIVAL_SOON;
 					totalTimeRadar = 0;
 				}
-			}else if(MainInitializer.currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVAL_SOON) {
+			}else if(MainInitializer.MainMod.currentStatus == OrderStatus.ORDER_CHEST_ARRIVAL_SOON) {
 				g2d.setFont(font.deriveFont(43f));
 				g2d.setColor(Color.white);
 				g2d.drawString("Ordered items", 34, 64-shopPy);
@@ -574,12 +574,12 @@ public class TabletOS {
 						this.drawChest = true;
 						this.chestX = satX+8;
 						this.chestY = satY+8;
-						MainInitializer.currentOrder.currentStatus = OrderStatus.ORDER_CHEST_ARRIVED;
+						MainInitializer.MainMod.currentStatus = OrderStatus.ORDER_CHEST_ARRIVED;
 					}
 				}else {
 					totalTimeRadar = 0;
 				}
-			}else if(MainInitializer.currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
+			}else if(MainInitializer.MainMod.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
 				if(this.drawChest) {
 					g2d.setFont(font.deriveFont(43f));
 					g2d.setColor(Color.white);
@@ -602,10 +602,10 @@ public class TabletOS {
 					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 					
 					if(chestY > 187 && chestY < 191 && chestX > 126 && chestX < 130) {
-						if(mcc.world.isSkyVisible(mcc.player.getBlockPos()) && !MainInitializer.currentOrder.entitySpawned) {
+						if(mcc.world.isSkyVisible(mcc.player.getBlockPos()) && !MainInitializer.MainMod.entitySpawned) {
 							EntityDeliveryChest edc = new EntityDeliveryChest(mcc.getServer().getWorld(DimensionType.OVERWORLD), new Vec3d(mcc.player.getPos().x, mcc.player.getPos().y, mcc.player.getPos().z));
 							mcc.getServer().getWorld(DimensionType.OVERWORLD).spawnEntity(edc);
-							MainInitializer.currentOrder.entitySpawned = true;
+							MainInitializer.MainMod.entitySpawned = true;
 							this.drawChest = false;
 						}
 					}
@@ -622,7 +622,7 @@ public class TabletOS {
 					g2d.drawString("Your items are at your location!", 36, 100-shopPy);
 					g2d.drawString("Collect your packages.", 36, 109-shopPy);
 				}
-			}else if(MainInitializer.currentOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
+			}else if(MainInitializer.MainMod.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
 				totalTimeRadar += deltaTime;
 				g2d.setColor(Color.white);
 				g2d.setFont(font.deriveFont(43f));
@@ -785,9 +785,9 @@ public class TabletOS {
 										sum += oi.getPrice();
 									}
 									
-									MainInitializer.currentOrder = new TabletOrder();
-									MainInitializer.currentOrder.items = this.shoppingCart.subList(0, this.shoppingCart.size());
-									MainInitializer.currentOrder.price = sum;
+									MainMod.currentOrder = new TabletOrder();
+									MainInitializer.MainMod.items = this.shoppingCart.subList(0, this.shoppingCart.size());
+									MainInitializer.MainMod.price = sum;
 									
 									tabletState = State.SHOP_OUTRO;
 									totalTimeRadar = 0;
