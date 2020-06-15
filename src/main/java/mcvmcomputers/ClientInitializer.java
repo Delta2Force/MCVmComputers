@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.lwjgl.glfw.GLFW;
 import org.virtualbox_6_1.ISession;
@@ -26,27 +27,19 @@ import mcvmcomputers.client.entities.render.PCRender;
 import mcvmcomputers.client.tablet.TabletOS;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.entities.EntityList;
+import mcvmcomputers.networking.PacketList;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Quaternion;
 
 public class ClientInitializer implements ClientModInitializer{
 	public static final OutputStream discardAllBytes = new OutputStream() { @Override public void write(int b) throws IOException {} };
-	public static Map<Integer, Identifier> vmScreenTextures;
-	public static NativeImage vmTextureNativeImage;
-	public static NativeImageBackedTexture vmTextureNIBT;
+	public static Map<UUID, Identifier> vmScreenTextures;
+	public static Map<UUID, NativeImage> vmScreenTextureNI;
+	public static Map<UUID, NativeImageBackedTexture> vmScreenTextureNIBT;
 	public static EntityItemPreview thePreviewEntity;
 	public static boolean vmTurnedOn;
 	public static boolean vmTurningOff;
@@ -145,9 +138,13 @@ public class ClientInitializer implements ClientModInitializer{
 	}
 	
 	public static void generatePCScreen() {
+		MinecraftClient mcc = MinecraftClient.getInstance();
+		if(mcc.player == null) {
+			return;
+		}
 		if(vmTextureBytes != null) {
-			if(vmScreenTextures.containsKey(0)) {
-				MinecraftClient.getInstance().getTextureManager().destroyTexture(vmScreenTextures.get(0));
+			if(vmScreenTextures.containsKey(mcc.player.getUuid())) {
+				MinecraftClient.getInstance().getTextureManager().destroyTexture(vmScreenTextures.get(mcc.player.getUuid()));
 			}
 			
 			NativeImage ni = null;
@@ -156,35 +153,22 @@ public class ClientInitializer implements ClientModInitializer{
 			} catch (IOException e) {
 			}
 			if(ni != null) {
-				vmTextureNativeImage.close();
-				vmTextureNIBT.close();
-				vmTextureNativeImage = ni;
-				vmTextureNIBT = new NativeImageBackedTexture(vmTextureNativeImage);
-				vmScreenTextures.put(0, MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("vm_texture", vmTextureNIBT));
+				vmScreenTextureNI.get(mcc.player.getUuid()).close();
+				vmScreenTextureNIBT.get(mcc.player.getUuid()).close();
+				vmScreenTextureNI.put(mcc.player.getUuid(), ni);
+				NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
+				vmScreenTextureNIBT.put(mcc.player.getUuid(), nibt);
+				vmScreenTextures.put(mcc.player.getUuid(), MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("vm_texture", nibt));
 			}
 			vmTextureBytes = null;
 		}
 	}
 	
-	public static void renderDisplay(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-		if(tabletOS.textureIdentifier != null) {
-			matrices.push();
-			matrices.scale(0.19f, 0.19f, 0.19f);
-			matrices.multiply(new Quaternion(-90, 0, 0, true));
-			matrices.translate(-1.65, -1.65, 7.57);
-			Matrix4f matrix4f = matrices.peek().getModel();
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getText(tabletOS.textureIdentifier));
-			vertexConsumer.vertex(matrix4f, 0.0F, 3.3F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(15728640).next();
-	        vertexConsumer.vertex(matrix4f, 3.3F, 3.3F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(15728640).next();
-	        vertexConsumer.vertex(matrix4f, 3.3F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(15728640).next();
-	        vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(15728640).next();
-	        matrices.pop();
-		}
-	}
-	
 	@Override
 	public void onInitializeClient() {
-		vmScreenTextures = new HashMap<Integer, Identifier>();
+		PacketList.registerClientPackets();
+		
+		vmScreenTextures = new HashMap<UUID, Identifier>();
 		
 		EntityRendererRegistry.INSTANCE.register(EntityList.ITEM_PREVIEW,
 				(entityRenderDispatcher, context) -> new ItemPreviewRender(entityRenderDispatcher));
