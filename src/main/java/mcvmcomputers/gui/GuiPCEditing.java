@@ -20,7 +20,7 @@ import org.virtualbox_6_1.VBoxException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import mcvmcomputers.MCVmComputersMod;
+import mcvmcomputers.MainInitializer;
 import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
@@ -323,7 +323,7 @@ public class GuiPCEditing extends Screen{
 		this.children.clear();
 		if(introScale > 0.99f) {
 			if(openCase) {
-				if((MCVmComputersMod.vmTurningOn || MCVmComputersMod.vmTurnedOn) && MCVmComputersMod.vmEntityID == pc_case.getEntityId()) {
+				if((MainInitializer.vmTurningOn || MainInitializer.vmTurnedOn) && MainInitializer.vmEntityID == pc_case.getEntityId()) {
 					openCase = false;
 				}
 				this.font.draw("Put panel back on: Right Ctrl", 4, 14, -1);
@@ -479,18 +479,18 @@ public class GuiPCEditing extends Screen{
 					this.addButton(sixtyfour);
 				}
 			}else {
-				boolean turnedOn = (MCVmComputersMod.vmTurningOn && MCVmComputersMod.vmEntityID == pc_case.getEntityId()) || (MCVmComputersMod.vmTurnedOn && MCVmComputersMod.vmEntityID == pc_case.getEntityId());
+				boolean turnedOn = (MainInitializer.vmTurningOn && MainInitializer.vmEntityID == pc_case.getEntityId()) || (MainInitializer.vmTurnedOn && MainInitializer.vmEntityID == pc_case.getEntityId());
 				if(turnedOn) {
 					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, "Turn off PC", (btn) -> this.turnOffPC(btn)));
 				}else {
 					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, "Turn on PC", (btn) -> this.turnOnPC(btn)));
 				}
 				
-				if(MCVmComputersMod.vmSession != null) {
+				if(MainInitializer.vmSession != null) {
 					boolean ejected = false;
 					
 					try {
-						ejected = MCVmComputersMod.vmSession.getMachine().getMediumAttachment("IDE Controller", 0, 0).getIsEjected();
+						ejected = MainInitializer.vmSession.getMachine().getMediumAttachment("IDE Controller", 0, 0).getIsEjected();
 					}catch(VBoxException e) {}
 					
 					if(ejected && !pc_case.getIsoFileName().isEmpty()) {
@@ -507,7 +507,7 @@ public class GuiPCEditing extends Screen{
 					RenderSystem.enableDepthTest();
 					int offX = 0;
 					int offY = 0;
-					for(File f : MCVmComputersMod.isoDirectory.listFiles()) {
+					for(File f : MainInitializer.isoDirectory.listFiles()) {
 						if(f.getName().endsWith(".iso")) {
 							if((this.width/2 - 75 + offX) + this.font.getStringWidth(f.getName())+10 > this.width/2 + 105) {
 								offX = 0;
@@ -549,9 +549,9 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	private void removeISO() {
-		if((MCVmComputersMod.vmTurningOn || MCVmComputersMod.vmTurnedOn) && MCVmComputersMod.vmEntityID == pc_case.getEntityId()) {
+		if((MainInitializer.vmTurningOn || MainInitializer.vmTurnedOn) && MainInitializer.vmEntityID == pc_case.getEntityId()) {
 			try {
-				MCVmComputersMod.vmSession.getMachine().unmountMedium("IDE Controller", 0, 0, true);
+				MainInitializer.vmSession.getMachine().unmountMedium("IDE Controller", 0, 0, true);
 			}catch(VBoxException ex) {}
 		}
 		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
@@ -559,9 +559,9 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	private void insertISO(String name) {
-		if((MCVmComputersMod.vmTurningOn || MCVmComputersMod.vmTurnedOn) && MCVmComputersMod.vmEntityID == pc_case.getEntityId()) {
-			IMedium m = MCVmComputersMod.vb.openMedium(new File(MCVmComputersMod.isoDirectory, name).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-			MCVmComputersMod.vmSession.getMachine().mountMedium("IDE Controller", 0, 0, m, true);
+		if((MainInitializer.vmTurningOn || MainInitializer.vmTurnedOn) && MainInitializer.vmEntityID == pc_case.getEntityId()) {
+			IMedium m = MainInitializer.vb.openMedium(new File(MainInitializer.isoDirectory, name).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+			MainInitializer.vmSession.getMachine().mountMedium("IDE Controller", 0, 0, m, true);
 		}
 		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
 		serverPCCase.setIsoFileName(name);
@@ -581,19 +581,19 @@ public class GuiPCEditing extends Screen{
 	
 	public void turnOffPC(ButtonWidget wdgt) {
 		//this.minecraft.openScreen(null);
-		MCVmComputersMod.vmTurningOff = true;
-		MCVmComputersMod.vmTurnedOn = false;
+		MainInitializer.vmTurningOff = true;
+		MainInitializer.vmTurnedOn = false;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while(MCVmComputersMod.vmTurningOn) {}
-				IProgress ip = MCVmComputersMod.vmSession.getConsole().powerDown();
+				while(MainInitializer.vmTurningOn) {}
+				IProgress ip = MainInitializer.vmSession.getConsole().powerDown();
 				ip.waitForCompletion(-1);
-				MCVmComputersMod.vmSession.unlockMachine();
-				MCVmComputersMod.vmSession = null;
-				MCVmComputersMod.vmTurnedOn = false;
-				MCVmComputersMod.vmTurningOff = false;
-				MCVmComputersMod.vmEntityID = -1;
+				MainInitializer.vmSession.unlockMachine();
+				MainInitializer.vmSession = null;
+				MainInitializer.vmTurnedOn = false;
+				MainInitializer.vmTurningOff = false;
+				MainInitializer.vmEntityID = -1;
 				
 			}
 		}, "Turn off PC").start();
@@ -601,23 +601,23 @@ public class GuiPCEditing extends Screen{
 	
 	public void turnOnPC(ButtonWidget wdgt) {
 		if(pc_case.getCpuDividedBy() > 0 && pc_case.getGpuInstalled() && pc_case.getMotherboardInstalled() && (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1()) >= 1) {
-			if(MCVmComputersMod.vmTurningOn || MCVmComputersMod.vmTurnedOn) {
+			if(MainInitializer.vmTurningOn || MainInitializer.vmTurnedOn) {
 				return;
 			}
 			//this.minecraft.openScreen(null);
-			MCVmComputersMod.vmTurningOn = true;
-			MCVmComputersMod.vmEntityID = pc_case.getEntityId();
+			MainInitializer.vmTurningOn = true;
+			MainInitializer.vmEntityID = pc_case.getEntityId();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					IMachine found = null;
 					try {
-						found = MCVmComputersMod.vb.findMachine("VmComputersVm");
+						found = MainInitializer.vb.findMachine("VmComputersVm");
 					}catch(VBoxException e) {}
 					
 					if(found != null) {
 						if(found.getState() == MachineState.Running) {
-							ISession sess = MCVmComputersMod.vbManager.getSessionObject();
+							ISession sess = MainInitializer.vbManager.getSessionObject();
 							found.lockMachine(sess, LockType.Shared);
 							IProgress ip = sess.getConsole().powerDown();
 							ip.waitForCompletion(-1);
@@ -630,32 +630,32 @@ public class GuiPCEditing extends Screen{
 					if(pc_case.get64Bit()) {
 						OSType += "_64";
 					}
-					IMachine machine = MCVmComputersMod.vb.createMachine("", "VmComputersVm", null, OSType, "forceOverwrite=1");
-					MCVmComputersMod.vb.registerMachine(machine);
-					ISession sess = MCVmComputersMod.vbManager.getSessionObject();
+					IMachine machine = MainInitializer.vb.createMachine("", "VmComputersVm", null, OSType, "forceOverwrite=1");
+					MainInitializer.vb.registerMachine(machine);
+					ISession sess = MainInitializer.vbManager.getSessionObject();
 					machine.lockMachine(sess, LockType.Write);
 					IMachine edit = sess.getMachine();
-					edit.setMemorySize((long) Math.min(MCVmComputersMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
-					edit.setCPUCount(MCVmComputersMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
+					edit.setMemorySize((long) Math.min(MainInitializer.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
+					edit.setCPUCount(MainInitializer.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
 					edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 					edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
-					edit.getGraphicsAdapter().setVRAMSize((long)MCVmComputersMod.videoMem);
+					edit.getGraphicsAdapter().setVRAMSize((long)MainInitializer.videoMem);
 					edit.addStorageController("SATA Controller", StorageBus.SATA);
 					edit.addStorageController("IDE Controller", StorageBus.IDE);
 					if(!pc_case.getHardDriveFileName().isEmpty()) {
-						if(new File(MCVmComputersMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
-							IMedium medium = MCVmComputersMod.vb.openMedium(new File(MCVmComputersMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
+						if(new File(MainInitializer.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
+							IMedium medium = MainInitializer.vb.openMedium(new File(MainInitializer.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
 							edit.attachDevice("SATA Controller", 0, 0, DeviceType.HardDisk, medium);
 						}
 					}
 					if(!pc_case.getIsoFileName().isEmpty()) {
-						if(new File(MCVmComputersMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
-							IMedium cd = MCVmComputersMod.vb.openMedium(new File(MCVmComputersMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+						if(new File(MainInitializer.isoDirectory, pc_case.getIsoFileName()).exists()) {
+							IMedium cd = MainInitializer.vb.openMedium(new File(MainInitializer.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
 							try {
 								edit.attachDevice("IDE Controller", 0, 0, DeviceType.DVD, cd);
 							}catch(VBoxException ex) {}
 						}else if(pc_case.getIsoFileName().equals("Additions")) {
-							IMedium cd = MCVmComputersMod.vb.openMedium(new File(MCVmComputersMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+							IMedium cd = MainInitializer.vb.openMedium(new File(MainInitializer.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
 							try {
 								edit.attachDevice("IDE Controller", 0, 0, DeviceType.DVD, cd);
 							}catch(VBoxException ex) {}
@@ -663,12 +663,12 @@ public class GuiPCEditing extends Screen{
 					}
 					edit.saveSettings();
 					sess.unlockMachine();
-					machine = MCVmComputersMod.vb.findMachine("VmComputersVm");
-					MCVmComputersMod.vmSession = MCVmComputersMod.vbManager.getSessionObject();
-					IProgress pr = machine.launchVMProcess(MCVmComputersMod.vmSession, "headless", Arrays.asList());
+					machine = MainInitializer.vb.findMachine("VmComputersVm");
+					MainInitializer.vmSession = MainInitializer.vbManager.getSessionObject();
+					IProgress pr = machine.launchVMProcess(MainInitializer.vmSession, "headless", Arrays.asList());
 					pr.waitForCompletion(-1);
-					MCVmComputersMod.vmTurningOn = false;
-					MCVmComputersMod.vmTurnedOn = true;
+					MainInitializer.vmTurningOn = false;
+					MainInitializer.vmTurnedOn = true;
 				}
 			}, "Turn on PC").start();
 		}

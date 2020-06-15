@@ -1,6 +1,6 @@
 package mcvmcomputers.item;
 
-import mcvmcomputers.MCVmComputersMod;
+import mcvmcomputers.MainInitializer;
 import mcvmcomputers.entities.EntityFlatScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -22,19 +22,19 @@ public class ItemFlatScreen extends OrderableItem{
 		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
 			EntityFlatScreen ek = new EntityFlatScreen(world, 
-									MCVmComputersMod.thePreviewEntity.getX(),
-									MCVmComputersMod.thePreviewEntity.getY(),
-									MCVmComputersMod.thePreviewEntity.getZ(),
+									MainInitializer.thePreviewEntity.getX(),
+									MainInitializer.thePreviewEntity.getY(),
+									MainInitializer.thePreviewEntity.getZ(),
 									new Vec3d(user.getPosVector().x,
-												MCVmComputersMod.thePreviewEntity.getY(),
+												MainInitializer.thePreviewEntity.getY(),
 												user.getPosVector().z));
 			world.spawnEntity(ek);
 		}
 		
 		if(world.isClient) {
-			world.playSound(MCVmComputersMod.thePreviewEntity.getX(),
-					MCVmComputersMod.thePreviewEntity.getY(),
-					MCVmComputersMod.thePreviewEntity.getZ(),
+			world.playSound(MainInitializer.thePreviewEntity.getX(),
+					MainInitializer.thePreviewEntity.getY(),
+					MainInitializer.thePreviewEntity.getZ(),
 					SoundEvents.BLOCK_METAL_PLACE,
 					SoundCategory.BLOCKS, 1, 1, true);
 		}

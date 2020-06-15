@@ -19,7 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "mcvmcomputers.MCVmComputersMod"
+      "mcvmcomputers.MainInitializer"
     ],
     "client": [
       "mcvmcomputers.ClientInitializer"

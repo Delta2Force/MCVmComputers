@@ -13,7 +13,7 @@ import org.virtualbox_6_1.IMedium;
 import org.virtualbox_6_1.IProgress;
 import org.virtualbox_6_1.MediumVariant;
 
-import mcvmcomputers.MCVmComputersMod;
+import mcvmcomputers.MainInitializer;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
 import net.minecraft.client.gui.screen.Screen;
@@ -61,7 +61,7 @@ public class GuiCreateHarddrive extends Screen{
 		}else {
 			int lastY = 60;
 			ArrayList<File> files = new ArrayList<>();
-			for(File f : MCVmComputersMod.vhdDirectory.listFiles()) {
+			for(File f : MainInitializer.vhdDirectory.listFiles()) {
 				if(f.getName().endsWith(".vdi")) {
 					files.add(f);
 				}
@@ -101,10 +101,10 @@ public class GuiCreateHarddrive extends Screen{
 	private void createNew(ButtonWidget wdgt) {
 		if(!status.startsWith(COLOR_CHAR + "c")) {
 			Long size = Long.parseLong(hddSize.getText())*1024L*1024L;
-			int i = MCVmComputersMod.latestVHDNum;
-			File vhd = new File(MCVmComputersMod.vhdDirectory, "vhd" + i + ".vdi");
+			int i = MainInitializer.latestVHDNum;
+			File vhd = new File(MainInitializer.vhdDirectory, "vhd" + i + ".vdi");
 			
-			IMedium hdd = MCVmComputersMod.vb.createMedium("vdi", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
+			IMedium hdd = MainInitializer.vb.createMedium("vdi", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
 			IProgress pr = hdd.createBaseStorage(size, Arrays.asList(MediumVariant.Standard));
 			pr.waitForCompletion(-1);
 			
@@ -114,7 +114,7 @@ public class GuiCreateHarddrive extends Screen{
 			spe.giveItemStack(it);
 			
 			try {
-				MCVmComputersMod.increaseVHDNum();
+				MainInitializer.increaseVHDNum();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -124,7 +124,7 @@ public class GuiCreateHarddrive extends Screen{
 	}
 	
 	private void removevhd(String name) {
-		new File(MCVmComputersMod.vhdDirectory, name).delete();
+		new File(MainInitializer.vhdDirectory, name).delete();
 		minecraft.openScreen(null);
 	}
 	

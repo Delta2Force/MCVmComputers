@@ -1,6 +1,6 @@
 package mcvmcomputers.utils;
 
-import static mcvmcomputers.MCVmComputersMod.*;
+import static mcvmcomputers.MainInitializer.*;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;

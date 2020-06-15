@@ -1,6 +1,6 @@
 package mcvmcomputers.entities;
 
-import mcvmcomputers.MCVmComputersMod;
+import mcvmcomputers.MainInitializer;
 import mcvmcomputers.item.ItemPackage;
 import mcvmcomputers.tablet.TabletOrder.OrderStatus;
 import net.minecraft.client.sound.SoundInstance;
@@ -56,10 +56,10 @@ public class EntityDeliveryChest extends Entity{
 		this.getDataTracker().set(TARGET_Z, (float)target.z);
 		this.updatePosition(target.x, target.y + 80, target.z - 80);
 		
-		if(MCVmComputersMod.currentOrder == null) {
+		if(MainInitializer.currentOrder == null) {
 			this.kill();
 		}else {
-			this.getDataTracker().set(DELIVERY_UUID, MCVmComputersMod.currentOrder.orderUUID);
+			this.getDataTracker().set(DELIVERY_UUID, MainInitializer.currentOrder.orderUUID);
 		}
 	}
 	
@@ -93,7 +93,7 @@ public class EntityDeliveryChest extends Entity{
 	@Override
 	public void tick() {
 		super.tick();
-		if(MCVmComputersMod.currentOrder == null || !MCVmComputersMod.currentOrder.orderUUID.equals(getDeliveryUUID())) {
+		if(MainInitializer.currentOrder == null || !MainInitializer.currentOrder.orderUUID.equals(getDeliveryUUID())) {
 			this.kill();
 		}
 	}
@@ -106,15 +106,15 @@ public class EntityDeliveryChest extends Entity{
 		if(hand == Hand.OFF_HAND) {
 			return false;
 		}
-		if(MCVmComputersMod.currentOrder != null) {
-			if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
+		if(MainInitializer.currentOrder != null) {
+			if(MainInitializer.currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
 				ItemStack is = player.getMainHandStack();
 				
 				boolean flag = false;
 				
 				if(is != null) {
 					if(is.getItem().equals(Items.IRON_INGOT)) {
-						MCVmComputersMod.currentOrder.price -= is.getCount();
+						MainInitializer.currentOrder.price -= is.getCount();
 						is.decrement(is.getCount());
 						flag = true;
 					}
@@ -123,18 +123,18 @@ public class EntityDeliveryChest extends Entity{
 				if(!flag) {
 					player.sendMessage(new LiteralText("You need to click the chest with ingots in your hand!").formatted(Formatting.RED));
 				}else {
-					if(MCVmComputersMod.currentOrder.price < 0) {
-						is.increment(MCVmComputersMod.currentOrder.price * -1);
-						MCVmComputersMod.currentOrder.currentStatus = OrderStatus.PAYMENT_CHEST_RECEIVING;
+					if(MainInitializer.currentOrder.price < 0) {
+						is.increment(MainInitializer.currentOrder.price * -1);
+						MainInitializer.currentOrder.currentStatus = OrderStatus.PAYMENT_CHEST_RECEIVING;
 					}
 				}
 				
 				return flag;
-			}else if(MCVmComputersMod.currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
-				player.world.spawnEntity(new ItemEntity(player.world, this.getX(), this.getY()+1.5, this.getZ(), ItemPackage.createPackage(Registry.ITEM.getId(MCVmComputersMod.currentOrder.items.get(0)))));
-				MCVmComputersMod.currentOrder.items.remove(0);
-				if(MCVmComputersMod.currentOrder.items.size() == 0) {
-					MCVmComputersMod.currentOrder.currentStatus = OrderStatus.ORDER_CHEST_RECEIVED;
+			}else if(MainInitializer.currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
+				player.world.spawnEntity(new ItemEntity(player.world, this.getX(), this.getY()+1.5, this.getZ(), ItemPackage.createPackage(Registry.ITEM.getId(MainInitializer.currentOrder.items.get(0)))));
+				MainInitializer.currentOrder.items.remove(0);
+				if(MainInitializer.currentOrder.items.size() == 0) {
+					MainInitializer.currentOrder.currentStatus = OrderStatus.ORDER_CHEST_RECEIVED;
 				}
 			}
 		}

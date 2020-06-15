@@ -3,7 +3,7 @@ package mcvmcomputers.gui.setup.pages;
 import java.io.File;
 import java.io.IOException;
 
-import mcvmcomputers.MCVmComputersMod;
+import mcvmcomputers.MainInitializer;
 import mcvmcomputers.gui.setup.GuiSetup;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;
@@ -31,16 +31,16 @@ public class SetupPageVMComputersDirectory extends SetupPage{
 	private void next(ButtonWidget bw) {
 		if(checkDirectory(vmComputersDirectory.getText())) {
 			File parent = new File(vmComputersDirectory.getText());
-			MCVmComputersMod.isoDirectory = new File(parent, "isos");
-			MCVmComputersMod.vhdDirectory = new File(parent, "vhds");
-			if(!MCVmComputersMod.isoDirectory.exists()) {
-				MCVmComputersMod.isoDirectory.mkdir();
+			MainInitializer.isoDirectory = new File(parent, "isos");
+			MainInitializer.vhdDirectory = new File(parent, "vhds");
+			if(!MainInitializer.isoDirectory.exists()) {
+				MainInitializer.isoDirectory.mkdir();
 			}
-			if(!MCVmComputersMod.vhdDirectory.exists()) {
-				MCVmComputersMod.vhdDirectory.mkdir();
+			if(!MainInitializer.vhdDirectory.exists()) {
+				MainInitializer.vhdDirectory.mkdir();
 			}
 			try {
-				MCVmComputersMod.getVHDNum();
+				MainInitializer.getVHDNum();
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -74,7 +74,7 @@ public class SetupPageVMComputersDirectory extends SetupPage{
 	@Override
 	public void init() {
 		next = new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, "Next", (bw) -> this.next(bw));
-		String dirText = MCVmComputersMod.vhdDirectory.getParentFile().getAbsolutePath();
+		String dirText = MainInitializer.vhdDirectory.getParentFile().getAbsolutePath();
 		if(vmComputersDirectory != null) {
 			dirText = vmComputersDirectory.getText();
 		}

@@ -42,7 +42,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
-public class MCVmComputersMod implements ModInitializer{
+public class MainInitializer implements ModInitializer{
 	public static final OutputStream discardAllBytes = new OutputStream() { @Override public void write(int b) throws IOException {} };
 	public static Identifier vmTextureIdentifier;
 	public static NativeImage vmTextureNativeImage;
@@ -107,35 +107,35 @@ public class MCVmComputersMod implements ModInitializer{
 	}
 	
 	public static void generatePCScreen() {
-		if(MCVmComputersMod.vmTextureBytes != null) {
+		if(MainInitializer.vmTextureBytes != null) {
 			if(vmTextureIdentifier != null) {
 				MinecraftClient.getInstance().getTextureManager().destroyTexture(vmTextureIdentifier);
 			}
 			
 			NativeImage ni = null;
 			try {
-				ni = NativeImage.read(MCVmComputersMod.vmTextureBytes);
+				ni = NativeImage.read(MainInitializer.vmTextureBytes);
 			} catch (IOException e) {
 			}
 			if(ni != null) {
-				MCVmComputersMod.vmTextureNativeImage.close();
-				MCVmComputersMod.vmTextureNIBT.close();
-				MCVmComputersMod.vmTextureNativeImage = ni;
-				MCVmComputersMod.vmTextureNIBT = new NativeImageBackedTexture(MCVmComputersMod.vmTextureNativeImage);
-				MCVmComputersMod.vmTextureIdentifier = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("vm_texture", MCVmComputersMod.vmTextureNIBT);
+				MainInitializer.vmTextureNativeImage.close();
+				MainInitializer.vmTextureNIBT.close();
+				MainInitializer.vmTextureNativeImage = ni;
+				MainInitializer.vmTextureNIBT = new NativeImageBackedTexture(MainInitializer.vmTextureNativeImage);
+				MainInitializer.vmTextureIdentifier = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("vm_texture", MainInitializer.vmTextureNIBT);
 			}
-			MCVmComputersMod.vmTextureBytes = null;
+			MainInitializer.vmTextureBytes = null;
 		}
 	}
 	
 	public static void renderDisplay(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-		if(MCVmComputersMod.tabletOS.textureIdentifier != null) {
+		if(MainInitializer.tabletOS.textureIdentifier != null) {
 			matrices.push();
 			matrices.scale(0.19f, 0.19f, 0.19f);
 			matrices.multiply(new Quaternion(-90, 0, 0, true));
 			matrices.translate(-1.65, -1.65, 7.57);
 			Matrix4f matrix4f = matrices.peek().getModel();
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getText(MCVmComputersMod.tabletOS.textureIdentifier));
+			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getText(MainInitializer.tabletOS.textureIdentifier));
 			vertexConsumer.vertex(matrix4f, 0.0F, 3.3F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(15728640).next();
 	        vertexConsumer.vertex(matrix4f, 3.3F, 3.3F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(15728640).next();
 	        vertexConsumer.vertex(matrix4f, 3.3F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(15728640).next();

@@ -7,7 +7,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
 import mcvmcomputers.ClientInitializer;
-import mcvmcomputers.MCVmComputersMod;
+import mcvmcomputers.MainInitializer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.TranslatableText;
 
@@ -21,7 +21,7 @@ public class GuiFocus extends Screen{
 	
 	@Override
 	protected void init() {
-		MCVmComputersMod.releaseKeys = false;
+		MainInitializer.releaseKeys = false;
 		
 		keyString = "";
 		
@@ -57,11 +57,11 @@ public class GuiFocus extends Screen{
 		double mouseY = mY.get();
 		mX.clear();
 		mY.clear();
-		MCVmComputersMod.mouseCurX = mouseX;
-		MCVmComputersMod.mouseCurY = mouseY;
-		MCVmComputersMod.leftMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-		MCVmComputersMod.middleMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
-		MCVmComputersMod.rightMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+		MainInitializer.mouseCurX = mouseX;
+		MainInitializer.mouseCurY = mouseY;
+		MainInitializer.leftMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+		MainInitializer.middleMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
+		MainInitializer.rightMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
 		
 		this.font.draw("Press " + keyString + " to lose focus", 4, 4, -1);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
@@ -83,7 +83,7 @@ public class GuiFocus extends Screen{
 	
 	@Override
 	public void removed() {
-		MCVmComputersMod.releaseKeys = true;
+		MainInitializer.releaseKeys = true;
 	}
 	
 	@Override

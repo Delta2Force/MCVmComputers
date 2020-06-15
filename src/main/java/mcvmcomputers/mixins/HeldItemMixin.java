@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import mcvmcomputers.MCVmComputersMod;
+import mcvmcomputers.MainInitializer;
 import mcvmcomputers.item.ItemOrderingTablet;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -35,8 +35,8 @@ public class HeldItemMixin {
 					matrices.push();
 						matrices.translate(0, 0.1, 0.38);
 						matrices.multiply(new Quaternion(-90, 0, 0, true));
-						MCVmComputersMod.tabletOS.orderingTabletModel.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(new Identifier("mcvmcomputers", "textures/entity/tablet.png"))), light, OverlayTexture.DEFAULT_UV, 0, 0, 0, 1);
-						MCVmComputersMod.renderDisplay(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
+						MainInitializer.tabletOS.orderingTabletModel.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(new Identifier("mcvmcomputers", "textures/entity/tablet.png"))), light, OverlayTexture.DEFAULT_UV, 0, 0, 0, 1);
+						MainInitializer.renderDisplay(player, tickDelta, pitch, hand, swingProgress, item, equipProgress, matrices, vertexConsumers, light);
 					matrices.pop();
 					matrices.push();
 						boolean b = hand == Hand.MAIN_HAND;
