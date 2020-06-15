@@ -9,6 +9,7 @@ import org.apache.commons.lang3.SystemUtils;
 import mcvmcomputers.gui.setup.pages.SetupPage;
 import mcvmcomputers.gui.setup.pages.SetupPageIntroMessage;
 import mcvmcomputers.gui.setup.pages.SetupPageMaxValues;
+import mcvmcomputers.gui.setup.pages.SetupPageUnfocusBinding;
 import mcvmcomputers.gui.setup.pages.SetupPageVMComputersDirectory;
 import mcvmcomputers.gui.setup.pages.SetupPageVboxDirectory;
 import mcvmcomputers.utils.MVCUtils;
@@ -71,6 +72,7 @@ public class GuiSetup extends Screen{
 				setupPages.add(new SetupPageVboxDirectory(this, this.font));
 			}
 			setupPages.add(new SetupPageVMComputersDirectory(this, this.font));
+			setupPages.add(new SetupPageUnfocusBinding(this, this.font));
 			setupPages.add(new SetupPageMaxValues(this, this.font));
 			currentSetupPage = setupPages.get(0);
 			initialized = true;

@@ -19,6 +19,41 @@ public class ClientInitializer implements ClientModInitializer{
 	public static int glfwUnfocusKey3 = GLFW.GLFW_KEY_BACKSPACE;
 	public static int glfwUnfocusKey4 = -1;
 	
+	public static String getKeyName(int key) {
+		if (key < 0) {
+			return "None";
+		}else {
+			return glfwKey(key);
+		}
+	}
+	
+	private static String glfwKey(int key) {
+		switch(key) {
+		case GLFW.GLFW_KEY_LEFT_CONTROL:
+			return "L Control";
+		case GLFW.GLFW_KEY_RIGHT_CONTROL:
+			return "R Control";
+		case GLFW.GLFW_KEY_RIGHT_ALT:
+			return "R Alt";
+		case GLFW.GLFW_KEY_LEFT_ALT:
+			return "L Alt";
+		case GLFW.GLFW_KEY_LEFT_SHIFT:
+			return "L Shift";
+		case GLFW.GLFW_KEY_RIGHT_SHIFT:
+			return "R Shift";
+		case GLFW.GLFW_KEY_ENTER:
+			return "Enter";
+		case GLFW.GLFW_KEY_BACKSPACE:
+			return "Backspace";
+		case GLFW.GLFW_KEY_CAPS_LOCK:
+			return "Caps Lock";
+		case GLFW.GLFW_KEY_TAB:
+			return "Tab";
+		default:
+			return GLFW.glfwGetKeyName(key, 0);
+		}
+	}
+	
 	@Override
 	public void onInitializeClient() {
 		EntityRendererRegistry.INSTANCE.register(EntityList.ITEM_PREVIEW,
