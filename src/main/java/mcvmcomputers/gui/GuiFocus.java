@@ -42,7 +42,7 @@ public class GuiFocus extends Screen{
 			if(plus) {
 				keyString += " + ";
 			}
-			keyString += GLFW.glfwGetKeyName(key, 0);
+			keyString += ClientInitializer.getKeyName(key);
 			plus = true;
 		}
 	}
