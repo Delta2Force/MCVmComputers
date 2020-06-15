@@ -194,7 +194,7 @@ public class GameloopMixin {
 				
 				for(ItemStack is : player.getItemsHand()) {
 					if(is.getItem() != null) {
-						if(ItemList.placableItems.contains(is.getItem())) {
+						if(ItemList.PLACABLE_ITEMS.contains(is.getItem())) {
 							if(thePreviewEntity != null) {
 								thePreviewEntity.setItem(is);
 								if(crosshairTarget != null) { 
