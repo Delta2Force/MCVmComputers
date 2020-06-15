@@ -22,8 +22,7 @@ public class ItemList {
 	public static final OrderableItem ITEM_MOTHERBOARD64 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 8);
 	public static final OrderableItem ITEM_FLATSCREEN = new ItemFlatScreen(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
 	public static final OrderableItem ITEM_CRTSCREEN = new ItemCRTScreen(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
-	public static final OrderableItem ITEM_NEW_HARDDRIVE = new ItemNewHarddrive(new Settings().group(MOD_ITEM_GROUP_PARTS));
-	public static final Item ITEM_HARDDRIVE = new ItemHarddrive(new Settings().rarity(Rarity.EPIC));
+	public static final OrderableItem ITEM_HARDDRIVE = new ItemHarddrive(new Settings().group(MOD_ITEM_GROUP_PARTS));
 	public static final OrderableItem ITEM_KEYBOARD = new ItemKeyboard(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
 	public static final OrderableItem ITEM_MOUSE = new ItemMouse(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
 	public static final OrderableItem ITEM_RAM1G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),2);
@@ -49,7 +48,6 @@ public class ItemList {
 		registerItem("motherboard64", ITEM_MOTHERBOARD64);
 		registerItem("flatscreen", ITEM_FLATSCREEN);
 		registerItem("crtscreen", ITEM_CRTSCREEN);
-		registerItem("new_harddrive", ITEM_NEW_HARDDRIVE);
 		registerItem("harddrive", ITEM_HARDDRIVE);
 		registerItem("keyboard", ITEM_KEYBOARD);
 		registerItem("mouse", ITEM_MOUSE);

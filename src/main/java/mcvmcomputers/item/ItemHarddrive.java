@@ -3,6 +3,7 @@ package mcvmcomputers.item;
 import java.io.File;
 import java.util.List;
 
+import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,10 +17,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class ItemHarddrive extends Item{
-
+public class ItemHarddrive extends OrderableItem{
 	public ItemHarddrive(Settings settings) {
-		super(settings);
+		super(settings, 6);
 	}
 	
 	@Override
@@ -29,19 +29,7 @@ public class ItemHarddrive extends Item{
 	
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		if(!world.isClient) {
-			ItemStack is = user.getStackInHand(hand);
-			boolean contains = false;
-			try {
-				contains = is.getTag().contains("vhdfile");
-			}catch(NullPointerException ex) {}
-			if(!contains) {
-				is.decrement(1);
-				user.giveItemStack(new ItemStack(ItemList.ITEM_NEW_HARDDRIVE));
-			}else if(!new File(MainMod.vhdDirectory, is.getTag().getString("vhdfile")).exists()) {
-				is.decrement(1);
-				user.giveItemStack(new ItemStack(ItemList.ITEM_NEW_HARDDRIVE));
-			}
+		if(world.isClient) {
 		}
 		return super.use(world, user, hand);
 	}

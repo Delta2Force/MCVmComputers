@@ -19,6 +19,7 @@ import org.virtualbox_6_1.LockType;
 import org.virtualbox_6_1.MachineState;
 import org.virtualbox_6_1.VBoxException;
 
+import mcvmcomputers.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.tablet.TabletOS;
 import mcvmcomputers.entities.EntityItemPreview;
@@ -38,6 +39,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
@@ -155,19 +157,6 @@ public class GameloopMixin {
 				
 				generatePCScreen();
 			}
-		}else {
-			if(vmTextureNativeImage != null) {
-				vmTextureNativeImage.close();
-				vmTextureNIBT.close();
-			}
-			NativeImage ni = new NativeImage(128, 128, true);
-			NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
-			vmTextureNativeImage = ni;
-			if(vmTextureIdentifier != null) {
-				MinecraftClient.getInstance().getTextureManager().destroyTexture(vmTextureIdentifier);
-			}
-			vmTextureIdentifier = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("vm_texture", nibt);
-			vmTextureNIBT = nibt;
 		}
 		
 		if(player != null) {
@@ -229,11 +218,14 @@ public class GameloopMixin {
 	@Inject(at = @At("HEAD"), method = "close")
 	private void close(CallbackInfo info) {
 		System.out.println("Stopping VM Computers Mod...");
-		if(vmTextureNativeImage != null) {
-			vmTextureNativeImage.close();
+		for(NativeImageBackedTexture nibt : vmScreenTextureNIBT.values()) {
+			nibt.close();
 		}
-		if(vmTextureNIBT != null) {
-			vmTextureNIBT.close();
+		for(NativeImage ni : vmScreenTextureNI.values()) {
+			ni.close();
+		}
+		for(Identifier i : vmScreenTextures.values()) {
+			MinecraftClient.getInstance().getTextureManager().destroyTexture(i);
 		}
 		if(vmUpdateThread != null) {
 			vmUpdateThread.interrupt();

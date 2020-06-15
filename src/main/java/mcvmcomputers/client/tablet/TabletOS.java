@@ -62,7 +62,7 @@ public class TabletOS {
 	private SoundInstance shopOutroSound;
 	private SoundInstance displayOrderMusicSound;
 	private ArrayList<OrderableItem> shoppingCart;
-	private static final List<OrderableItem> PC_PARTS = Arrays.asList(ItemList.PC_CASE, ItemList.PC_CASE_SIDEPANEL, ItemList.ITEM_MOTHERBOARD, ItemList.ITEM_MOTHERBOARD64, ItemList.ITEM_RAM1G, ItemList.ITEM_RAM2G, ItemList.ITEM_RAM4G, ItemList.ITEM_CPU2, ItemList.ITEM_CPU4, ItemList.ITEM_CPU6, ItemList.ITEM_GPU, ItemList.ITEM_NEW_HARDDRIVE);
+	private static final List<OrderableItem> PC_PARTS = Arrays.asList(ItemList.PC_CASE, ItemList.PC_CASE_SIDEPANEL, ItemList.ITEM_MOTHERBOARD, ItemList.ITEM_MOTHERBOARD64, ItemList.ITEM_RAM1G, ItemList.ITEM_RAM2G, ItemList.ITEM_RAM4G, ItemList.ITEM_CPU2, ItemList.ITEM_CPU4, ItemList.ITEM_CPU6, ItemList.ITEM_GPU, ItemList.ITEM_HARDDRIVE);
 	private static final List<OrderableItem> PERIPHERALS = Arrays.asList(ItemList.ITEM_KEYBOARD, ItemList.ITEM_MOUSE, ItemList.ITEM_CRTSCREEN, ItemList.ITEM_FLATSCREEN);
 	private BufferedImage lastShopImage;
 	
@@ -454,7 +454,7 @@ public class TabletOS {
 			int satX = (int)(128 + (96*Math.cos((satelliteAngle*6.3)-1.65)));
 			int satY = (int)((190 + (32*Math.sin((satelliteAngle*6.3)-1.65)))-shopPy);
 			
-			if(MainInitializer.MainMod.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON) {
+			if(MainMod.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON) {
 				g2d.setFont(font.deriveFont(43f));
 				g2d.setColor(Color.white);
 				g2d.drawString("Payment chest", 32, 64-shopPy);

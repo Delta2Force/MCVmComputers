@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.client.gui.GuiFocus;
 import mcvmcomputers.client.gui.setup.pages.SetupPageUnfocusBinding;
@@ -21,9 +22,9 @@ public class KeyboardMixin {
 	public void onKey(long window, int key, int scancode, int i, int j, CallbackInfo ci) {
 		MinecraftClient mcc = MinecraftClient.getInstance();
 		 if (window == mcc.getWindow().getHandle()) {
-			 if(MainMod.vmTurnedOn && mcc.currentScreen instanceof GuiFocus) {
+			 if(ClientMod.vmTurnedOn && mcc.currentScreen instanceof GuiFocus) {
 				 if(i != 2) {
-					 MainMod.vmKeyboardScancodes.addAll(KeyConverter.toVBKey(key, i));
+					 ClientMod.vmKeyboardScancodes.addAll(KeyConverter.toVBKey(key, i));
 				 }
 			 }else if(SetupPageUnfocusBinding.changeBinding) {
 				 if(i == GLFW.GLFW_PRESS) {
