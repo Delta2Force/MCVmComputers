@@ -1,6 +1,6 @@
 package mcvmcomputers.item;
 
-import mcvmcomputers.gui.GuiCreateHarddrive;
+import mcvmcomputers.client.gui.GuiCreateHarddrive;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

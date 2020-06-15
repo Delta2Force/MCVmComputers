@@ -1,7 +1,7 @@
 package mcvmcomputers.entities;
 
 import mcvmcomputers.MainInitializer;
-import mcvmcomputers.gui.GuiPCEditing;
+import mcvmcomputers.client.gui.GuiPCEditing;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
 import net.minecraft.client.MinecraftClient;

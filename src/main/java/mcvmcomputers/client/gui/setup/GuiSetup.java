@@ -1,4 +1,4 @@
-package mcvmcomputers.gui.setup;
+package mcvmcomputers.client.gui.setup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
 
-import mcvmcomputers.gui.setup.pages.SetupPage;
-import mcvmcomputers.gui.setup.pages.SetupPageIntroMessage;
-import mcvmcomputers.gui.setup.pages.SetupPageMaxValues;
-import mcvmcomputers.gui.setup.pages.SetupPageUnfocusBinding;
-import mcvmcomputers.gui.setup.pages.SetupPageVMComputersDirectory;
-import mcvmcomputers.gui.setup.pages.SetupPageVboxDirectory;
+import mcvmcomputers.client.gui.setup.pages.SetupPage;
+import mcvmcomputers.client.gui.setup.pages.SetupPageIntroMessage;
+import mcvmcomputers.client.gui.setup.pages.SetupPageMaxValues;
+import mcvmcomputers.client.gui.setup.pages.SetupPageUnfocusBinding;
+import mcvmcomputers.client.gui.setup.pages.SetupPageVMComputersDirectory;
+import mcvmcomputers.client.gui.setup.pages.SetupPageVboxDirectory;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;

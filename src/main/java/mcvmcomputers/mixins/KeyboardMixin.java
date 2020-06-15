@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import mcvmcomputers.MainInitializer;
-import mcvmcomputers.gui.GuiFocus;
-import mcvmcomputers.gui.setup.pages.SetupPageUnfocusBinding;
+import mcvmcomputers.client.gui.GuiFocus;
+import mcvmcomputers.client.gui.setup.pages.SetupPageUnfocusBinding;
 import mcvmcomputers.utils.KeyConverter;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;

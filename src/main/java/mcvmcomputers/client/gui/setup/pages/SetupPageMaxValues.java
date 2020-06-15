@@ -1,4 +1,4 @@
-package mcvmcomputers.gui.setup.pages;
+package mcvmcomputers.client.gui.setup.pages;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VirtualBoxManager;
 
 import mcvmcomputers.MainInitializer;
-import mcvmcomputers.gui.setup.GuiSetup;
+import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.TitleScreen;

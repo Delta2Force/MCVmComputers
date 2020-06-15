@@ -1,6 +1,6 @@
-package mcvmcomputers.gui.setup.pages;
+package mcvmcomputers.client.gui.setup.pages;
 
-import mcvmcomputers.gui.setup.GuiSetup;
+import mcvmcomputers.client.gui.setup.GuiSetup;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 

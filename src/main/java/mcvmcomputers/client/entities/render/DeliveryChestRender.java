@@ -1,13 +1,13 @@
-package mcvmcomputers.entities.render;
+package mcvmcomputers.client.entities.render;
 
 import java.awt.Color;
 import java.io.IOException;
 
 import mcvmcomputers.MainInitializer;
+import mcvmcomputers.client.entities.model.DeliveryChestModel;
+import mcvmcomputers.client.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.entities.EntityDeliveryChest;
-import mcvmcomputers.entities.model.DeliveryChestModel;
 import mcvmcomputers.sound.SoundList;
-import mcvmcomputers.tablet.TabletOrder.OrderStatus;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;

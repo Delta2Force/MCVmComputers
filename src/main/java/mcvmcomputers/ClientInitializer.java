@@ -2,14 +2,14 @@ package mcvmcomputers;
 
 import org.lwjgl.glfw.GLFW;
 
+import mcvmcomputers.client.entities.render.CRTScreenRender;
+import mcvmcomputers.client.entities.render.DeliveryChestRender;
+import mcvmcomputers.client.entities.render.FlatScreenRender;
+import mcvmcomputers.client.entities.render.ItemPreviewRender;
+import mcvmcomputers.client.entities.render.KeyboardRender;
+import mcvmcomputers.client.entities.render.MouseRender;
+import mcvmcomputers.client.entities.render.PCRender;
 import mcvmcomputers.entities.EntityList;
-import mcvmcomputers.entities.render.CRTScreenRender;
-import mcvmcomputers.entities.render.DeliveryChestRender;
-import mcvmcomputers.entities.render.FlatScreenRender;
-import mcvmcomputers.entities.render.ItemPreviewRender;
-import mcvmcomputers.entities.render.KeyboardRender;
-import mcvmcomputers.entities.render.MouseRender;
-import mcvmcomputers.entities.render.PCRender;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 

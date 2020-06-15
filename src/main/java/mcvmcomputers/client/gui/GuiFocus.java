@@ -1,4 +1,4 @@
-package mcvmcomputers.gui;
+package mcvmcomputers.client.gui;
 
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;

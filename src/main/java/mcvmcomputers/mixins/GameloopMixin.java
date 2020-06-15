@@ -19,11 +19,11 @@ import org.virtualbox_6_1.LockType;
 import org.virtualbox_6_1.MachineState;
 import org.virtualbox_6_1.VBoxException;
 
+import mcvmcomputers.client.gui.setup.GuiSetup;
+import mcvmcomputers.client.tablet.TabletOS;
 import mcvmcomputers.entities.EntityItemPreview;
-import mcvmcomputers.gui.setup.GuiSetup;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.ItemOrderingTablet;
-import mcvmcomputers.tablet.TabletOS;
 import mcvmcomputers.utils.VMRunnable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.FatalErrorScreen;

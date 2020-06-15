@@ -1,4 +1,4 @@
-package mcvmcomputers.gui;
+package mcvmcomputers.client.gui;
 
 import java.awt.Color;
 import java.io.File;

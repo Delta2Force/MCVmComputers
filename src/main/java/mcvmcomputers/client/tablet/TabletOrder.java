@@ -1,4 +1,4 @@
-package mcvmcomputers.tablet;
+package mcvmcomputers.client.tablet;
 
 import java.util.List;
 import java.util.UUID;

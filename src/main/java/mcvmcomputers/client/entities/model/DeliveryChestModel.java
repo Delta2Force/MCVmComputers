@@ -1,4 +1,4 @@
-package mcvmcomputers.entities.model;
+package mcvmcomputers.client.entities.model;
 
 import java.awt.Color;
 import java.io.IOException;

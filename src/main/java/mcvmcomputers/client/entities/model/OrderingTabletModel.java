@@ -1,4 +1,4 @@
-package mcvmcomputers.entities.model;
+package mcvmcomputers.client.entities.model;
 
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.model.ModelPart;

@@ -1,4 +1,4 @@
-package mcvmcomputers.entities.render;
+package mcvmcomputers.client.entities.render;
 
 import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.item.ItemList;

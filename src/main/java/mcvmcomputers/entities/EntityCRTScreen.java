@@ -1,6 +1,6 @@
 package mcvmcomputers.entities;
 
-import mcvmcomputers.gui.GuiFocus;
+import mcvmcomputers.client.gui.GuiFocus;
 import mcvmcomputers.item.ItemList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;

@@ -15,7 +15,7 @@ import org.virtualbox_6_1.ISession;
 import org.virtualbox_6_1.LockType;
 import org.virtualbox_6_1.MachineState;
 
-import mcvmcomputers.gui.GuiFocus;
+import mcvmcomputers.client.gui.GuiFocus;
 import net.minecraft.client.MinecraftClient;
 
 public class VMRunnable implements Runnable{

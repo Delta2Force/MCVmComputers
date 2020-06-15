@@ -1,4 +1,4 @@
-package mcvmcomputers.entities.render;
+package mcvmcomputers.client.entities.render;
 
 import mcvmcomputers.MainInitializer;
 import mcvmcomputers.entities.EntityCRTScreen;

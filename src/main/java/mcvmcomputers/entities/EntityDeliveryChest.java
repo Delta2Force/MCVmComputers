@@ -1,8 +1,8 @@
 package mcvmcomputers.entities;
 
 import mcvmcomputers.MainInitializer;
+import mcvmcomputers.client.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.item.ItemPackage;
-import mcvmcomputers.tablet.TabletOrder.OrderStatus;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

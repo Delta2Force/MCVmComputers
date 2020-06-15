@@ -1,9 +1,10 @@
-package mcvmcomputers.gui.setup.pages;
+package mcvmcomputers.client.gui.setup.pages;
 
-import mcvmcomputers.gui.setup.GuiSetup;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import static mcvmcomputers.ClientInitializer.*;
+
+import mcvmcomputers.client.gui.setup.GuiSetup;
 
 public class SetupPageUnfocusBinding extends SetupPage{
 	public static boolean changeBinding;

@@ -1,4 +1,4 @@
-package mcvmcomputers.tablet;
+package mcvmcomputers.client.tablet;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -20,13 +20,13 @@ import javax.imageio.ImageIO;
 import org.lwjgl.glfw.GLFW;
 
 import mcvmcomputers.MainInitializer;
+import mcvmcomputers.client.entities.model.OrderingTabletModel;
+import mcvmcomputers.client.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.entities.EntityDeliveryChest;
-import mcvmcomputers.entities.model.OrderingTabletModel;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.sound.TabletSoundInstance;
-import mcvmcomputers.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
