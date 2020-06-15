@@ -82,6 +82,20 @@ public class SetupPageMaxValues extends SetupPage{
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+		}else if(SystemUtils.IS_OS_MAC){
+			ProcessBuilder vboxConfig = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "/VBoxManage", "setproperty", "websrvauthlibrary", "null");
+			try {
+				vboxConfig.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+			ProcessBuilder vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "/vboxwebsrv", "--timeout", "0");
+			try {
+				MCVmComputersMod.vboxWebSrv = vboxWebSrv.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}else {
 			ProcessBuilder vboxConfig = new ProcessBuilder("vboxmanage", "setproperty", "websrvauthlibrary", "null");
 			try {

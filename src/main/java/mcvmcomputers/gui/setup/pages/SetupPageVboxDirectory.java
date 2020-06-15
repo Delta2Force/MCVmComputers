@@ -62,10 +62,6 @@ public class SetupPageVboxDirectory extends SetupPage{
 
 	@Override
 	public void init() {
-		if(!SystemUtils.IS_OS_WINDOWS) {
-			setupGui.nextPage();
-			return;
-		}
 		next = new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, "Next", (bw) -> this.next(bw));
 		String dirText = this.setupGui.virtualBoxDirectory;
 		if(vboxDirectory != null) {

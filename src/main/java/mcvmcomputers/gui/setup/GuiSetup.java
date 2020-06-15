@@ -1,7 +1,10 @@
 package mcvmcomputers.gui.setup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.lang3.SystemUtils;
 
 import mcvmcomputers.gui.setup.pages.SetupPage;
 import mcvmcomputers.gui.setup.pages.SetupPageIntroMessage;
@@ -19,10 +22,15 @@ public class GuiSetup extends Screen{
 	private int setupIndex;
 	private SetupPage currentSetupPage;
 	private boolean initialized = false;
-	public String virtualBoxDirectory = "C:\\Program Files\\Oracle\\VirtualBox";
+	public String virtualBoxDirectory;
 	
 	public GuiSetup() {
 		super(new LiteralText("Setup"));
+		if(SystemUtils.IS_OS_WINDOWS) {
+			virtualBoxDirectory = "C:\\Program Files\\Oracle\\VirtualBox";
+		}else if(SystemUtils.IS_OS_MAC) {
+			virtualBoxDirectory = "/Applications/VirtualBox.app/Contents/MacOS";
+		}
 	}
 	
 	public void addElement(Element e) {
@@ -57,7 +65,13 @@ public class GuiSetup extends Screen{
 	@Override
 	public void init() {
 		if(!initialized) {
-			setupPages = Arrays.asList(new SetupPageIntroMessage(this, this.font), new SetupPageVboxDirectory(this, this.font), new SetupPageVMComputersDirectory(this, this.font), new SetupPageMaxValues(this, this.font));
+			setupPages = new ArrayList<>();
+			setupPages.add(new SetupPageIntroMessage(this, this.font));
+			if(SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_MAC) {
+				setupPages.add(new SetupPageVboxDirectory(this, this.font));
+			}
+			setupPages.add(new SetupPageVMComputersDirectory(this, this.font));
+			setupPages.add(new SetupPageMaxValues(this, this.font));
 			currentSetupPage = setupPages.get(0);
 			initialized = true;
 		}
