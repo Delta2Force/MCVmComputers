@@ -24,5 +24,9 @@
     "mcvmcomputers.motherboard_not_present": "You need that Motherboard in your Inventory to do that!",
     "mcvmcomputers.cpu_not_present": "You need that CPU in your Inventory to do that!",
     "mcvmcomputers.gpu_not_present": "You need a GPU in your Inventory to do that!",
-    "mcvmcomputers.ram_not_present": "You need the sort of RAM you want to add in your Inventory to do that!"
+    "mcvmcomputers.ram_not_present": "You need the sort of RAM you want to add in your Inventory to do that!",
+    "key.mcvmcomputers.unfocuskey1": "Unfocus key combination: Key 1",
+    "key.mcvmcomputers.unfocuskey2": "Unfocus key combination: Key 2",
+    "key.mcvmcomputers.unfocuskey3": "Unfocus key combination: Key 3",
+    "key.mcvmcomputers.unfocuskey4": "Unfocus key combination: Key 4"
 }
