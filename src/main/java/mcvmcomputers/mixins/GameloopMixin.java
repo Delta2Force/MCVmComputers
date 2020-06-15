@@ -194,23 +194,20 @@ public class GameloopMixin {
 				
 				for(ItemStack is : player.getItemsHand()) {
 					if(is.getItem() != null) {
-						if(ItemList.placableItems.contains(is.getItem())) {
+						if(ItemList.PLACABLE_ITEMS.contains(is.getItem())) {
 							if(thePreviewEntity != null) {
 								thePreviewEntity.setItem(is);
 								if(crosshairTarget != null) { 
 									Vec3d hit = crosshairTarget.getPos();
 									thePreviewEntity.updatePosition(hit.x, hit.y, hit.z);
-									if(world.getEntityById(thePreviewEntity.getEntityId()) != null) {
-										world.getEntityById(thePreviewEntity.getEntityId()).updatePosition(hit.x, hit.y, hit.z);
-									}
 								}else {
 									break;
 								}
 							}else {
 								if(crosshairTarget != null) {
 									Vec3d hit = crosshairTarget.getPos();
-									thePreviewEntity = new EntityItemPreview(server.getWorld(DimensionType.OVERWORLD), hit.x, hit.y, hit.z, is);
-									this.server.getWorld(DimensionType.OVERWORLD).spawnEntity(thePreviewEntity);
+									thePreviewEntity = new EntityItemPreview(world, hit.x, hit.y, hit.z, is);
+									this.world.addEntity(Integer.MAX_VALUE-20,thePreviewEntity);
 								}
 							}
 						}else {
