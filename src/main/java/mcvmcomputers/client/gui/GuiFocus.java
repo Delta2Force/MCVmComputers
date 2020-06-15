@@ -21,7 +21,7 @@ public class GuiFocus extends Screen{
 	
 	@Override
 	protected void init() {
-		MainInitializer.releaseKeys = false;
+		ClientInitializer.releaseKeys = false;
 		
 		keyString = "";
 		
@@ -57,11 +57,11 @@ public class GuiFocus extends Screen{
 		double mouseY = mY.get();
 		mX.clear();
 		mY.clear();
-		MainInitializer.mouseCurX = mouseX;
-		MainInitializer.mouseCurY = mouseY;
-		MainInitializer.leftMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-		MainInitializer.middleMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
-		MainInitializer.rightMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+		ClientInitializer.mouseCurX = mouseX;
+		ClientInitializer.mouseCurY = mouseY;
+		ClientInitializer.leftMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+		ClientInitializer.middleMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
+		ClientInitializer.rightMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
 		
 		this.font.draw("Press " + keyString + " to lose focus", 4, 4, -1);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
@@ -83,7 +83,7 @@ public class GuiFocus extends Screen{
 	
 	@Override
 	public void removed() {
-		MainInitializer.releaseKeys = true;
+		ClientInitializer.releaseKeys = true;
 	}
 	
 	@Override

@@ -25,7 +25,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 
-import static mcvmcomputers.MainInitializer.*;
+import static mcvmcomputers.ClientInitializer.*;
 import static mcvmcomputers.utils.MVCUtils.*;
 
 public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{

@@ -3,6 +3,7 @@ package mcvmcomputers.client.gui.setup.pages;
 import java.io.File;
 import java.io.IOException;
 
+import mcvmcomputers.ClientInitializer;
 import mcvmcomputers.MainInitializer;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.utils.MVCUtils;
@@ -31,16 +32,16 @@ public class SetupPageVMComputersDirectory extends SetupPage{
 	private void next(ButtonWidget bw) {
 		if(checkDirectory(vmComputersDirectory.getText())) {
 			File parent = new File(vmComputersDirectory.getText());
-			MainInitializer.isoDirectory = new File(parent, "isos");
-			MainInitializer.vhdDirectory = new File(parent, "vhds");
-			if(!MainInitializer.isoDirectory.exists()) {
-				MainInitializer.isoDirectory.mkdir();
+			ClientInitializer.isoDirectory = new File(parent, "isos");
+			ClientInitializer.vhdDirectory = new File(parent, "vhds");
+			if(!ClientInitializer.isoDirectory.exists()) {
+				ClientInitializer.isoDirectory.mkdir();
 			}
-			if(!MainInitializer.vhdDirectory.exists()) {
-				MainInitializer.vhdDirectory.mkdir();
+			if(!ClientInitializer.vhdDirectory.exists()) {
+				ClientInitializer.vhdDirectory.mkdir();
 			}
 			try {
-				MainInitializer.getVHDNum();
+				ClientInitializer.getVHDNum();
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -74,7 +75,7 @@ public class SetupPageVMComputersDirectory extends SetupPage{
 	@Override
 	public void init() {
 		next = new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, "Next", (bw) -> this.next(bw));
-		String dirText = MainInitializer.vhdDirectory.getParentFile().getAbsolutePath();
+		String dirText = ClientInitializer.vhdDirectory.getParentFile().getAbsolutePath();
 		if(vmComputersDirectory != null) {
 			dirText = vmComputersDirectory.getText();
 		}

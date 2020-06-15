@@ -7,6 +7,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VirtualBoxManager;
 
+import mcvmcomputers.ClientInitializer;
 import mcvmcomputers.MainInitializer;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.utils.MVCUtils;
@@ -64,8 +65,8 @@ public class SetupPageMaxValues extends SetupPage{
 	}
 	
 	private void confirmButton(ButtonWidget in) {
-		if(MainInitializer.vboxWebSrv != null) {
-			MainInitializer.vboxWebSrv.destroy();
+		if(ClientInitializer.vboxWebSrv != null) {
+			ClientInitializer.vboxWebSrv.destroy();
 		}
 		
 		if(SystemUtils.IS_OS_WINDOWS) {
@@ -78,7 +79,7 @@ public class SetupPageMaxValues extends SetupPage{
 			
 			ProcessBuilder vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\vboxwebsrv.exe", "--timeout", "0");
 			try {
-				MainInitializer.vboxWebSrv = vboxWebSrv.start();
+				ClientInitializer.vboxWebSrv = vboxWebSrv.start();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -92,7 +93,7 @@ public class SetupPageMaxValues extends SetupPage{
 			
 			ProcessBuilder vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "/vboxwebsrv", "--timeout", "0");
 			try {
-				MainInitializer.vboxWebSrv = vboxWebSrv.start();
+				ClientInitializer.vboxWebSrv = vboxWebSrv.start();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -106,7 +107,7 @@ public class SetupPageMaxValues extends SetupPage{
 			
 			ProcessBuilder vboxWebSrv = new ProcessBuilder("vboxwebsrv", "--timeout", "0");
 			try {
-				MainInitializer.vboxWebSrv = vboxWebSrv.start();
+				ClientInitializer.vboxWebSrv = vboxWebSrv.start();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -114,7 +115,7 @@ public class SetupPageMaxValues extends SetupPage{
 		
 		Runnable runnable = new Runnable() {
 		    public void run() {
-		    	MainInitializer.vboxWebSrv.destroy();
+		    	ClientInitializer.vboxWebSrv.destroy();
 		    }
 		};
 		Runtime.getRuntime().addShutdownHook(new Thread(runnable));
@@ -127,8 +128,8 @@ public class SetupPageMaxValues extends SetupPage{
 		this.setupGui.clearElements();
 		this.setupGui.clearButtons();
 		onlyStatusMessage = true;
-		MainInitializer.maxRam = Integer.parseInt(maxRam.getText());
-		MainInitializer.videoMem = Integer.parseInt(videoMemory.getText());
+		ClientInitializer.maxRam = Integer.parseInt(maxRam.getText());
+		ClientInitializer.videoMem = Integer.parseInt(videoMemory.getText());
 		status = "All values valid. Attempting to start VirtualBox...";
 		new Thread(new Runnable() {
 			@Override
@@ -145,8 +146,8 @@ public class SetupPageMaxValues extends SetupPage{
 						}
 						status = MVCUtils.getColorChar('a') + "VirtualBox " + vb.getVersion() + " works!\n\n"+"Minecraft will start in " + i + " seconds.";
 					}
-					MainInitializer.vbManager = vm;
-					MainInitializer.vb = vb;
+					ClientInitializer.vbManager = vm;
+					ClientInitializer.vb = vb;
 					minecraft.openScreen(new TitleScreen());
 					return;
 				}catch(Exception ex) {
