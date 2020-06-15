@@ -28,7 +28,7 @@ public class GuiSetup extends Screen{
 		if(SystemUtils.IS_OS_WINDOWS) {
 			virtualBoxDirectory = "C:\\Program Files\\Oracle\\VirtualBox";
 		}else if(SystemUtils.IS_OS_MAC) {
-			virtualBoxDirectory = "Applications/VirtualBox.app/Contents/MacOS/";
+			virtualBoxDirectory = "/Applications/VirtualBox.app/Contents/MacOS";
 		}
 	}
 	
