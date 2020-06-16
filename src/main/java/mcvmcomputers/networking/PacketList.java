@@ -79,7 +79,7 @@ public class PacketList {
 						Inflater inf = new Inflater();
 						inf.setInput(screen);
 						byte[] actualScreen = new byte[dataSize];
-						inf.inflate(actualScreen);
+						inf.inflate(actualScreen); // java.util.zip.DataFormatException: invalid stored block lengths
 						NativeImage ni = NativeImage.read(new ByteArrayInputStream(actualScreen));
 						NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
 						ClientMod.vmScreenTextures.put(pcOwner, mcc.getTextureManager().registerDynamicTexture("pc_screen_mp", nibt));
