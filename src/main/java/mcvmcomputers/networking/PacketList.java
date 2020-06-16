@@ -2,7 +2,6 @@ package mcvmcomputers.networking;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -16,6 +15,7 @@ import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.utils.TabletOrder;
+import mcvmcomputers.utils.TabletOrder.OrderStatus;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.fabric.api.server.PlayerStream;
@@ -24,7 +24,6 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
@@ -41,6 +40,7 @@ public class PacketList {
 	//Server-to-client
 	public static final Identifier S2C_SCREEN = new Identifier("mcvmcomputers", "s2c_screen");
 	public static final Identifier S2C_STOP_SCREEN = new Identifier("mcvmcomputers", "s2c_stop_screen");
+	public static final Identifier S2C_SYNC_ORDER = new Identifier("mcvmcomputers", "s2c_sync_order");
 	
 	public static void registerClientPackets() {
 		ClientSidePacketRegistry.INSTANCE.register(S2C_SCREEN, (packetContext, attachedData) -> {
@@ -50,25 +50,26 @@ public class PacketList {
 			
 			packetContext.getTaskQueue().execute(() -> {
 				MinecraftClient mcc = MinecraftClient.getInstance();
-				if(ClientMod.vmScreenTextures.containsKey(pcOwner)) {
-					mcc.getTextureManager().destroyTexture(ClientMod.vmScreenTextures.get(pcOwner));
-					ClientMod.vmScreenTextureNI.get(pcOwner).close();
-					ClientMod.vmScreenTextureNIBT.get(pcOwner).close();
+				if(!pcOwner.equals(mcc.player.getUuid())) {
+					if(ClientMod.vmScreenTextures.containsKey(pcOwner)) {
+						mcc.getTextureManager().destroyTexture(ClientMod.vmScreenTextures.get(pcOwner));
+						ClientMod.vmScreenTextureNI.get(pcOwner).close();
+						ClientMod.vmScreenTextureNIBT.get(pcOwner).close();
+					}
+					try {
+						Inflater inf = new Inflater();
+						inf.setInput(screen);
+						byte[] actualScreen = new byte[dataSize];
+						inf.inflate(actualScreen);
+						NativeImage ni = NativeImage.read(new ByteArrayInputStream(actualScreen));
+						NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
+						ClientMod.vmScreenTextures.put(pcOwner, mcc.getTextureManager().registerDynamicTexture("pc_screen_mp", nibt));
+						ClientMod.vmScreenTextureNI.put(pcOwner, ni);
+						ClientMod.vmScreenTextureNIBT.put(pcOwner, nibt);
+					} catch (IOException | DataFormatException e) {
+						e.printStackTrace();
+					}
 				}
-				try {
-					Inflater inf = new Inflater();
-					inf.setInput(screen);
-					byte[] actualScreen = new byte[dataSize];
-					inf.inflate(actualScreen);
-					NativeImage ni = NativeImage.read(new ByteArrayInputStream(actualScreen));
-					NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
-					ClientMod.vmScreenTextures.put(pcOwner, mcc.getTextureManager().registerDynamicTexture("pc_screen_mp", nibt));
-					ClientMod.vmScreenTextureNI.put(pcOwner, ni);
-					ClientMod.vmScreenTextureNIBT.put(pcOwner, nibt);
-				} catch (IOException | DataFormatException e) {
-					e.printStackTrace();
-				}
-				
 			});
 		});
 		
@@ -84,19 +85,45 @@ public class PacketList {
 				}
 			});
 		});
+		
+		ClientSidePacketRegistry.INSTANCE.register(S2C_SYNC_ORDER, (packetContext, attachedData) -> {
+			int arraySize = attachedData.readInt();
+			OrderableItem[] arr = new OrderableItem[arraySize];
+			for(int i = 0;i<arraySize;i++) {
+				arr[i] = (OrderableItem) attachedData.readItemStack().getItem();
+			}
+			int price = attachedData.readInt();
+			OrderStatus status = OrderStatus.values()[attachedData.readInt()]; //send ordinal
+			
+			packetContext.getTaskQueue().execute(() -> {
+				if(ClientMod.myOrder == null) {
+					ClientMod.myOrder = new TabletOrder();
+				}
+				ClientMod.myOrder.price = price;
+				ClientMod.myOrder.items = Arrays.asList(arr);
+				ClientMod.myOrder.orderUUID = packetContext.getPlayer().getUuid().toString();
+				ClientMod.myOrder.currentStatus = status;
+			});
+		});
 	}
 	
 	public static void registerServerPackets() {
 		ServerSidePacketRegistry.INSTANCE.register(C2S_ORDER, (packetContext, attachedData) -> {
 			int arraySize = attachedData.readInt();
 			OrderableItem[] items = new OrderableItem[arraySize];
+			int price = 0;
 			for(int i = 0;i<arraySize;i++) {
 				items[i] = (OrderableItem) attachedData.readItemStack().getItem();
+				price += items[i].getPrice();
 			}
+			
+			final int pr = price;
 			
 			packetContext.getTaskQueue().execute(() -> {
 				TabletOrder to = new TabletOrder();
 				to.items = Arrays.asList(items);
+				to.price = pr;
+				to.orderUUID = packetContext.getPlayer().getUuid().toString();
 				MainMod.orders.put(packetContext.getPlayer().getUuid(), to);
 			});
 		});

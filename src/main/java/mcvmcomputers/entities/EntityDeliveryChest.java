@@ -2,11 +2,15 @@ package mcvmcomputers.entities;
 
 import java.util.UUID;
 
+import io.netty.buffer.Unpooled;
 import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemPackage;
+import mcvmcomputers.item.OrderableItem;
+import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.TabletOrder;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
@@ -24,6 +28,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -159,6 +164,16 @@ public class EntityDeliveryChest extends Entity{
 					}
 				}
 				
+				/*
+				PacketByteBuf pb = new PacketByteBuf(Unpooled.buffer());
+				pb.writeInt(to.items.size());
+				for(OrderableItem oi : to.items) {
+					pb.writeItemStack(new ItemStack(oi));
+				}
+				pb.writeInt(to.price);
+				pb.writeInt(to.currentStatus.ordinal());
+				ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, PacketList.S2C_SYNC_ORDER, pb);*/
+				
 				return flag;
 			}else if(to.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
 				player.world.spawnEntity(new ItemEntity(player.world, this.getX(), this.getY()+1.5, this.getZ(), ItemPackage.createPackage(Registry.ITEM.getId(to.items.get(0)))));
@@ -166,6 +181,16 @@ public class EntityDeliveryChest extends Entity{
 				if(to.items.size() == 0) {
 					to.currentStatus = OrderStatus.ORDER_CHEST_RECEIVED;
 				}
+				
+				/*
+				PacketByteBuf pb = new PacketByteBuf(Unpooled.buffer());
+				pb.writeInt(to.items.size());
+				for(OrderableItem oi : to.items) {
+					pb.writeItemStack(new ItemStack(oi));
+				}
+				pb.writeInt(to.price);
+				pb.writeInt(to.currentStatus.ordinal());
+				ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, PacketList.S2C_SYNC_ORDER, pb);*/
 			}
 		}
 		

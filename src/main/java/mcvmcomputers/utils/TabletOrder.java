@@ -10,7 +10,8 @@ public class TabletOrder {
 	public OrderStatus currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON;
 	public int price;
 	public boolean entitySpawned;
-	public final String orderUUID;
+	public String orderUUID;
+	public float tickCount;
 	
 	public TabletOrder() {
 		orderUUID = UUID.randomUUID().toString();

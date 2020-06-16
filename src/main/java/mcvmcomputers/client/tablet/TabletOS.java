@@ -21,9 +21,7 @@ import org.lwjgl.glfw.GLFW;
 
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.ClientMod;
-import mcvmcomputers.MainMod;
 import mcvmcomputers.client.entities.model.OrderingTabletModel;
-import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.networking.PacketList;
@@ -41,8 +39,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.dimension.DimensionType;
 
 public class TabletOS {
 	//Rendering variables
@@ -446,7 +442,6 @@ public class TabletOS {
 			if(!mcc.getSoundManager().isPlaying(displayOrderMusicSound) && tabletOn) {
 				mcc.getSoundManager().play(displayOrderMusicSound);
 			}
-			
 			if(ClientMod.myOrder != null) {
 				shopPy = MVCUtils.lerp(shopPy, 0, deltaTime*2);
 			}
@@ -711,11 +706,6 @@ public class TabletOS {
 								shoppingCart.remove(shopExtraIndex);
 							}else {
 								if(shoppingCart.size() > 0) {
-									int sum = 0;
-									for(OrderableItem oi : shoppingCart) {
-										sum += oi.getPrice();
-									}
-									
 									PacketByteBuf p = new PacketByteBuf(Unpooled.buffer());
 									p.writeInt(shoppingCart.size());
 									for(OrderableItem i : shoppingCart) {
