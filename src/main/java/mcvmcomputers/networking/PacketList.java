@@ -2,6 +2,7 @@ package mcvmcomputers.networking;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -140,7 +141,8 @@ public class PacketList {
 			
 			packetContext.getTaskQueue().execute(() -> {
 				TabletOrder to = new TabletOrder();
-				to.items = Arrays.asList(items);
+				to.items = new ArrayList<>();
+				to.items.addAll(Arrays.asList(items));
 				to.price = pr;
 				to.orderUUID = packetContext.getPlayer().getUuid().toString();
 				MainMod.orders.put(packetContext.getPlayer().getUuid(), to);
