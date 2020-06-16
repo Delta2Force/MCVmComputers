@@ -11,12 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.Deflater;
 
 import org.lwjgl.glfw.GLFW;
 import org.virtualbox_6_1.ISession;
 import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VirtualBoxManager;
 
+import io.netty.buffer.Unpooled;
 import mcvmcomputers.client.entities.render.CRTScreenRender;
 import mcvmcomputers.client.entities.render.DeliveryChestRender;
 import mcvmcomputers.client.entities.render.FlatScreenRender;
@@ -30,10 +32,12 @@ import mcvmcomputers.entities.EntityList;
 import mcvmcomputers.networking.PacketList;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 
 public class ClientMod implements ClientModInitializer{
 	public static final OutputStream discardAllBytes = new OutputStream() { @Override public void write(int b) throws IOException {} };
@@ -54,7 +58,8 @@ public class ClientMod implements ClientModInitializer{
 	
 	public static Process vboxWebSrv;
 	public static Thread vmUpdateThread;
-	public static ByteArrayInputStream vmTextureBytes;
+	public static byte[] vmTextureBytes;
+	public static int vmTextureBytesSize;
 	
 	public static double mouseLastX = 0;
 	public static double mouseLastY = 0;
@@ -147,9 +152,19 @@ public class ClientMod implements ClientModInitializer{
 				MinecraftClient.getInstance().getTextureManager().destroyTexture(vmScreenTextures.get(mcc.player.getUuid()));
 			}
 			
+			Deflater def = new Deflater();
+			def.setInput(vmTextureBytes);
+			byte[] deflated = new byte[vmTextureBytesSize];
+			def.deflate(deflated);
+			
+			PacketByteBuf p = new PacketByteBuf(Unpooled.buffer());
+			p.writeByteArray(deflated);
+			p.writeInt(vmTextureBytesSize);
+			ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
+			
 			NativeImage ni = null;
 			try {
-				ni = NativeImage.read(vmTextureBytes);
+				ni = NativeImage.read(new ByteArrayInputStream(vmTextureBytes));
 			} catch (IOException e) {
 			}
 			if(ni != null) {

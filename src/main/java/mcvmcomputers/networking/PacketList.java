@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Stream;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.ClientMod;
@@ -38,6 +40,7 @@ public class PacketList {
 	public static void registerClientPackets() {
 		ClientSidePacketRegistry.INSTANCE.register(S2C_SCREEN, (packetContext, attachedData) -> {
 			byte[] screen = attachedData.readByteArray();
+			int dataSize = attachedData.readInt();
 			UUID pcOwner = attachedData.readUuid();
 			
 			packetContext.getTaskQueue().execute(() -> {
@@ -48,12 +51,16 @@ public class PacketList {
 					ClientMod.vmScreenTextureNIBT.get(pcOwner).close();
 				}
 				try {
-					NativeImage ni = NativeImage.read(new ByteArrayInputStream(screen));
+					Inflater inf = new Inflater();
+					inf.setInput(screen);
+					byte[] actualScreen = new byte[dataSize];
+					inf.inflate(actualScreen);
+					NativeImage ni = NativeImage.read(new ByteArrayInputStream(actualScreen));
 					NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
 					ClientMod.vmScreenTextures.put(pcOwner, mcc.getTextureManager().registerDynamicTexture("pc_screen_mp", nibt));
 					ClientMod.vmScreenTextureNI.put(pcOwner, ni);
 					ClientMod.vmScreenTextureNIBT.put(pcOwner, nibt);
-				} catch (IOException e) {
+				} catch (IOException | DataFormatException e) {
 					e.printStackTrace();
 				}
 				
@@ -91,15 +98,19 @@ public class PacketList {
 		
 		ServerSidePacketRegistry.INSTANCE.register(C2S_SCREEN, (packetContext, attachedData) -> {
 			byte[] screen = attachedData.readByteArray();
+			int dataSize = attachedData.readInt();
 			
 			packetContext.getTaskQueue().execute(() -> {
-				Stream<PlayerEntity> watchingPlayers = PlayerStream.watching(MainMod.computers.get(packetContext.getPlayer().getUuid()));
-				PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-				b.writeByteArray(screen);
-				b.writeUuid(packetContext.getPlayer().getUuid());
-				watchingPlayers.forEach((player) -> {
-					ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_SCREEN, b);
-				});
+				if(MainMod.computers.containsKey(packetContext.getPlayer().getUuid())) {
+					Stream<PlayerEntity> watchingPlayers = PlayerStream.watching(MainMod.computers.get(packetContext.getPlayer().getUuid()));
+					PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+					b.writeByteArray(screen);
+					b.writeInt(dataSize);
+					b.writeUuid(packetContext.getPlayer().getUuid());
+					watchingPlayers.forEach((player) -> {
+						ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_SCREEN, b);
+					});
+				}
 			});
 		});
 	}

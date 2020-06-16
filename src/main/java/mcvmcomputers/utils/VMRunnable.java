@@ -83,7 +83,8 @@ public class VMRunnable implements Runnable{
 						continue;
 					}
 					ns.unlockMachine();
-					vmTextureBytes = new ByteArrayInputStream(image);
+					vmTextureBytesSize = image.length;
+					vmTextureBytes = image;
 			}catch(Exception ex) {} //TERRIBLE PRACTICE BTW
 		}
 	}
