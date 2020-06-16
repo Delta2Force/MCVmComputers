@@ -26,6 +26,9 @@ public class EntityFlatScreen extends Entity{
 	private static final TrackedData<Float> LOOK_AT_POS_Z =
 			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.FLOAT);
 	
+	private static final TrackedData<String> OWNER_UUID =
+			DataTracker.registerData(EntityCRTScreen.class, TrackedDataHandlerRegistry.STRING);
+	
 	public EntityFlatScreen(EntityType<?> type, World world) {
 		super(type, world);
 	}
@@ -35,12 +38,13 @@ public class EntityFlatScreen extends Entity{
 		this.updatePosition(x, y, z);
 	}
 	
-	public EntityFlatScreen(World world, double x, double y, double z, Vec3d lookAt) {
+	public EntityFlatScreen(World world, double x, double y, double z, Vec3d lookAt, String uuid) {
 		this(EntityList.FLATSCREEN, world);
 		this.updatePosition(x, y, z);
 		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
 		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);
 		this.getDataTracker().set(LOOK_AT_POS_Z, (float)lookAt.z);
+		this.getDataTracker().set(OWNER_UUID, uuid);
 	}
 	
 	public Vec3d getLookAtPos() {
@@ -52,6 +56,7 @@ public class EntityFlatScreen extends Entity{
 		this.getDataTracker().startTracking(LOOK_AT_POS_X, 0f);
 		this.getDataTracker().startTracking(LOOK_AT_POS_Y, 0f);
 		this.getDataTracker().startTracking(LOOK_AT_POS_Z, 0f);
+		this.getDataTracker().startTracking(OWNER_UUID, "");
 	}
 	@Override
 	protected void readCustomDataFromTag(CompoundTag tag) {
@@ -86,6 +91,10 @@ public class EntityFlatScreen extends Entity{
 	@Override
 	public boolean collides() {
 		return true;
+	}
+	
+	public String getOwnerUUID() {
+		return this.getDataTracker().get(OWNER_UUID);
 	}
 
 	@Override

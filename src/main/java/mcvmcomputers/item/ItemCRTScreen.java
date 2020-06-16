@@ -1,7 +1,6 @@
 package mcvmcomputers.item;
 
 import mcvmcomputers.ClientMod;
-import mcvmcomputers.MainMod;
 import mcvmcomputers.entities.EntityCRTScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -30,7 +29,7 @@ public class ItemCRTScreen extends OrderableItem{
 									hr.getPos().getZ(),
 									new Vec3d(user.getPosVector().x,
 												hr.getPos().getY(),
-												user.getPosVector().z));
+												user.getPosVector().z), user.getUuid().toString());
 			world.spawnEntity(ek);
 		}
 		

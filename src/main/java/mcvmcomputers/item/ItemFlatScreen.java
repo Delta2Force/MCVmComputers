@@ -29,7 +29,7 @@ public class ItemFlatScreen extends OrderableItem{
 										hr.getPos().getZ(),
 										new Vec3d(user.getPosVector().x,
 													hr.getPos().getY(),
-													user.getPosVector().z));
+													user.getPosVector().z), user.getUuid().toString());
 			world.spawnEntity(ek);
 		}
 		
