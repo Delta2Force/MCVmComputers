@@ -196,7 +196,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 		smokeParticle(entity.world, curPos, 6);
 		
 		Vec3d ground = new Vec3d(curPos.getX(), entity.world.getTopY(Type.MOTION_BLOCKING, (int)curPos.getX(), (int)curPos.getZ()), curPos.getZ());
-		double dist = ground.distanceTo(entity.getPosVector());
+		double dist = ground.distanceTo(curPos);
 		if(dist < 0) {
 			dist = -dist;
 		}
