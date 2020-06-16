@@ -14,6 +14,7 @@ import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.client.tablet.TabletOrder;
 import mcvmcomputers.entities.EntityPC;
+import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.OrderableItem;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
@@ -25,6 +26,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
@@ -32,6 +34,7 @@ public class PacketList {
 	//Client-to-server
 	public static final Identifier C2S_ORDER = new Identifier("mcvmcomputers", "c2s_order");
 	public static final Identifier C2S_SCREEN = new Identifier("mcvmcomputers", "c2s_screen");
+	public static final Identifier C2S_CHANGE_HDD = new Identifier("mcvmcomputers", "c2s_change_hdd");
 	public static final Identifier C2S_TURN_ON_PC = new Identifier("mcvmcomputers", "c2s_turn_on_pc");
 	public static final Identifier C2S_TURN_OFF_PC = new Identifier("mcvmcomputers", "c2s_turn_off_pc");
 	
@@ -136,6 +139,24 @@ public class PacketList {
 			packetContext.getTaskQueue().execute(() -> {
 				if(MainMod.computers.containsKey(packetContext.getPlayer().getUuid())) {
 					MainMod.computers.remove(packetContext.getPlayer().getUuid());
+				}
+			});
+		});
+		
+		ServerSidePacketRegistry.INSTANCE.register(C2S_CHANGE_HDD, (packetContext, attachedData) -> {
+			String newHddName = attachedData.readString();
+			
+			packetContext.getTaskQueue().execute(() -> {
+				for(ItemStack is : packetContext.getPlayer().getItemsHand()) {
+					if(is != null) {
+						if(is.getItem() instanceof ItemHarddrive) {
+							CompoundTag ct = is.getTag();
+							ct.putString("vhdfile", newHddName);
+							ct.putUuid("owner", packetContext.getPlayer().getUuid());
+							is.setTag(ct);
+							break;
+						}
+					}
 				}
 			});
 		});

@@ -13,16 +13,21 @@ import org.virtualbox_6_1.IMedium;
 import org.virtualbox_6_1.IProgress;
 import org.virtualbox_6_1.MediumVariant;
 
+import io.netty.buffer.Unpooled;
 import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
+import mcvmcomputers.networking.PacketList;
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.PacketByteBuf;
 
 public class GuiCreateHarddrive extends Screen{
 	private TextFieldWidget hddSize;
@@ -92,10 +97,9 @@ public class GuiCreateHarddrive extends Screen{
 	
 	private void selectOld(ButtonWidget wdgt) {
 		String fileName = wdgt.getMessage().split(" | ")[0];
-		ItemStack it = ItemHarddrive.createHardDrive(fileName);
-		ServerPlayerEntity spe = minecraft.getServer().getPlayerManager().getPlayerList().get(0);
-		spe.inventory.getInvStack(spe.inventory.getSlotWithStack(new ItemStack(ItemList.ITEM_NEW_HARDDRIVE))).decrement(1);
-		spe.giveItemStack(it);
+		PacketByteBuf pb = new PacketByteBuf(Unpooled.buffer());
+		pb.writeString(fileName);
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_CHANGE_HDD, pb);
 		minecraft.openScreen(null);
 	}
 	
@@ -109,17 +113,15 @@ public class GuiCreateHarddrive extends Screen{
 			IProgress pr = hdd.createBaseStorage(size, Arrays.asList(MediumVariant.Standard));
 			pr.waitForCompletion(-1);
 			
-			ItemStack it = ItemHarddrive.createHardDrive(vhd.getName());
-			ServerPlayerEntity spe = minecraft.getServer().getPlayerManager().getPlayerList().get(0);
-			spe.inventory.getInvStack(spe.inventory.getSlotWithStack(new ItemStack(ItemList.ITEM_NEW_HARDDRIVE))).decrement(1);
-			spe.giveItemStack(it);
-			
 			try {
 				ClientMod.increaseVHDNum();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
+			PacketByteBuf pb = new PacketByteBuf(Unpooled.buffer());
+			pb.writeString(vhd.getName());
+			ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_CHANGE_HDD, pb);
 			minecraft.openScreen(null);
 		}
 	}
