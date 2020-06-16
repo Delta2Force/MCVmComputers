@@ -30,7 +30,7 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 									hr.getPos().getZ(),
 									new Vec3d(user.getPosVector().x,
 												hr.getPos().getY(),
-												user.getPosVector().z), true);
+												user.getPosVector().z), user.getUuid(), true);
 			world.spawnEntity(ek);
 		}
 		

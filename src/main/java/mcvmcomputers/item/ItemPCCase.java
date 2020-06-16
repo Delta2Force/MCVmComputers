@@ -30,7 +30,7 @@ public class ItemPCCase extends OrderableItem{
 									hr.getPos().getZ(),
 									new Vec3d(user.getPosVector().x,
 												hr.getPos().getY(),
-												user.getPosVector().z));
+												user.getPosVector().z), user.getUuid());
 			world.spawnEntity(ek);
 			MainMod.computers.put(user.getUuid(), ek);
 		}
