@@ -36,20 +36,20 @@ public class ServerMixin {
 	protected void tick(CallbackInfo ci) {
 		for(TabletOrder order : MainMod.orders.values()) {
 			if(order.currentStatus == OrderStatus.ORDER_CHEST_ARRIVAL_SOON) {
-				order.tickCount +=tickTime;
-				if(order.tickCount > 20*10) {
+				order.tickCount += tickTime / 1000f;
+				if(order.tickCount > 5) {
 					order.currentStatus = OrderStatus.ORDER_CHEST_ARRIVED;
 					order.tickCount = 0;
 				}
 			}else if(order.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON) {
-				order.tickCount +=tickTime;
-				if(order.tickCount > 20*10) {
+				order.tickCount += tickTime / 1000f;
+				if(order.tickCount > 5) {
 					order.currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVED;
 					order.tickCount = 0;
 				}
 			}else if(order.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
-				order.tickCount +=tickTime;
-				if(order.tickCount > 20*5) {
+				order.tickCount += tickTime / 1000f;
+				if(order.tickCount > 0.25) {
 					MainMod.orders.remove(UUID.fromString(order.orderUUID));
 				}
 			}else if(order.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {

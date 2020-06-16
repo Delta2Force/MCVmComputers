@@ -121,9 +121,10 @@ public class EntityDeliveryChest extends Entity{
 				TabletOrder to = MainMod.orders.get(UUID.fromString(getDeliveryUUID()));
 				if(to.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING || to.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
 					this.getDataTracker().set(TAKING_OFF, true);
-					takeOffTime += this.getServer().getTickTime();
-					if(takeOffTime > 10f) {
+					takeOffTime += this.getServer().getTickTime() / 1000f;
+					if(takeOffTime > 1.5f) {
 						this.kill();
+						to.entitySpawned = false;
 						if(to.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
 							to.currentStatus = OrderStatus.ORDER_CHEST_ARRIVAL_SOON;
 						}
