@@ -80,8 +80,8 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 					@Override
 					public void tick() {
 						this.x = (float) entity.getX();
-						this.y = (float) entity.getY();
-						this.z = (float) entity.getZ();
+						this.y = (float) entity.getY() + entity.renderOffY;
+						this.z = (float) entity.getZ() + entity.renderOffZ;
 						
 						Vec3d v = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
 						double dist = v.distanceTo(mcc.player.getPos());
