@@ -471,8 +471,9 @@ public class GuiPCEditing extends Screen{
 				ClientMod.vmSession.getMachine().unmountMedium("IDE Controller", 0, 0, true);
 			}catch(VBoxException ex) {}
 		}
-		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-		serverPCCase.setIsoFileName("");
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_ISO, b);
 	}
 	
 	private void insertISO(String name) {
@@ -480,8 +481,10 @@ public class GuiPCEditing extends Screen{
 			IMedium m = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, name).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
 			ClientMod.vmSession.getMachine().mountMedium("IDE Controller", 0, 0, m, true);
 		}
-		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-		serverPCCase.setIsoFileName(name);
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeString(name);
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_ISO, b);
 	}
 	
 	public void turnOffPC(ButtonWidget wdgt) {
