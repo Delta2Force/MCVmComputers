@@ -37,22 +37,29 @@ public class ServerMixin {
 		for(TabletOrder order : MainMod.orders.values()) {
 			if(order.currentStatus == OrderStatus.ORDER_CHEST_ARRIVAL_SOON) {
 				order.tickCount +=tickTime;
-				if(order.tickCount > 10) {
+				if(order.tickCount > 20*10) {
 					order.currentStatus = OrderStatus.ORDER_CHEST_ARRIVED;
 					order.tickCount = 0;
 				}
 			}else if(order.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVAL_SOON) {
 				order.tickCount +=tickTime;
-				if(order.tickCount > 10) {
+				if(order.tickCount > 20*10) {
 					order.currentStatus = OrderStatus.PAYMENT_CHEST_ARRIVED;
 					order.tickCount = 0;
 				}
 			}else if(order.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
 				order.tickCount +=tickTime;
-				if(order.tickCount > 5) {
+				if(order.tickCount > 20*5) {
 					MainMod.orders.remove(UUID.fromString(order.orderUUID));
 				}
 			}else if(order.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
+				if(!order.entitySpawned) {
+					PlayerEntity p = playerManager.getPlayer(UUID.fromString(order.orderUUID));
+					World w = p.world;
+					w.spawnEntity(new EntityDeliveryChest(w, new Vec3d(p.getX(), p.getY(), p.getZ()), p.getUuid()));
+					order.entitySpawned = true;
+				}
+			}else if(order.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
 				if(!order.entitySpawned) {
 					PlayerEntity p = playerManager.getPlayer(UUID.fromString(order.orderUUID));
 					World w = p.world;
