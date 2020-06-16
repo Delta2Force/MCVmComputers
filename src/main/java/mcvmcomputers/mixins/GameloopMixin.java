@@ -104,10 +104,6 @@ public class GameloopMixin {
 			deltaTime = (float) diff / 1000f;
 		}
 		
-		if(this.currentScreen instanceof MultiplayerScreen) {
-			MinecraftClient.getInstance().openScreen(new FatalErrorScreen(new LiteralText("Vm Computers").formatted(Formatting.RED), "You can't play multiplayer with this mod installed."));
-		}
-		
 		if(tabletOS != null) {
 			tabletOS.generateTexture();
 		}else {
