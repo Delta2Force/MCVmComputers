@@ -65,6 +65,7 @@ public class PacketList {
 	public static void registerClientPackets() {
 		ClientSidePacketRegistry.INSTANCE.register(S2C_SCREEN, (packetContext, attachedData) -> {
 			byte[] screen = attachedData.readByteArray();
+			int compressedDataSize = attachedData.readInt();
 			int dataSize = attachedData.readInt();
 			UUID pcOwner = attachedData.readUuid();
 			
@@ -78,10 +79,10 @@ public class PacketList {
 					}
 					try {
 						Inflater inf = new Inflater();
-						inf.setInput(screen);
+						inf.setInput(screen, 0, compressedDataSize);
 						byte[] actualScreen = new byte[dataSize];
-						inf.inflate(actualScreen); // java.util.zip.DataFormatException: invalid stored block lengths
-						NativeImage ni = NativeImage.read(new ByteArrayInputStream(actualScreen));
+						int size = inf.inflate(actualScreen); // java.util.zip.DataFormatException: invalid stored block lengths
+						NativeImage ni = NativeImage.read(new ByteArrayInputStream(actualScreen, 0, size));
 						NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
 						ClientMod.vmScreenTextures.put(pcOwner, mcc.getTextureManager().registerDynamicTexture("pc_screen_mp", nibt));
 						ClientMod.vmScreenTextureNI.put(pcOwner, ni);
@@ -151,6 +152,7 @@ public class PacketList {
 		
 		ServerSidePacketRegistry.INSTANCE.register(C2S_SCREEN, (packetContext, attachedData) -> {
 			byte[] screen = attachedData.readByteArray();
+			int compressedDataSize = attachedData.readInt();
 			int dataSize = attachedData.readInt();
 			
 			packetContext.getTaskQueue().execute(() -> {
@@ -158,6 +160,7 @@ public class PacketList {
 					Stream<PlayerEntity> watchingPlayers = PlayerStream.watching(MainMod.computers.get(packetContext.getPlayer().getUuid()));
 					PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 					b.writeByteArray(screen);
+					b.writeInt(compressedDataSize);
 					b.writeInt(dataSize);
 					b.writeUuid(packetContext.getPlayer().getUuid());
 					watchingPlayers.forEach((player) -> {

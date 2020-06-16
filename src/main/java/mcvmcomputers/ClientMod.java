@@ -157,10 +157,11 @@ public class ClientMod implements ClientModInitializer{
 			Deflater def = new Deflater();
 			def.setInput(vmTextureBytes);
 			byte[] deflated = new byte[vmTextureBytesSize];
-			def.deflate(deflated);
+			int sz = def.deflate(deflated);
 			
 			PacketByteBuf p = new PacketByteBuf(Unpooled.buffer());
 			p.writeByteArray(deflated);
+			p.writeInt(sz);
 			p.writeInt(vmTextureBytesSize);
 			ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
 			
