@@ -5,9 +5,9 @@ import java.io.IOException;
 
 import mcvmcomputers.MainMod;
 import mcvmcomputers.client.entities.model.DeliveryChestModel;
-import mcvmcomputers.client.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.sound.SoundList;
+import mcvmcomputers.utils.TabletOrder.OrderStatus;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;

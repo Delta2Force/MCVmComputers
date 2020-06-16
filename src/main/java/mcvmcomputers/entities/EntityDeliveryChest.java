@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
-import mcvmcomputers.client.tablet.TabletOrder;
-import mcvmcomputers.client.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.item.ItemPackage;
+import mcvmcomputers.utils.TabletOrder;
+import mcvmcomputers.utils.TabletOrder.OrderStatus;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

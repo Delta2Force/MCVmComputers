@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import mcvmcomputers.client.tablet.TabletOrder;
 import mcvmcomputers.entities.EntityList;
 import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.sound.SoundList;
+import mcvmcomputers.utils.TabletOrder;
 import net.fabricmc.api.ModInitializer;
 
 public class MainMod implements ModInitializer{
