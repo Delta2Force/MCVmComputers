@@ -190,6 +190,8 @@ public class ClientMod implements ClientModInitializer{
 		PacketList.registerClientPackets();
 		
 		vmScreenTextures = new HashMap<UUID, Identifier>();
+		vmScreenTextureNI = new HashMap<UUID, NativeImage>();
+		vmScreenTextureNIBT = new HashMap<UUID, NativeImageBackedTexture>();
 		
 		EntityRendererRegistry.INSTANCE.register(EntityList.ITEM_PREVIEW,
 				(entityRenderDispatcher, context) -> new ItemPreviewRender(entityRenderDispatcher));

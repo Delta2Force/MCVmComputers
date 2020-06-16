@@ -2,6 +2,8 @@ package mcvmcomputers.mixins;
 
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,11 +28,20 @@ import net.minecraft.world.World;
 
 @Mixin(MinecraftServer.class)
 public class ServerMixin {
+	private static final Logger LOGGER = LogManager.getLogger();
+	
 	@Shadow
 	private float tickTime;
 	
 	@Shadow
 	private PlayerManager playerManager;
+	
+	@Inject(at = @At("HEAD"), method = "shutdown")
+	protected void shutdown(CallbackInfo ci) {
+		LOGGER.info("Stopping VM Computers");
+		MainMod.computers.clear();
+		MainMod.orders.clear();
+	}
 	
 	@Inject(at = @At("HEAD"), method = "tick")
 	protected void tick(CallbackInfo ci) {
