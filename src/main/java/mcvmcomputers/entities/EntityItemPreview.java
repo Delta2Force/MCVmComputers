@@ -1,5 +1,6 @@
 package mcvmcomputers.entities;
 
+import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -34,10 +35,12 @@ public class EntityItemPreview extends Entity{
 	
 	@Override
 	public void tick() {
-		if(!this.world.isClient) {
-			if(this != MainMod.thePreviewEntity) {
+		if(this.world.isClient) {
+			if(this != ClientMod.thePreviewEntity) {
 				this.kill();
 			}
+		}else {
+			this.kill();
 		}
 	}
 	

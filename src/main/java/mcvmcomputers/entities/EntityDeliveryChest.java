@@ -1,6 +1,10 @@
 package mcvmcomputers.entities;
 
+import java.util.UUID;
+
+import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.tablet.TabletOrder;
 import mcvmcomputers.client.tablet.TabletOrder.OrderStatus;
 import mcvmcomputers.item.ItemPackage;
 import net.minecraft.client.sound.SoundInstance;
@@ -40,6 +44,8 @@ public class EntityDeliveryChest extends Entity{
 	public float uLeg23Rot = -2.7f;
 	public float openingRot = 0f;
 	public float takeOffSpeed = 0f;
+	public float renderOffY = 80;
+	public float renderOffZ = -80;
 	public boolean fire = false;
 	public SoundInstance rocketSound;
 	
@@ -49,22 +55,17 @@ public class EntityDeliveryChest extends Entity{
 		super(type, world);
 	}
 	
-	public EntityDeliveryChest(World world, Vec3d target) {
+	public EntityDeliveryChest(World world, Vec3d target, UUID owner) {
 		super(EntityList.DELIVERY_CHEST, world);
 		this.getDataTracker().set(TARGET_X, (float)target.x);
 		this.getDataTracker().set(TARGET_Y, (float)target.y);
 		this.getDataTracker().set(TARGET_Z, (float)target.z);
-		this.updatePosition(target.x, target.y + 80, target.z - 80);
-		
-		if(MainMod.currentOrder == null) {
-			this.kill();
-		}else {
-			this.getDataTracker().set(DELIVERY_UUID, MainInitializer.MainMod.orderUUID);
-		}
+		this.getDataTracker().set(DELIVERY_UUID, owner.toString());
+		this.updatePosition(target.x, target.y, target.z);
 	}
 	
-	public EntityDeliveryChest(World world, double x, double y, double z) {
-		this(world, new Vec3d(x, y-80, z+80));
+	public EntityDeliveryChest(World world, UUID owner, double targetX, double targetY, double targetZ) {
+		this(world, new Vec3d(targetX, targetY, targetZ), owner);
 	}
 
 	@Override
@@ -93,8 +94,10 @@ public class EntityDeliveryChest extends Entity{
 	@Override
 	public void tick() {
 		super.tick();
-		if(MainMod.currentOrder == null || !MainInitializer.MainMod.orderUUID.equals(getDeliveryUUID())) {
-			this.kill();
+		if(!this.world.isClient) {
+			if(!MainMod.orders.containsKey(UUID.fromString(this.getDeliveryUUID()))) {
+				
+			}
 		}
 	}
 	
@@ -106,15 +109,16 @@ public class EntityDeliveryChest extends Entity{
 		if(hand == Hand.OFF_HAND) {
 			return false;
 		}
-		if(MainMod.currentOrder != null) {
-			if(MainInitializer.MainMod.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
+		if(player.getUuid().toString().equals(getDeliveryUUID())) {
+			TabletOrder to = MainMod.orders.get(UUID.fromString(getDeliveryUUID()));
+			if(to.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED) {
 				ItemStack is = player.getMainHandStack();
 				
 				boolean flag = false;
 				
 				if(is != null) {
 					if(is.getItem().equals(Items.IRON_INGOT)) {
-						MainInitializer.MainMod.price -= is.getCount();
+						to.price -= is.getCount();
 						is.decrement(is.getCount());
 						flag = true;
 					}
@@ -123,18 +127,20 @@ public class EntityDeliveryChest extends Entity{
 				if(!flag) {
 					player.sendMessage(new LiteralText("You need to click the chest with ingots in your hand!").formatted(Formatting.RED));
 				}else {
-					if(MainInitializer.MainMod.price < 0) {
-						is.increment(MainInitializer.MainMod.price * -1);
-						MainInitializer.MainMod.currentStatus = OrderStatus.PAYMENT_CHEST_RECEIVING;
+					if(to.price < 0) {
+						is.increment(to.price * -1);
+						to.currentStatus = OrderStatus.PAYMENT_CHEST_RECEIVING;
+					}else if(to.price == 0) {
+						to.currentStatus = OrderStatus.PAYMENT_CHEST_RECEIVING;
 					}
 				}
 				
 				return flag;
-			}else if(MainInitializer.MainMod.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
-				player.world.spawnEntity(new ItemEntity(player.world, this.getX(), this.getY()+1.5, this.getZ(), ItemPackage.createPackage(Registry.ITEM.getId(MainInitializer.MainMod.items.get(0)))));
-				MainInitializer.MainMod.items.remove(0);
-				if(MainInitializer.MainMod.items.size() == 0) {
-					MainInitializer.MainMod.currentStatus = OrderStatus.ORDER_CHEST_RECEIVED;
+			}else if(to.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
+				player.world.spawnEntity(new ItemEntity(player.world, this.getX(), this.getY()+1.5, this.getZ(), ItemPackage.createPackage(Registry.ITEM.getId(to.items.get(0)))));
+				to.items.remove(0);
+				if(to.items.size() == 0) {
+					to.currentStatus = OrderStatus.ORDER_CHEST_RECEIVED;
 				}
 			}
 		}
