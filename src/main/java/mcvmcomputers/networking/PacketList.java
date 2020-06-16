@@ -13,6 +13,7 @@ import io.netty.buffer.Unpooled;
 import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.client.tablet.TabletOrder;
+import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.item.OrderableItem;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
@@ -20,6 +21,7 @@ import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -110,6 +112,30 @@ public class PacketList {
 					watchingPlayers.forEach((player) -> {
 						ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_SCREEN, b);
 					});
+				}
+			});
+		});
+		
+		ServerSidePacketRegistry.INSTANCE.register(C2S_TURN_ON_PC, (packetContext, attachedData) -> {
+			int pcEntityId = attachedData.readInt();
+			
+			packetContext.getTaskQueue().execute(() -> {
+				Entity e = packetContext.getPlayer().world.getEntityById(pcEntityId);
+				if(e != null) {
+					if(e instanceof EntityPC) {
+						EntityPC pc = (EntityPC) e;
+						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
+							MainMod.computers.put(packetContext.getPlayer().getUuid(), (EntityPC) e);
+						}
+					}
+				}
+			});
+		});
+		
+		ServerSidePacketRegistry.INSTANCE.register(C2S_TURN_OFF_PC, (packetContext, attachedData) -> {
+			packetContext.getTaskQueue().execute(() -> {
+				if(MainMod.computers.containsKey(packetContext.getPlayer().getUuid())) {
+					MainMod.computers.remove(packetContext.getPlayer().getUuid());
 				}
 			});
 		});
