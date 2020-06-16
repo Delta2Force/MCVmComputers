@@ -45,36 +45,13 @@ public class ItemHarddrive extends OrderableItem{
 	}
 	
 	@Override
-	public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
-		if(stack != null) {
-			if(stack.getTag() != null) {
-				if(stack.getTag().contains("vhdfile")) {
-					if(new File(MainMod.vhdDirectory, stack.getTag().getString("vhdfile")).exists()) {
-						tooltip.add(new LiteralText("Hard drive file: " + stack.getTag().getString("vhdfile")).formatted(Formatting.GRAY));
-						tooltip.add(new LiteralText("Used size: " + ((float)new File(MainMod.vhdDirectory, stack.getTag().getString("vhdfile")).length())/1024f/1024f).formatted(Formatting.GRAY).append(" MB"));
-						return;
-					}else {
-						stack.getTag().remove("vhdfile");
-					}
-				}
-			}
-		}
-		tooltip.add(new LiteralText("Invalid item, right click with item").formatted(Formatting.RED));
-		tooltip.add(new LiteralText("in hand to get new hard drive").formatted(Formatting.RED));
-	}
-	
-	@Override
 	public Text getName(ItemStack stack) {
 		if(stack.getTag() != null) {
 			if(stack.getTag().contains("vhdfile")) {
-				if(new File(MainMod.vhdDirectory, stack.getTag().getString("vhdfile")).exists()) {
-					return new LiteralText("Hard Drive (").formatted(Formatting.WHITE).append(new LiteralText(stack.getTag().getString("vhdfile")).formatted(Formatting.GREEN).append(new LiteralText(")").formatted(Formatting.WHITE)));
-				}else {
-					stack.getTag().remove("vhdfile");
-				}
+				return new LiteralText("Hard Drive (").formatted(Formatting.WHITE).append(new LiteralText(stack.getTag().getString("vhdfile")).formatted(Formatting.GREEN).append(new LiteralText(")").formatted(Formatting.WHITE)));
 			}
 		}
-		return new LiteralText("Hard Drive (").formatted(Formatting.WHITE).append(new LiteralText("Invalid").formatted(Formatting.RED).append(new LiteralText(")").formatted(Formatting.WHITE)));
+		return new LiteralText("Hard Drive (").formatted(Formatting.WHITE).append(new LiteralText("Right click").formatted(Formatting.GRAY).append(new LiteralText(")").formatted(Formatting.WHITE)));
 	}
 	
 	public static ItemStack createHardDrive(String fileName) {
