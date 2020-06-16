@@ -20,11 +20,14 @@ import org.virtualbox_6_1.VBoxException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import io.netty.buffer.Unpooled;
 import mcvmcomputers.ClientMod;
 import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
+import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.MVCUtils;
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -38,7 +41,10 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.dimension.DimensionType;
 
 public class GuiPCEditing extends Screen{
@@ -157,157 +163,66 @@ public class GuiPCEditing extends Screen{
 	
 	
 	private void addMotherboard(boolean sixtyFour) {
-		PlayerEntity serverPlayer = this.minecraft.getServer().getPlayerManager().getPlayerList().get(0);
-		if(!sixtyFour) {
-			if(serverPlayer.inventory.contains(new ItemStack(ItemList.ITEM_MOTHERBOARD))) {
-				serverPlayer.inventory.getInvStack(serverPlayer.inventory.getSlotWithStack(new ItemStack(ItemList.ITEM_MOTHERBOARD))).decrement(1);
-				EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-				serverPCCase.setMotherboardInstalled(true);
-				serverPCCase.set64Bit(false);
-			}else {
-				serverPlayer.sendMessage(new TranslatableText("mcvmcomputers.motherboard_not_present"));
-			}
-		}else {
-			if(serverPlayer.inventory.contains(new ItemStack(ItemList.ITEM_MOTHERBOARD64))) {
-				serverPlayer.inventory.getInvStack(serverPlayer.inventory.getSlotWithStack(new ItemStack(ItemList.ITEM_MOTHERBOARD64))).decrement(1);
-				EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-				serverPCCase.setMotherboardInstalled(true);
-				serverPCCase.set64Bit(true);
-			}else {
-				serverPlayer.sendMessage(new TranslatableText("mcvmcomputers.motherboard_not_present"));
-			}
-		}
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeBoolean(sixtyFour);
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_MOBO, b);
 	}
 	
 	private void removeMotherboard() {
-		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-		if(pc_case.getMotherboardInstalled()) {
-			if(pc_case.get64Bit()) {
-				serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ItemList.ITEM_MOTHERBOARD64)));
-			}else {
-				serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ItemList.ITEM_MOTHERBOARD)));
-			}
-			serverPCCase.setMotherboardInstalled(false);
-			removeCPU();
-			removeRamStick(0);
-			removeRamStick(1);
-			removeHardDrive();
-			removeGPU();
-		}
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_MOBO, b);
 	}
 	
 	private void addCPU(Item cpuItem, int dividedBy) {
-		PlayerEntity serverPlayer = this.minecraft.getServer().getPlayerManager().getPlayerList().get(0);
-		if(serverPlayer.inventory.contains(new ItemStack(cpuItem))) {
-			serverPlayer.inventory.getInvStack(serverPlayer.inventory.getSlotWithStack(new ItemStack(cpuItem))).decrement(1);
-			EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-			serverPCCase.setCpuDividedBy(dividedBy);
-		}else {
-			serverPlayer.sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present"));
-		}
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeInt(dividedBy);
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_CPU, b);
 	}
 	
 	private void addGPU() {
-		PlayerEntity serverPlayer = this.minecraft.getServer().getPlayerManager().getPlayerList().get(0);
-		if(serverPlayer.inventory.contains(new ItemStack(ItemList.ITEM_GPU))) {
-			serverPlayer.inventory.getInvStack(serverPlayer.inventory.getSlotWithStack(new ItemStack(ItemList.ITEM_GPU))).decrement(1);
-			EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-			serverPCCase.setGpuInstalled(true);
-		}else {
-			serverPlayer.sendMessage(new TranslatableText("mcvmcomputers.gpu_not_present"));
-		}
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_GPU, b);
 	}
 	
 	private void addHardDrive(String fileName) {
-		PlayerEntity serverPlayer = this.minecraft.getServer().getPlayerManager().getPlayerList().get(0);
-		ItemStack is = ItemHarddrive.createHardDrive(fileName);
-		int i = serverPlayer.inventory.getSlotWithStack(is);
-		if(i != -1) {
-			serverPlayer.inventory.getInvStack(i).decrement(1);
-			EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-			serverPCCase.setHardDriveFileName(fileName);
-		}else {
-			serverPlayer.sendMessage(new TranslatableText("mcvmcomputers.harddrive_not_present"));
-		}
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeString(fileName);
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_HARD_DRIVE, b);
 	}
 	
 	private void removeHardDrive() {
-		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-		if(!pc_case.getHardDriveFileName().isEmpty()) {
-			serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), ItemHarddrive.createHardDrive(pc_case.getHardDriveFileName())));
-			serverPCCase.setHardDriveFileName("");
-		}
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_HARD_DRIVE, b);
 	}
 	private void removeGPU() {
-		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-		if(pc_case.getGpuInstalled()) {
-			serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ItemList.ITEM_GPU)));
-			serverPCCase.setGpuInstalled(false);
-		}
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_GPU, b);
 	}
 	
 	private void addRamStick(Item ramItem, int gigs) {
-		PlayerEntity serverPlayer = this.minecraft.getServer().getPlayerManager().getPlayerList().get(0);
-		if(serverPlayer.inventory.contains(new ItemStack(ramItem))) {
-			serverPlayer.inventory.getInvStack(serverPlayer.inventory.getSlotWithStack(new ItemStack(ramItem))).decrement(1);
-			EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-			if(serverPCCase.getGigsOfRamInSlot0() > 0) {
-				serverPCCase.setGigsOfRamInSlot1(gigs);
-			}else {
-				serverPCCase.setGigsOfRamInSlot0(gigs);
-			}
-		}else {
-			serverPlayer.sendMessage(new TranslatableText("mcvmcomputers.ram_not_present"));
-		}
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeInt(gigs);
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_RAM, b);
 	}
 	
 	private void removeRamStick(int slot) {
-		Item ramStickItem = null;
-		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-		if(slot == 0) {
-			if(pc_case.getGigsOfRamInSlot0() == 1) {
-				ramStickItem = ItemList.ITEM_RAM1G;
-			}else if(pc_case.getGigsOfRamInSlot0() == 2) {
-				ramStickItem = ItemList.ITEM_RAM2G;
-			}else if(pc_case.getGigsOfRamInSlot0() == 4) {
-				ramStickItem = ItemList.ITEM_RAM4G;
-			}else {
-				return;
-			}
-			serverPCCase.setGigsOfRamInSlot0(0);
-			serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ramStickItem)));
-		}else {
-			if(pc_case.getGigsOfRamInSlot1() == 1) {
-				ramStickItem = ItemList.ITEM_RAM1G;
-			}else if(pc_case.getGigsOfRamInSlot1() == 2) {
-				ramStickItem = ItemList.ITEM_RAM2G;
-			}else if(pc_case.getGigsOfRamInSlot1() == 4) {
-				ramStickItem = ItemList.ITEM_RAM4G;
-			}else {
-				return;
-			}
-			serverPCCase.setGigsOfRamInSlot1(0);
-			serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(ramStickItem)));
-		}
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeInt(slot);
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_RAM, b);
 	}
 	private void removeCPU() {
-		Item cpuItem = null;
-		EntityPC serverPCCase = (EntityPC) this.minecraft.getServer().getWorld(DimensionType.OVERWORLD).getEntityById(pc_case.getEntityId());
-		switch(pc_case.getCpuDividedBy()) {
-		case 2:
-			cpuItem = ItemList.ITEM_CPU2;
-			break;
-		case 4:
-			cpuItem = ItemList.ITEM_CPU4;
-			break;
-		case 6:
-			cpuItem = ItemList.ITEM_CPU6;
-			break;
-		default:
-			return;
-		}
-		serverPCCase.setCpuDividedBy(0);
-		serverPCCase.world.spawnEntity(new ItemEntity(serverPCCase.world, serverPCCase.getX(), serverPCCase.getY(), serverPCCase.getZ(), new ItemStack(cpuItem)));
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		b.writeInt(this.pc_case.getEntityId());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_CPU, b);
 	}
 	
 	@Override
@@ -392,17 +307,19 @@ public class GuiPCEditing extends Screen{
 							if(is.getItem() instanceof ItemHarddrive) {
 								if(is.getTag().contains("vhdfile")) {
 									String file = is.getTag().getString("vhdfile");
-									int w = Math.max(50, this.font.getStringWidth(file)+4);
-									this.addButton(new ButtonWidget(this.width/2 + 20 + lastXOffset, this.height / 2 + 40 + lastYOffset, Math.max(50, this.font.getStringWidth(file)+4), 12, file, (btn) -> this.addHardDrive(file)));
-									lastXOffset += w+1;
-									xOffCount += 1;
-									if(xOffCount >= 3) {
-										xOffCount = 0;
-										lastXOffset = 0;
-										lastYOffset += 13;
+									if(new File(ClientMod.vhdDirectory, file).exists()) {
+										int w = Math.max(50, this.font.getStringWidth(file)+4);
+										this.addButton(new ButtonWidget(this.width/2 + 20 + lastXOffset, this.height / 2 + 40 + lastYOffset, Math.max(50, this.font.getStringWidth(file)+4), 12, file, (btn) -> this.addHardDrive(file)));
+										lastXOffset += w+1;
+										xOffCount += 1;
+										if(xOffCount >= 3) {
+											xOffCount = 0;
+											lastXOffset = 0;
+											lastYOffset += 13;
+										}
+										//lastYOffset += 13;
+										count++;
 									}
-									//lastYOffset += 13;
-									count++;
 								}
 							}
 						}
@@ -589,6 +506,19 @@ public class GuiPCEditing extends Screen{
 	
 	public void turnOnPC(ButtonWidget wdgt) {
 		if(pc_case.getCpuDividedBy() > 0 && pc_case.getGpuInstalled() && pc_case.getMotherboardInstalled() && (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1()) >= 1) {
+			if(!pc_case.getHardDriveFileName().isEmpty()) {
+				if(!new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
+					minecraft.player.sendMessage(new LiteralText("The inserted hard drive does not exist on your computer!").formatted(Formatting.RED));
+					return;
+				}
+			}
+			if(!pc_case.getIsoFileName().isEmpty()) {
+				if(!new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
+					minecraft.player.sendMessage(new LiteralText("The inserted ISO does not exist on your computer!").formatted(Formatting.RED));
+					return;
+				}
+			}
+			
 			if(ClientMod.vmTurningOn || ClientMod.vmTurnedOn) {
 				return;
 			}

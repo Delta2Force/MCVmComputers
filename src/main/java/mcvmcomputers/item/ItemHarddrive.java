@@ -1,15 +1,10 @@
 package mcvmcomputers.item;
 
-import java.io.File;
-import java.util.List;
+import java.util.UUID;
 
-import mcvmcomputers.ClientMod;
-import mcvmcomputers.MainMod;
 import mcvmcomputers.client.gui.GuiCreateHarddrive;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
@@ -32,15 +27,6 @@ public class ItemHarddrive extends OrderableItem{
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if(world.isClient) {
-			ItemStack is = null;
-			switch(hand) {
-			case MAIN_HAND:
-				is = user.getMainHandStack();
-				break;
-			case OFF_HAND:
-				is = user.getOffHandStack();
-				break;
-			}
 			MinecraftClient.getInstance().openScreen(new GuiCreateHarddrive());
 		}
 		return super.use(world, user, hand);
@@ -53,13 +39,14 @@ public class ItemHarddrive extends OrderableItem{
 				return new LiteralText("Hard Drive (").formatted(Formatting.WHITE).append(new LiteralText(stack.getTag().getString("vhdfile")).formatted(Formatting.GREEN).append(new LiteralText(")").formatted(Formatting.WHITE)));
 			}
 		}
-		return new LiteralText("Hard Drive (").formatted(Formatting.WHITE).append(new LiteralText("Right click").formatted(Formatting.GRAY).append(new LiteralText(")").formatted(Formatting.WHITE)));
+		return new LiteralText("Hard Drive (").formatted(Formatting.WHITE).append(new LiteralText("right click").formatted(Formatting.GRAY).append(new LiteralText(")").formatted(Formatting.WHITE)));
 	}
 	
-	public static ItemStack createHardDrive(String fileName) {
+	public static ItemStack createHardDrive(String fileName, String uuid) {
 		ItemStack is = new ItemStack(ItemList.ITEM_HARDDRIVE);
 		CompoundTag ct = is.getOrCreateTag();
 		ct.putString("vhdfile", fileName);
+		ct.putUuid("owner", UUID.fromString(uuid));
 		is.setTag(ct);
 		return is;
 	}

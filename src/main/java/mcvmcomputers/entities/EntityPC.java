@@ -225,7 +225,7 @@ public class EntityPC extends Entity{
 				if(!this.getHardDriveFileName().isEmpty()) {
 					player.world.spawnEntity(new ItemEntity(player.world,
 							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							ItemHarddrive.createHardDrive(this.getHardDriveFileName())));
+							ItemHarddrive.createHardDrive(this.getHardDriveFileName(), this.getOwner())));
 				}
 				if(this.getMotherboardInstalled()) {
 					player.world.spawnEntity(new ItemEntity(player.world,
