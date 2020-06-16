@@ -79,11 +79,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 				entity.rocketSound = new MovingSoundInstance(SoundList.ROCKET_SOUND, SoundCategory.MASTER) {
 					@Override
 					public void tick() {
-						this.x = (float) entity.getX();
-						this.y = (float) entity.getY() + entity.renderOffY;
-						this.z = (float) entity.getZ() + entity.renderOffZ;
-						
-						Vec3d v = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
+						Vec3d v = new Vec3d(entity.getX(), entity.getY() + entity.renderOffY, entity.getZ() + entity.renderOffZ);
 						double dist = v.distanceTo(mcc.player.getPos());
 						if(dist < 0) {
 							dist = -dist;
