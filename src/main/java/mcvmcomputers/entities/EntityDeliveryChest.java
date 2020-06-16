@@ -209,6 +209,7 @@ public class EntityDeliveryChest extends Entity{
 	
 	@Override
 	public void remove() {
+		super.remove();
 		if(world.isClient) {
 			if(MinecraftClient.getInstance().getSoundManager().isPlaying(rocketSound)) {
 				MinecraftClient.getInstance().getSoundManager().stop(rocketSound);

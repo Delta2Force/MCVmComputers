@@ -247,28 +247,33 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 				matrices.translate(-15.63, -15.63, 6.22);
 				matrices.push();   
 					matrices.scale(0.4f, 0.4f, 0.4f);
-					if(entity.getDeliveryUUID().equals(ClientMod.myOrder.orderUUID)) {
-						if(ClientMod.myOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED || ClientMod.myOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
-							matrices.translate(0, -5, 0);
-							this.getFontRenderer().draw("Please insert", 6, 25, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-							String s = ""+ClientMod.myOrder.price;
-							this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 33, new Color(0.4f,0.4f,1f,1f).getRGB(), false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-							this.getFontRenderer().draw("Iron Ingots", 10, 41, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-							this.getFontRenderer().draw("by clicking", 13, 50, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-							this.getFontRenderer().draw("this chest", 14, 59, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-						}else if(ClientMod.myOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED || ClientMod.myOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
-							String s = ClientMod.myOrder.items.size() + " items";
-							this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 20, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,1f,0.2f).getRGB(), light);
-							matrices.push();
-								matrices.translate(0.5, 0, 0);
-								this.getFontRenderer().draw("in chest", 19, 30, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-							matrices.pop();
-							this.getFontRenderer().draw("Collect by", 14, 44, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-							this.getFontRenderer().draw("clicking", 21, 52, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+					if(ClientMod.myOrder != null) {
+						if(entity.getDeliveryUUID().equals(ClientMod.myOrder.orderUUID)) {
+							if(ClientMod.myOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED || ClientMod.myOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
+								matrices.translate(0, -5, 0);
+								this.getFontRenderer().draw("Please insert", 6, 25, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+								String s = ""+ClientMod.myOrder.price;
+								this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 33, new Color(0.4f,0.4f,1f,1f).getRGB(), false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+								this.getFontRenderer().draw("Iron Ingots", 10, 41, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+								this.getFontRenderer().draw("by clicking", 13, 50, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+								this.getFontRenderer().draw("this chest", 14, 59, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+							}else if(ClientMod.myOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED || ClientMod.myOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
+								String s = ClientMod.myOrder.items.size() + " items";
+								this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 20, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,1f,0.2f).getRGB(), light);
+								matrices.push();
+									matrices.translate(0.5, 0, 0);
+									this.getFontRenderer().draw("in chest", 19, 30, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+								matrices.pop();
+								this.getFontRenderer().draw("Collect by", 14, 44, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+								this.getFontRenderer().draw("clicking", 21, 52, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+							}
+						}else {
+							this.getFontRenderer().draw("This is not", 13, 30, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(1f,0f,0f,1f).getRGB(), light);
+							this.getFontRenderer().draw("your chest!", 10, 40, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(1f,0f,0f,1f).getRGB(), light);
 						}
 					}else {
-						this.getFontRenderer().draw("This is not", 0, 0, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(1f,0f,0f,0f).getRGB(), light);
-						this.getFontRenderer().draw("your chest!", 0, 8, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(1f,0f,0f,0f).getRGB(), light);
+						this.getFontRenderer().draw("This is not", 13, 30, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(1f,0f,0f,1f).getRGB(), light);
+						this.getFontRenderer().draw("your chest!", 10, 40, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(1f,0f,0f,1f).getRGB(), light);
 					}
 				matrices.pop();
 			matrices.pop();
