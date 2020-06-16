@@ -5,6 +5,8 @@ import java.util.List;
 
 import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.gui.GuiCreateHarddrive;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -39,7 +41,7 @@ public class ItemHarddrive extends OrderableItem{
 				is = user.getOffHandStack();
 				break;
 			}
-			
+			MinecraftClient.getInstance().openScreen(new GuiCreateHarddrive());
 		}
 		return super.use(world, user, hand);
 	}

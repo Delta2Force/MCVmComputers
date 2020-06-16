@@ -10,15 +10,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.TabletOrder;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 @Mixin(MinecraftServer.class)
 public class ServerMixin {
@@ -47,6 +51,13 @@ public class ServerMixin {
 				order.tickCount +=tickTime;
 				if(order.tickCount > 5) {
 					MainMod.orders.remove(UUID.fromString(order.orderUUID));
+				}
+			}else if(order.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
+				if(!order.entitySpawned) {
+					PlayerEntity p = playerManager.getPlayer(UUID.fromString(order.orderUUID));
+					World w = p.world;
+					w.spawnEntity(new EntityDeliveryChest(w, new Vec3d(p.getX(), p.getY(), p.getZ()), p.getUuid()));
+					order.entitySpawned = true;
 				}
 			}
 			

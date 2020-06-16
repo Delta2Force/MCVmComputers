@@ -112,7 +112,10 @@ public class EntityDeliveryChest extends Entity{
 	public void tick() {
 		super.tick();
 		if(!this.world.isClient) {
-			if(!MainMod.orders.containsKey(UUID.fromString(this.getDeliveryUUID()))) {
+			if(this.getDeliveryUUID().isEmpty()) {
+				this.kill();
+			}
+			else if(!MainMod.orders.containsKey(UUID.fromString(this.getDeliveryUUID()))) {
 				this.kill();
 			}else {
 				TabletOrder to = MainMod.orders.get(UUID.fromString(getDeliveryUUID()));

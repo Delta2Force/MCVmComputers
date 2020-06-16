@@ -194,10 +194,12 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	}
 	
 	private void doParticlesForFire(EntityDeliveryChest entity) {
-		smokeParticle(entity.world, entity.getPosVector(), 3);
-		smokeParticle(entity.world, entity.getPosVector(), 6);
+		Vec3d curPos = renderPos(entity);
 		
-		Vec3d ground = new Vec3d(entity.getX(), entity.world.getTopY(Type.MOTION_BLOCKING, entity.getBlockPos().getX(), entity.getBlockPos().getZ()), entity.getZ());
+		smokeParticle(entity.world, curPos, 3);
+		smokeParticle(entity.world, curPos, 6);
+		
+		Vec3d ground = new Vec3d(curPos.getX(), entity.world.getTopY(Type.MOTION_BLOCKING, (int)curPos.getX(), (int)curPos.getZ()), curPos.getZ());
 		double dist = ground.distanceTo(entity.getPosVector());
 		if(dist < 0) {
 			dist = -dist;
@@ -237,6 +239,9 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 		}
 		
 		matrices.push();
+		matrices.translate(0, entity.renderOffY, entity.renderOffZ);
+		
+		matrices.push();
 			matrices.multiply(new Quaternion(entity.renderRot, 0, 0, true));
 			matrices.translate(0, -1.5, 0);
 			deliveryChestModel.render(matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
@@ -271,6 +276,8 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 					}
 				matrices.pop();
 			matrices.pop();
+		matrices.pop();
+		
 		matrices.pop();
 		
 		super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
