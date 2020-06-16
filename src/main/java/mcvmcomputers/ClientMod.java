@@ -27,6 +27,7 @@ import mcvmcomputers.client.entities.render.KeyboardRender;
 import mcvmcomputers.client.entities.render.MouseRender;
 import mcvmcomputers.client.entities.render.PCRender;
 import mcvmcomputers.client.tablet.TabletOS;
+import mcvmcomputers.client.tablet.TabletOrder;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.entities.EntityList;
 import mcvmcomputers.networking.PacketList;
@@ -75,6 +76,7 @@ public class ClientMod implements ClientModInitializer{
 	public static File isoDirectory;
 	public static int latestVHDNum = 0;
 	public static TabletOS tabletOS;
+	public static TabletOrder myOrder;
 	public static int vmEntityID = -1;
 	
 	public static Thread tabletThread;

@@ -64,8 +64,12 @@ public class EntityDeliveryChest extends Entity{
 		this.updatePosition(target.x, target.y, target.z);
 	}
 	
-	public EntityDeliveryChest(World world, UUID owner, double targetX, double targetY, double targetZ) {
-		this(world, new Vec3d(targetX, targetY, targetZ), owner);
+	public EntityDeliveryChest(World world, double targetX, double targetY, double targetZ) {
+		super(EntityList.DELIVERY_CHEST, world);
+		this.getDataTracker().set(TARGET_X, (float)targetX);
+		this.getDataTracker().set(TARGET_Y, (float)targetY);
+		this.getDataTracker().set(TARGET_Z, (float)targetZ);
+		this.updatePosition(targetX, targetY, targetZ);
 	}
 
 	@Override
@@ -73,7 +77,7 @@ public class EntityDeliveryChest extends Entity{
 		this.getDataTracker().startTracking(TARGET_X, 0f);
 		this.getDataTracker().startTracking(TARGET_Y, 0f);
 		this.getDataTracker().startTracking(TARGET_Z, 0f);
-		this.getDataTracker().startTracking(DELIVERY_UUID, "Hello there!");
+		this.getDataTracker().startTracking(DELIVERY_UUID, "");
 	}
 	
 	@Override
