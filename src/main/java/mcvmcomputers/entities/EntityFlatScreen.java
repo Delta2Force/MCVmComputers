@@ -63,12 +63,14 @@ public class EntityFlatScreen extends Entity{
 		this.getDataTracker().set(LOOK_AT_POS_X, tag.getFloat("LookAtX"));
 		this.getDataTracker().set(LOOK_AT_POS_Y, tag.getFloat("LookAtY"));
 		this.getDataTracker().set(LOOK_AT_POS_Z, tag.getFloat("LookAtZ"));
+		this.getDataTracker().set(OWNER_UUID, tag.getString("Owner"));
 	}
 	@Override
 	protected void writeCustomDataToTag(CompoundTag tag) {
 		tag.putFloat("LookAtX", this.getDataTracker().get(LOOK_AT_POS_X));
 		tag.putFloat("LookAtY", this.getDataTracker().get(LOOK_AT_POS_Y));
 		tag.putFloat("LookAtZ", this.getDataTracker().get(LOOK_AT_POS_Z));
+		tag.putString("Owner", this.getDataTracker().get(OWNER_UUID));
 	}
 	
 	@Override
@@ -86,6 +88,13 @@ public class EntityFlatScreen extends Entity{
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public void tick() {
+		if(getOwnerUUID().isEmpty()) {
+			this.kill();
+		}
 	}
 	
 	@Override

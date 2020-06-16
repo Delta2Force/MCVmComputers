@@ -170,8 +170,12 @@ public class ClientMod implements ClientModInitializer{
 			} catch (IOException e) {
 			}
 			if(ni != null) {
-				vmScreenTextureNI.get(mcc.player.getUuid()).close();
-				vmScreenTextureNIBT.get(mcc.player.getUuid()).close();
+				if(vmScreenTextureNI.containsKey(mcc.player.getUuid())) {
+					vmScreenTextureNI.get(mcc.player.getUuid()).close();
+				}
+				if(vmScreenTextureNIBT.containsKey(mcc.player.getUuid())) {
+					vmScreenTextureNIBT.get(mcc.player.getUuid()).close();
+				}
 				vmScreenTextureNI.put(mcc.player.getUuid(), ni);
 				NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
 				vmScreenTextureNIBT.put(mcc.player.getUuid(), nibt);

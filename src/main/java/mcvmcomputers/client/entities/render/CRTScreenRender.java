@@ -34,6 +34,10 @@ public class CRTScreenRender extends EntityRenderer<EntityCRTScreen>{
 	@Override
 	public void render(EntityCRTScreen entity, float yaw, float tickDelta, MatrixStack matrices,
 			VertexConsumerProvider vertexConsumers, int light) {
+		if(entity.getOwnerUUID().isEmpty()) {
+			return;
+		}
+		
 		matrices.push();
 		matrices.translate(0, 0.5, 0);
 		Quaternion look = MVCUtils.lookAt(entity.getPosVector(), entity.getLookAtPos());
