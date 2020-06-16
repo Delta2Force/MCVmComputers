@@ -3,6 +3,7 @@ package mcvmcomputers.client.entities.render;
 import java.awt.Color;
 import java.io.IOException;
 
+import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.client.entities.model.DeliveryChestModel;
 import mcvmcomputers.entities.EntityDeliveryChest;
@@ -68,6 +69,10 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 		deliveryChestModel.fireYes = entity.fire;
 	}
 	
+	private Vec3d renderPos(EntityDeliveryChest entity) {
+		return new Vec3d(entity.getX(), entity.getY()+entity.renderOffY, entity.getZ()+entity.renderOffZ);
+	}
+	
 	private void changeRotations(EntityDeliveryChest entity) {
 		if(entity.fire) {
 			if(entity.rocketSound == null) {
@@ -112,27 +117,19 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 						return 0;
 					}
 				};
-				MinecraftClient.getInstance().getSoundManager().play(entity.rocketSound);
+				mcc.getSoundManager().play(entity.rocketSound);
 			}
 		}else {
 			if(entity.rocketSound != null) {
-				MinecraftClient.getInstance().getSoundManager().stop(entity.rocketSound);
+				mcc.getSoundManager().stop(entity.rocketSound);
 				entity.rocketSound = null;
 			}
 		}
-		if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED || currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
-			EntityDeliveryChest serverEntity = null;
-			for(ServerWorld sw : MinecraftClient.getInstance().getServer().getWorlds()) {
-				if(sw.getEntityById(entity.getEntityId()) != null) {
-					serverEntity = (EntityDeliveryChest) sw.getEntityById(entity.getEntityId());
-					Vec3d v = new Vec3d(lerp(serverEntity.getX(), entity.getTargetX(), deltaTime/2f), lerp(serverEntity.getY(), entity.getTargetY(), deltaTime/2f), lerp(serverEntity.getZ(), entity.getTargetZ(), deltaTime/2f));
-					entity.updatePosition(v.x, v.y, v.z);
-					serverEntity.updatePosition(v.x, v.y, v.z);
-				}
-			}
-			//entity.updatePosition(serverEntity.getX(), serverEntity.getY(), serverEntity.getZ());
-			
-			double dist = serverEntity.getPos().distanceTo(new Vec3d(entity.getTargetX(),entity.getTargetY(),entity.getTargetZ()));
+		if(!entity.getTakingOff()) {
+			Vec3d curPos = renderPos(entity);
+			Vec3d v = new Vec3d(lerp(curPos.getX(), entity.getTargetX(), deltaTime/2f), lerp(curPos.getY(), entity.getTargetY(), deltaTime/2f), lerp(curPos.getZ(), entity.getTargetZ(), deltaTime/2f));
+			entity.updateRenderPos(v.x, v.y, v.z);
+			double dist = renderPos(entity).distanceTo(new Vec3d(entity.getTargetX(),entity.getTargetY(),entity.getTargetZ()));
 			if(dist < 0) {
 				dist = -dist;
 			}
@@ -158,21 +155,13 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 			if (dist < 0.1) {
 				entity.openingRot = lerp(entity.openingRot, -2F, deltaTime);
 				entity.fire = false;
-				entity.updatePosition(entity.getTargetX(), entity.getTargetY(), entity.getTargetZ());
-				serverEntity.updatePosition(entity.getTargetX(), entity.getTargetY(), entity.getTargetZ());
+				entity.updateRenderPos(entity.getTargetX(), entity.getTargetY(), entity.getTargetZ());
 			}
-		}else if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING  || currentOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
-			EntityDeliveryChest serverEntity = null;
-			for(ServerWorld sw : MinecraftClient.getInstance().getServer().getWorlds()) {
-				if(sw.getEntityById(entity.getEntityId()) != null) {
-					serverEntity = (EntityDeliveryChest) sw.getEntityById(entity.getEntityId());
-					entity.takeOffSpeed = lerp(entity.takeOffSpeed, 5f, deltaTime/180f);
-					Vec3d v = new Vec3d(serverEntity.getX(),serverEntity.getY()+entity.takeOffSpeed, serverEntity.getZ());
-					entity.updatePosition(v.x, v.y, v.z);
-					serverEntity.updatePosition(v.x, v.y, v.z);
-				}
-			}
-			entity.updatePosition(serverEntity.getX(), serverEntity.getY(), serverEntity.getZ());
+		}else {
+			entity.takeOffSpeed = lerp(entity.takeOffSpeed, 5f, deltaTime/180f);
+			Vec3d curPos = renderPos(entity);
+			Vec3d v = new Vec3d(curPos.getX(),curPos.getY()+entity.takeOffSpeed, curPos.getZ());
+			entity.updateRenderPos(v.x, v.y, v.z);
 			
 			entity.upLeg01Rot = lerp(entity.upLeg01Rot, 3f, deltaTime);
 			entity.upLeg23Rot = lerp(entity.upLeg23Rot, 3.3f, deltaTime);
@@ -181,15 +170,13 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 			entity.openingRot = lerp(entity.openingRot, 0f, deltaTime);
 			entity.fire = true;
 			
-			if(entity.getY() > 250) {
+			if(curPos.getY() > 250) {
 				if(entity.rocketSound != null) {
-					if(MinecraftClient.getInstance().getSoundManager().isPlaying(entity.rocketSound)) {
-						MinecraftClient.getInstance().getSoundManager().stop(entity.rocketSound);
+					if(mcc.getSoundManager().isPlaying(entity.rocketSound)) {
+						mcc.getSoundManager().stop(entity.rocketSound);
 						entity.rocketSound = null;
 					}
 				}
-				MainInitializer.MainMod.entitySpawned = false;
-				entity.kill();
 			}
 		}
 	}
@@ -259,23 +246,28 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 				matrices.translate(-15.63, -15.63, 6.22);
 				matrices.push();   
 					matrices.scale(0.4f, 0.4f, 0.4f);
-					if(currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED || currentOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
-						matrices.translate(0, -5, 0);
-						this.getFontRenderer().draw("Please insert", 6, 25, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-						String s = ""+currentOrder.price;
-						this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 33, new Color(0.4f,0.4f,1f,1f).getRGB(), false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-						this.getFontRenderer().draw("Iron Ingots", 10, 41, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-						this.getFontRenderer().draw("by clicking", 13, 50, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-						this.getFontRenderer().draw("this chest", 14, 59, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-					}else if(currentOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED || currentOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
-						String s = currentOrder.items.size() + " items";
-						this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 20, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,1f,0.2f).getRGB(), light);
-						matrices.push();
-							matrices.translate(0.5, 0, 0);
-							this.getFontRenderer().draw("in chest", 19, 30, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-						matrices.pop();
-						this.getFontRenderer().draw("Collect by", 14, 44, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
-						this.getFontRenderer().draw("clicking", 21, 52, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+					if(entity.getDeliveryUUID().equals(ClientMod.myOrder.orderUUID)) {
+						if(ClientMod.myOrder.currentStatus == OrderStatus.PAYMENT_CHEST_ARRIVED || ClientMod.myOrder.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
+							matrices.translate(0, -5, 0);
+							this.getFontRenderer().draw("Please insert", 6, 25, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+							String s = ""+ClientMod.myOrder.price;
+							this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 33, new Color(0.4f,0.4f,1f,1f).getRGB(), false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+							this.getFontRenderer().draw("Iron Ingots", 10, 41, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+							this.getFontRenderer().draw("by clicking", 13, 50, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+							this.getFontRenderer().draw("this chest", 14, 59, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+						}else if(ClientMod.myOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED || ClientMod.myOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
+							String s = ClientMod.myOrder.items.size() + " items";
+							this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 20, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,1f,0.2f).getRGB(), light);
+							matrices.push();
+								matrices.translate(0.5, 0, 0);
+								this.getFontRenderer().draw("in chest", 19, 30, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+							matrices.pop();
+							this.getFontRenderer().draw("Collect by", 14, 44, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+							this.getFontRenderer().draw("clicking", 21, 52, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+						}
+					}else {
+						this.getFontRenderer().draw("This is not", 0, 0, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(1f,0f,0f,0f).getRGB(), light);
+						this.getFontRenderer().draw("your chest!", 0, 8, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(1f,0f,0f,0f).getRGB(), light);
 					}
 				matrices.pop();
 			matrices.pop();

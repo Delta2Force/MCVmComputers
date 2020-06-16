@@ -7,6 +7,7 @@ import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemPackage;
 import mcvmcomputers.utils.TabletOrder;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -34,9 +35,12 @@ public class EntityDeliveryChest extends Entity{
 			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Float> TARGET_Z =
 			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.FLOAT);
+	private static final TrackedData<Boolean> TAKING_OFF =
+			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<String> DELIVERY_UUID =
 			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.STRING);
 	
+	//Client vars
 	public float renderRot = 90f;
 	public float upLeg01Rot = 3f;
 	public float uLeg01Rot = -2.7f;
@@ -48,6 +52,9 @@ public class EntityDeliveryChest extends Entity{
 	public float renderOffZ = -80;
 	public boolean fire = false;
 	public SoundInstance rocketSound;
+	
+	//Server vars
+	public float takeOffTime = 0f;
 	
 	//z -80 y 80 starting position from target
 	
@@ -78,6 +85,7 @@ public class EntityDeliveryChest extends Entity{
 		this.getDataTracker().startTracking(TARGET_Y, 0f);
 		this.getDataTracker().startTracking(TARGET_Z, 0f);
 		this.getDataTracker().startTracking(DELIVERY_UUID, "");
+		this.getDataTracker().startTracking(TAKING_OFF, false);
 	}
 	
 	@Override
@@ -100,7 +108,19 @@ public class EntityDeliveryChest extends Entity{
 		super.tick();
 		if(!this.world.isClient) {
 			if(!MainMod.orders.containsKey(UUID.fromString(this.getDeliveryUUID()))) {
-				
+				this.kill();
+			}else {
+				TabletOrder to = MainMod.orders.get(UUID.fromString(getDeliveryUUID()));
+				if(to.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING || to.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
+					this.getDataTracker().set(TAKING_OFF, true);
+					takeOffTime += this.getServer().getTickTime();
+					if(takeOffTime > 10f) {
+						this.kill();
+						if(to.currentStatus == OrderStatus.PAYMENT_CHEST_RECEIVING) {
+							to.currentStatus = OrderStatus.ORDER_CHEST_ARRIVAL_SOON;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -164,7 +184,14 @@ public class EntityDeliveryChest extends Entity{
 	public String getDeliveryUUID() {
 		return this.getDataTracker().get(DELIVERY_UUID);
 	}
+	public Boolean getTakingOff() {
+		return this.getDataTracker().get(TAKING_OFF);
+	}
 	
+	public void updateRenderPos(double x, double y, double z) {
+		this.renderOffY = (float) (y - this.getY());
+		this.renderOffZ = (float) (z - this.getZ());
+	}
 
 	@Override
 	public Packet<?> createSpawnPacket() {
