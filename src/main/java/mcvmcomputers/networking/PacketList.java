@@ -74,8 +74,12 @@ public class PacketList {
 				if(!pcOwner.equals(mcc.player.getUuid())) {
 					if(ClientMod.vmScreenTextures.containsKey(pcOwner)) {
 						mcc.getTextureManager().destroyTexture(ClientMod.vmScreenTextures.get(pcOwner));
+					}
+					if(ClientMod.vmScreenTextureNI.containsKey(pcOwner)) {
 						ClientMod.vmScreenTextureNI.get(pcOwner).close();
-						ClientMod.vmScreenTextureNIBT.get(pcOwner).close();
+					}
+					if(ClientMod.vmScreenTextureNIBT.containsKey(pcOwner)) {
+						ClientMod.vmScreenTextureNI.get(pcOwner).close();
 					}
 					try {
 						Inflater inf = new Inflater();
