@@ -7,11 +7,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import org.lwjgl.glfw.GLFW;
 import org.virtualbox_6_1.ISession;
@@ -34,8 +37,10 @@ import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.entities.EntityList;
 import mcvmcomputers.entities.EntityPC;
+import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.TabletOrder;
+import mcvmcomputers.utils.TabletOrder.OrderStatus;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
@@ -196,6 +201,81 @@ public class ClientMod implements ClientModInitializer{
 		}
 	}
 	
+	public static void registerClientPackets() {
+		ClientSidePacketRegistry.INSTANCE.register(PacketList.S2C_SCREEN, (packetContext, attachedData) -> {
+			byte[] screen = attachedData.readByteArray();
+			int compressedDataSize = attachedData.readInt();
+			int dataSize = attachedData.readInt();
+			UUID pcOwner = attachedData.readUuid();
+			
+			packetContext.getTaskQueue().execute(() -> {
+				MinecraftClient mcc = MinecraftClient.getInstance();
+				if(!pcOwner.equals(mcc.player.getUuid())) {
+					if(ClientMod.vmScreenTextures.containsKey(pcOwner)) {
+						mcc.getTextureManager().destroyTexture(ClientMod.vmScreenTextures.get(pcOwner));
+					}
+					if(ClientMod.vmScreenTextureNI.containsKey(pcOwner)) {
+						ClientMod.vmScreenTextureNI.get(pcOwner).close();
+					}
+					if(ClientMod.vmScreenTextureNIBT.containsKey(pcOwner)) {
+						ClientMod.vmScreenTextureNI.get(pcOwner).close();
+					}
+					try {
+						Inflater inf = new Inflater();
+						inf.setInput(screen, 0, compressedDataSize);
+						byte[] actualScreen = new byte[dataSize+1];
+						int size = inf.inflate(actualScreen);
+						inf.end();
+						NativeImage ni = NativeImage.read(new ByteArrayInputStream(actualScreen, 0, size));
+						NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
+						ClientMod.vmScreenTextures.put(pcOwner, mcc.getTextureManager().registerDynamicTexture("pc_screen_mp", nibt));
+						ClientMod.vmScreenTextureNI.put(pcOwner, ni);
+						ClientMod.vmScreenTextureNIBT.put(pcOwner, nibt);
+					} catch (IOException | DataFormatException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		});
+		
+		ClientSidePacketRegistry.INSTANCE.register(PacketList.S2C_STOP_SCREEN, (packetContext, attachedData) -> {
+			UUID pcOwner = attachedData.readUuid();
+			
+			packetContext.getTaskQueue().execute(() -> {
+				MinecraftClient mcc = MinecraftClient.getInstance();
+				if(ClientMod.vmScreenTextures.containsKey(pcOwner)) {
+					mcc.getTextureManager().destroyTexture(ClientMod.vmScreenTextures.get(pcOwner));
+				}
+				if(ClientMod.vmScreenTextureNI.containsKey(pcOwner)) {
+					ClientMod.vmScreenTextureNI.get(pcOwner).close();
+				}
+				if(ClientMod.vmScreenTextureNIBT.containsKey(pcOwner)) {
+					ClientMod.vmScreenTextureNIBT.get(pcOwner).close();
+				}
+			});
+		});
+		
+		ClientSidePacketRegistry.INSTANCE.register(PacketList.S2C_SYNC_ORDER, (packetContext, attachedData) -> {
+			int arraySize = attachedData.readInt();
+			OrderableItem[] arr = new OrderableItem[arraySize];
+			for(int i = 0;i<arraySize;i++) {
+				arr[i] = (OrderableItem) attachedData.readItemStack().getItem();
+			}
+			int price = attachedData.readInt();
+			OrderStatus status = OrderStatus.values()[attachedData.readInt()]; //send ordinal
+			
+			packetContext.getTaskQueue().execute(() -> {
+				if(ClientMod.myOrder == null) {
+					ClientMod.myOrder = new TabletOrder();
+				}
+				ClientMod.myOrder.price = price;
+				ClientMod.myOrder.items = Arrays.asList(arr);
+				ClientMod.myOrder.orderUUID = packetContext.getPlayer().getUuid().toString();
+				ClientMod.myOrder.currentStatus = status;
+			});
+		});
+	}
+	
 	@Override
 	public void onInitializeClient() {
 		MainMod.pcOpenGui = new Runnable() {
@@ -228,7 +308,7 @@ public class ClientMod implements ClientModInitializer{
 			}
 		};
 		
-		PacketList.registerClientPackets();
+		registerClientPackets();
 		
 		vmScreenTextures = new HashMap<UUID, Identifier>();
 		vmScreenTextureNI = new HashMap<UUID, NativeImage>();
