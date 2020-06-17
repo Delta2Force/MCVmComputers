@@ -11,10 +11,10 @@
 ![Tablet1](https://i.imgur.com/hWRK8wb.png)
 #### 3) The rest is self-explanatory.
 ### Creating a Hard Drive / Importing an ISO
-ISOs are located at `[minecraft folder]/vm_computers/isos`. Place your ISOs in there and you will be able to select them in the PC case menu. Hard Drives are created using the "New hard drive" item. Right click while holding it to open the hard drive menu. You can either use an existing hard drive (located in `[minecraft folder]/vm_computers/vhds`) or create a new one.
+ISOs are located at `[minecraft folder]/vm_computers/isos`. Place your ISOs in there and you will be able to select them in the PC case menu. Virtual Hard Drives are created by rightclicking with a hard drive in your hand. It doesn't matter if it's already assigned to a file or not, it will always open the menu. You can either use an existing hard drive (located in `[minecraft folder]/vm_computers/vhds`) or create a new one.
 ### Building the Computer
 ##### You need a PC case, a motherboard, RAM, a CPU, a GPU and a screen. The keyboard and mouse are only decorative and you can start the VM without a hard drive or ISO inserted.
-##### To insert a hard drive, you need to create one using the "New hard drive" item.
+##### To insert a hard drive, you need to create one by rightclicking with a hard drive in your hand. It doesn't matter if it's already assigned to a file or not.
 #### 1) Place down the case.
 ![case](https://i.imgur.com/8Wgqtcb.png)
 #### 2) Right click it.
