@@ -2,10 +2,10 @@ package mcvmcomputers.entities;
 
 import java.util.UUID;
 
-import mcvmcomputers.client.gui.GuiPCEditing;
+import mcvmcomputers.ClientMod;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -275,9 +275,10 @@ public class EntityPC extends Entity{
 			}
 		}else {
 			if(!player.isSneaking())
-				if(this.getOwner().equals(player.getUuid().toString()))
-					MinecraftClient.getInstance().openScreen(new GuiPCEditing(this));
-				else
+				if(this.getOwner().equals(player.getUuid().toString())) {
+					ClientMod.currentPC = this;
+					MainMod.pcOpenGui.run();
+				}else
 					player.sendMessage(new LiteralText("This computer is not yours!").formatted(Formatting.RED));
 		}
 		return true;

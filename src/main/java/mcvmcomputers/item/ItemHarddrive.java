@@ -2,8 +2,7 @@ package mcvmcomputers.item;
 
 import java.util.UUID;
 
-import mcvmcomputers.client.gui.GuiCreateHarddrive;
-import net.minecraft.client.MinecraftClient;
+import mcvmcomputers.MainMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.item.ItemStack;
@@ -27,7 +26,7 @@ public class ItemHarddrive extends OrderableItem{
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if(world.isClient) {
-			MinecraftClient.getInstance().openScreen(new GuiCreateHarddrive());
+			MainMod.hardDriveClick.run();
 		}
 		return super.use(world, user, hand);
 	}

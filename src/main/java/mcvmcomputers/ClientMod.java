@@ -26,9 +26,14 @@ import mcvmcomputers.client.entities.render.ItemPreviewRender;
 import mcvmcomputers.client.entities.render.KeyboardRender;
 import mcvmcomputers.client.entities.render.MouseRender;
 import mcvmcomputers.client.entities.render.PCRender;
+import mcvmcomputers.client.gui.GuiCreateHarddrive;
+import mcvmcomputers.client.gui.GuiFocus;
+import mcvmcomputers.client.gui.GuiPCEditing;
 import mcvmcomputers.client.tablet.TabletOS;
+import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.entities.EntityList;
+import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.TabletOrder;
 import net.fabricmc.api.ClientModInitializer;
@@ -88,6 +93,9 @@ public class ClientMod implements ClientModInitializer{
 	public static int glfwUnfocusKey2 = GLFW.GLFW_KEY_RIGHT_CONTROL;
 	public static int glfwUnfocusKey3 = GLFW.GLFW_KEY_BACKSPACE;
 	public static int glfwUnfocusKey4 = -1;
+	
+	public static EntityDeliveryChest currentDeliveryChest;
+	public static EntityPC currentPC;
 	
 	public static String getKeyName(int key) {
 		if (key < 0) {
@@ -190,6 +198,36 @@ public class ClientMod implements ClientModInitializer{
 	
 	@Override
 	public void onInitializeClient() {
+		MainMod.pcOpenGui = new Runnable() {
+			@Override
+			public void run() {
+				MinecraftClient.getInstance().openScreen(new GuiPCEditing(currentPC));
+			}
+		};
+		
+		MainMod.hardDriveClick = new Runnable() {
+			@Override
+			public void run() {
+				MinecraftClient.getInstance().openScreen(new GuiCreateHarddrive());
+			}
+		};
+		
+		MainMod.focus = new Runnable() {
+			@Override
+			public void run() {
+				MinecraftClient.getInstance().openScreen(new GuiFocus());
+			}
+		};
+		
+		MainMod.deliveryChestSound = new Runnable() {
+			@Override
+			public void run() {
+				if(MinecraftClient.getInstance().getSoundManager().isPlaying(currentDeliveryChest.rocketSound)) {
+					MinecraftClient.getInstance().getSoundManager().stop(currentDeliveryChest.rocketSound);
+				}
+			}
+		};
+		
 		PacketList.registerClientPackets();
 		
 		vmScreenTextures = new HashMap<UUID, Identifier>();

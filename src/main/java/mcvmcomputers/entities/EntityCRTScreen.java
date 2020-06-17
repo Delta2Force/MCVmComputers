@@ -1,8 +1,7 @@
 package mcvmcomputers.entities;
 
-import mcvmcomputers.client.gui.GuiFocus;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemList;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -84,7 +83,7 @@ public class EntityCRTScreen extends Entity{
 			}
 		}else {
 			if(!player.isSneaking()) {
-				MinecraftClient.getInstance().openScreen(new GuiFocus());
+				MainMod.focus.run();
 			}
 		}
 		return true;

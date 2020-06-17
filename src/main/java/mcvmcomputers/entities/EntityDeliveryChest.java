@@ -2,11 +2,11 @@ package mcvmcomputers.entities;
 
 import java.util.UUID;
 
+import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemPackage;
 import mcvmcomputers.utils.TabletOrder;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -20,7 +20,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -211,9 +210,8 @@ public class EntityDeliveryChest extends Entity{
 	public void remove() {
 		super.remove();
 		if(world.isClient) {
-			if(MinecraftClient.getInstance().getSoundManager().isPlaying(rocketSound)) {
-				MinecraftClient.getInstance().getSoundManager().stop(rocketSound);
-			}
+			ClientMod.currentDeliveryChest = this;
+			MainMod.deliveryChestSound.run();
 		}
 	}
 
