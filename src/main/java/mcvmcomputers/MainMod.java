@@ -147,7 +147,7 @@ public class MainMod implements ModInitializer{
 				Item lookingFor = null;
 				if(x64) {lookingFor = ItemList.ITEM_MOTHERBOARD64;} else {lookingFor = ItemList.ITEM_MOTHERBOARD;}
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.getSlotWithStack(new ItemStack(lookingFor)));
+					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(new ItemStack(lookingFor)));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
@@ -173,7 +173,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Item lookingFor = ItemList.ITEM_GPU;
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.getSlotWithStack(new ItemStack(lookingFor)));
+					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(new ItemStack(lookingFor)));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
@@ -200,7 +200,7 @@ public class MainMod implements ModInitializer{
 				Item lookingFor = null;
 				if(dividedBy == 2) {lookingFor = ItemList.ITEM_CPU2;} else if(dividedBy == 4) {lookingFor = ItemList.ITEM_CPU4;} else if(dividedBy == 6) {lookingFor = ItemList.ITEM_CPU6;}
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.getSlotWithStack(new ItemStack(lookingFor)));
+					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(new ItemStack(lookingFor)));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
@@ -227,7 +227,7 @@ public class MainMod implements ModInitializer{
 				Item lookingFor = null;
 				if(gb == 1) {lookingFor = ItemList.ITEM_RAM1G;} else if(gb == 2) {lookingFor = ItemList.ITEM_RAM2G;} else if(gb == 4) {lookingFor = ItemList.ITEM_RAM4G;}
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.getSlotWithStack(new ItemStack(lookingFor)));
+					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(new ItemStack(lookingFor)));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
@@ -256,7 +256,8 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				ItemStack lookingFor = ItemHarddrive.createHardDrive(vhdname, packetContext.getPlayer().getUuid().toString());
 				if(packetContext.getPlayer().inventory.contains(lookingFor)) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.getSlotWithStack(lookingFor));
+					packetContext.getPlayer().inventory.getOccupiedSlotWithRoomForStack(null);
+					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(lookingFor));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
