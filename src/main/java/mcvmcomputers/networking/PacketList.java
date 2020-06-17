@@ -106,7 +106,11 @@ public class PacketList {
 				MinecraftClient mcc = MinecraftClient.getInstance();
 				if(ClientMod.vmScreenTextures.containsKey(pcOwner)) {
 					mcc.getTextureManager().destroyTexture(ClientMod.vmScreenTextures.get(pcOwner));
+				}
+				if(ClientMod.vmScreenTextureNI.containsKey(pcOwner)) {
 					ClientMod.vmScreenTextureNI.get(pcOwner).close();
+				}
+				if(ClientMod.vmScreenTextureNIBT.containsKey(pcOwner)) {
 					ClientMod.vmScreenTextureNIBT.get(pcOwner).close();
 				}
 			});
@@ -196,6 +200,13 @@ public class PacketList {
 				if(MainMod.computers.containsKey(packetContext.getPlayer().getUuid())) {
 					MainMod.computers.remove(packetContext.getPlayer().getUuid());
 				}
+				
+				Stream<PlayerEntity> watchingPlayers = PlayerStream.watching(MainMod.computers.get(packetContext.getPlayer().getUuid()));
+				PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+				b.writeUuid(packetContext.getPlayer().getUuid());
+				watchingPlayers.forEach((player) -> {
+					ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_STOP_SCREEN, b);
+				});
 			});
 		});
 		

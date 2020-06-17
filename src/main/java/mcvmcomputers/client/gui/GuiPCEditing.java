@@ -491,6 +491,8 @@ public class GuiPCEditing extends Screen{
 		//this.minecraft.openScreen(null);
 		ClientMod.vmTurningOff = true;
 		ClientMod.vmTurnedOn = false;
+		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_TURN_OFF_PC, b);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -528,6 +530,9 @@ public class GuiPCEditing extends Screen{
 			//this.minecraft.openScreen(null);
 			ClientMod.vmTurningOn = true;
 			ClientMod.vmEntityID = pc_case.getEntityId();
+			PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+			b.writeInt(pc_case.getEntityId());
+			ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_TURN_ON_PC, b);
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
