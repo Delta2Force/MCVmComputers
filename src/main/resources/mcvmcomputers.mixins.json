@@ -4,7 +4,8 @@
   "package": "mcvmcomputers.mixins",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ServerMixin"
+    "ServerMixin",
+    "PlayerManagerMixin"
   ],
   "client": [
     "HeldItemMixin",
