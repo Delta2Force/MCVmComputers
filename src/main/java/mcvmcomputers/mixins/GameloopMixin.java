@@ -1,6 +1,6 @@
 package mcvmcomputers.mixins;
 
-import org.spongepowered.asm.mixin.injection.At;
+import static mcvmcomputers.ClientMod.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.virtualbox_6_1.IMachine;
@@ -19,7 +20,6 @@ import org.virtualbox_6_1.LockType;
 import org.virtualbox_6_1.MachineState;
 import org.virtualbox_6_1.VBoxException;
 
-import mcvmcomputers.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.tablet.TabletOS;
 import mcvmcomputers.entities.EntityItemPreview;
@@ -27,32 +27,21 @@ import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.ItemOrderingTablet;
 import mcvmcomputers.utils.VMRunnable;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.FatalErrorScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.dimension.DimensionType;
-
-import static mcvmcomputers.ClientMod.*;
 
 @Mixin(MinecraftClient.class)
 public class GameloopMixin {
 	@Shadow
 	public ClientPlayerEntity player;
-	
-	@Shadow
-	private IntegratedServer server;
 	
 	@Shadow
 	public HitResult crosshairTarget;
@@ -133,7 +122,7 @@ public class GameloopMixin {
 		}
 		
 		if(vmTurnedOn) {
-			if(player == null && server == null) {
+			if(player == null) {
 				vmUpdateThread.interrupt();
 				
 				IMachine m = vb.findMachine("VmComputersVm");
