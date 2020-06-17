@@ -50,10 +50,20 @@ public class SetupPageVboxDirectory extends SetupPage{
 			vboxStatus = MVCUtils.getColorChar('c') + "Path points to a file, not a directory.";
 			next.active = false;
 			return false;
-		}else if(!new File(vboxDir, "vboxmanage.exe").exists() || !new File(vboxDir, "vboxwebsrv.exe").exists()) {
-			vboxStatus = MVCUtils.getColorChar('c') + "The directory isn't the VirtualBox directory.";
-			next.active = false;
-			return false;
+		}else {
+			if(SystemUtils.IS_OS_WINDOWS) {
+				if(!new File(vboxDir, "vboxmanage.exe").exists() || !new File(vboxDir, "vboxwebsrv.exe").exists()) {
+					vboxStatus = MVCUtils.getColorChar('c') + "The directory isn't the VirtualBox directory.";
+					next.active = false;
+					return false;
+				}
+			}else if(SystemUtils.IS_OS_MAC) {
+				if(!new File(vboxDir, "VBoxManage").exists() || !new File(vboxDir, "vboxwebsrv").exists()) {
+					vboxStatus = MVCUtils.getColorChar('c') + "The directory isn't the VirtualBox directory.";
+					next.active = false;
+					return false;
+				}
+			}
 		}
 		vboxStatus = MVCUtils.getColorChar('a') + "This should be a valid VirtualBox directory!";
 		next.active = true;
