@@ -256,7 +256,6 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				ItemStack lookingFor = ItemHarddrive.createHardDrive(vhdname, packetContext.getPlayer().getUuid().toString());
 				if(packetContext.getPlayer().inventory.contains(lookingFor)) {
-					packetContext.getPlayer().inventory.getOccupiedSlotWithRoomForStack(null);
 					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(lookingFor));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
