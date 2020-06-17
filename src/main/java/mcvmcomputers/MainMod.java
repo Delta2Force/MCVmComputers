@@ -123,7 +123,7 @@ public class MainMod implements ModInitializer{
 		});
 		
 		ServerSidePacketRegistry.INSTANCE.register(C2S_CHANGE_HDD, (packetContext, attachedData) -> {
-			String newHddName = attachedData.readString();
+			String newHddName = attachedData.readString(32767);
 			
 			packetContext.getTaskQueue().execute(() -> {
 				for(ItemStack is : packetContext.getPlayer().getItemsHand()) {
@@ -250,7 +250,7 @@ public class MainMod implements ModInitializer{
 		});
 		
 		ServerSidePacketRegistry.INSTANCE.register(C2S_ADD_HARD_DRIVE, (packetContext, attachedData) -> {
-			String vhdname = attachedData.readString();
+			String vhdname = attachedData.readString(32767);
 			int entityId = attachedData.readInt();
 			
 			packetContext.getTaskQueue().execute(() -> {
