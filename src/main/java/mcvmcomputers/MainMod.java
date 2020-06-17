@@ -369,7 +369,7 @@ public class MainMod implements ModInitializer{
 		});
 		
 		ServerSidePacketRegistry.INSTANCE.register(C2S_ADD_ISO, (packetContext, attachedData) -> {
-			String isoName = attachedData.readString();
+			String isoName = attachedData.readString(32767);
 			int entityId = attachedData.readInt();
 			
 			packetContext.getTaskQueue().execute(() -> {
