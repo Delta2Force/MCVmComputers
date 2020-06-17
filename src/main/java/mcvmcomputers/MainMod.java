@@ -109,16 +109,15 @@ public class MainMod implements ModInitializer{
 		
 		ServerSidePacketRegistry.INSTANCE.register(C2S_TURN_OFF_PC, (packetContext, attachedData) -> {
 			packetContext.getTaskQueue().execute(() -> {
-				if(MainMod.computers.containsKey(packetContext.getPlayer().getUuid())) {
-					MainMod.computers.remove(packetContext.getPlayer().getUuid());
-				}
-				
 				Stream<PlayerEntity> watchingPlayers = PlayerStream.watching(MainMod.computers.get(packetContext.getPlayer().getUuid()));
 				PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 				b.writeUuid(packetContext.getPlayer().getUuid());
 				watchingPlayers.forEach((player) -> {
 					ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_STOP_SCREEN, b);
 				});
+				if(MainMod.computers.containsKey(packetContext.getPlayer().getUuid())) {
+					MainMod.computers.remove(packetContext.getPlayer().getUuid());
+				}
 			});
 		});
 		
