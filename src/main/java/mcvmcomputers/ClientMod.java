@@ -156,8 +156,10 @@ public class ClientMod implements ClientModInitializer{
 			
 			Deflater def = new Deflater();
 			def.setInput(vmTextureBytes);
+			def.finish();
 			byte[] deflated = new byte[vmTextureBytesSize];
 			int sz = def.deflate(deflated);
+			def.end();
 			
 			PacketByteBuf p = new PacketByteBuf(Unpooled.buffer());
 			p.writeByteArray(deflated);
