@@ -6,7 +6,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import mcvmcomputers.MCVmComputersMod;
+import mcvmcomputers.ClientMod;
+import mcvmcomputers.MainMod;
 import net.minecraft.client.Mouse;
 
 @Mixin(Mouse.class)
@@ -28,13 +29,13 @@ public class MouseMixin {
 	
 	@Inject(at = @At("TAIL"), method = "onMouseScroll")
 	private void onMouseScroll(CallbackInfo ci) {
-		MCVmComputersMod.mouseDeltaScroll = (int) this.eventDeltaWheel;
+		ClientMod.mouseDeltaScroll = (int) this.eventDeltaWheel;
 	}
 	
 	@Inject(at = @At("TAIL"), method = "onMouseButton")
 	private void onMouseButton(CallbackInfo ci) {
-		MCVmComputersMod.leftMouseButton = leftButtonClicked;
-		MCVmComputersMod.middleMouseButton = middleButtonClicked;
-		MCVmComputersMod.rightMouseButton = rightButtonClicked;
+		ClientMod.leftMouseButton = leftButtonClicked;
+		ClientMod.middleMouseButton = middleButtonClicked;
+		ClientMod.rightMouseButton = rightButtonClicked;
 	}
 }

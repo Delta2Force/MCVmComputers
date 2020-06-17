@@ -1,6 +1,6 @@
 package mcvmcomputers.mixins;
 
-import org.spongepowered.asm.mixin.injection.At;
+import static mcvmcomputers.ClientMod.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.virtualbox_6_1.IMachine;
@@ -19,38 +20,28 @@ import org.virtualbox_6_1.LockType;
 import org.virtualbox_6_1.MachineState;
 import org.virtualbox_6_1.VBoxException;
 
+import mcvmcomputers.client.gui.setup.GuiSetup;
+import mcvmcomputers.client.tablet.TabletOS;
 import mcvmcomputers.entities.EntityItemPreview;
-import mcvmcomputers.gui.setup.GuiSetup;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.ItemOrderingTablet;
-import mcvmcomputers.tablet.TabletOS;
 import mcvmcomputers.utils.VMRunnable;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.FatalErrorScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.dimension.DimensionType;
-
-import static mcvmcomputers.MCVmComputersMod.*;
 
 @Mixin(MinecraftClient.class)
 public class GameloopMixin {
 	@Shadow
 	public ClientPlayerEntity player;
-	
-	@Shadow
-	private IntegratedServer server;
 	
 	@Shadow
 	public HitResult crosshairTarget;
@@ -102,10 +93,6 @@ public class GameloopMixin {
 			deltaTime = (float) diff / 1000f;
 		}
 		
-		if(this.currentScreen instanceof MultiplayerScreen) {
-			MinecraftClient.getInstance().openScreen(new FatalErrorScreen(new LiteralText("Vm Computers").formatted(Formatting.RED), "You can't play multiplayer with this mod installed."));
-		}
-		
 		if(tabletOS != null) {
 			tabletOS.generateTexture();
 		}else {
@@ -135,7 +122,7 @@ public class GameloopMixin {
 		}
 		
 		if(vmTurnedOn) {
-			if(player == null && server == null) {
+			if(player == null) {
 				vmUpdateThread.interrupt();
 				
 				IMachine m = vb.findMachine("VmComputersVm");
@@ -155,19 +142,6 @@ public class GameloopMixin {
 				
 				generatePCScreen();
 			}
-		}else {
-			if(vmTextureNativeImage != null) {
-				vmTextureNativeImage.close();
-				vmTextureNIBT.close();
-			}
-			NativeImage ni = new NativeImage(128, 128, true);
-			NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
-			vmTextureNativeImage = ni;
-			if(vmTextureIdentifier != null) {
-				MinecraftClient.getInstance().getTextureManager().destroyTexture(vmTextureIdentifier);
-			}
-			vmTextureIdentifier = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("vm_texture", nibt);
-			vmTextureNIBT = nibt;
 		}
 		
 		if(player != null) {
@@ -229,11 +203,14 @@ public class GameloopMixin {
 	@Inject(at = @At("HEAD"), method = "close")
 	private void close(CallbackInfo info) {
 		System.out.println("Stopping VM Computers Mod...");
-		if(vmTextureNativeImage != null) {
-			vmTextureNativeImage.close();
+		for(NativeImageBackedTexture nibt : vmScreenTextureNIBT.values()) {
+			nibt.close();
 		}
-		if(vmTextureNIBT != null) {
-			vmTextureNIBT.close();
+		for(NativeImage ni : vmScreenTextureNI.values()) {
+			ni.close();
+		}
+		for(Identifier i : vmScreenTextures.values()) {
+			MinecraftClient.getInstance().getTextureManager().destroyTexture(i);
 		}
 		if(vmUpdateThread != null) {
 			vmUpdateThread.interrupt();

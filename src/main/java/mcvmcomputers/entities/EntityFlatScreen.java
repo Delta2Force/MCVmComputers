@@ -1,8 +1,7 @@
 package mcvmcomputers.entities;
 
-import mcvmcomputers.gui.GuiFocus;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemList;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -26,6 +25,9 @@ public class EntityFlatScreen extends Entity{
 	private static final TrackedData<Float> LOOK_AT_POS_Z =
 			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.FLOAT);
 	
+	private static final TrackedData<String> OWNER_UUID =
+			DataTracker.registerData(EntityCRTScreen.class, TrackedDataHandlerRegistry.STRING);
+	
 	public EntityFlatScreen(EntityType<?> type, World world) {
 		super(type, world);
 	}
@@ -35,12 +37,13 @@ public class EntityFlatScreen extends Entity{
 		this.updatePosition(x, y, z);
 	}
 	
-	public EntityFlatScreen(World world, double x, double y, double z, Vec3d lookAt) {
+	public EntityFlatScreen(World world, double x, double y, double z, Vec3d lookAt, String uuid) {
 		this(EntityList.FLATSCREEN, world);
 		this.updatePosition(x, y, z);
 		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
 		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);
 		this.getDataTracker().set(LOOK_AT_POS_Z, (float)lookAt.z);
+		this.getDataTracker().set(OWNER_UUID, uuid);
 	}
 	
 	public Vec3d getLookAtPos() {
@@ -52,18 +55,21 @@ public class EntityFlatScreen extends Entity{
 		this.getDataTracker().startTracking(LOOK_AT_POS_X, 0f);
 		this.getDataTracker().startTracking(LOOK_AT_POS_Y, 0f);
 		this.getDataTracker().startTracking(LOOK_AT_POS_Z, 0f);
+		this.getDataTracker().startTracking(OWNER_UUID, "");
 	}
 	@Override
 	protected void readCustomDataFromTag(CompoundTag tag) {
 		this.getDataTracker().set(LOOK_AT_POS_X, tag.getFloat("LookAtX"));
 		this.getDataTracker().set(LOOK_AT_POS_Y, tag.getFloat("LookAtY"));
 		this.getDataTracker().set(LOOK_AT_POS_Z, tag.getFloat("LookAtZ"));
+		this.getDataTracker().set(OWNER_UUID, tag.getString("Owner"));
 	}
 	@Override
 	protected void writeCustomDataToTag(CompoundTag tag) {
 		tag.putFloat("LookAtX", this.getDataTracker().get(LOOK_AT_POS_X));
 		tag.putFloat("LookAtY", this.getDataTracker().get(LOOK_AT_POS_Y));
 		tag.putFloat("LookAtZ", this.getDataTracker().get(LOOK_AT_POS_Z));
+		tag.putString("Owner", this.getDataTracker().get(OWNER_UUID));
 	}
 	
 	@Override
@@ -77,15 +83,26 @@ public class EntityFlatScreen extends Entity{
 			}
 		}else {
 			if(!player.isSneaking()) {
-				MinecraftClient.getInstance().openScreen(new GuiFocus());
+				MainMod.focus.run();
 			}
 		}
 		return true;
 	}
 	
 	@Override
+	public void tick() {
+		if(getOwnerUUID().isEmpty()) {
+			this.kill();
+		}
+	}
+	
+	@Override
 	public boolean collides() {
 		return true;
+	}
+	
+	public String getOwnerUUID() {
+		return this.getDataTracker().get(OWNER_UUID);
 	}
 
 	@Override

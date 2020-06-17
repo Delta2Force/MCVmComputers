@@ -19,10 +19,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "mcvmcomputers.MCVmComputersMod"
+      "mcvmcomputers.MainMod"
     ],
     "client": [
-      "mcvmcomputers.ClientInitializer"
+      "mcvmcomputers.ClientMod"
     ]
   },
   "mixins": [

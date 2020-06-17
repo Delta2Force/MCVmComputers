@@ -1,10 +1,11 @@
 package mcvmcomputers.entities;
 
-import mcvmcomputers.MCVmComputersMod;
-import mcvmcomputers.gui.GuiPCEditing;
+import java.util.UUID;
+
+import mcvmcomputers.ClientMod;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -18,6 +19,8 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -26,6 +29,8 @@ public class EntityPC extends Entity{
 	private static final TrackedData<String> ISO_FILE_NAME =
 			DataTracker.registerData(EntityPC.class, TrackedDataHandlerRegistry.STRING);
 	private static final TrackedData<String> HARD_DRIVE_FILE_NAME =
+			DataTracker.registerData(EntityPC.class, TrackedDataHandlerRegistry.STRING);
+	private static final TrackedData<String> OWNER_UUID =
 			DataTracker.registerData(EntityPC.class, TrackedDataHandlerRegistry.STRING);
 	
 	private static final TrackedData<Float> LOOK_AT_POS_X =
@@ -60,20 +65,22 @@ public class EntityPC extends Entity{
 		this.updatePosition(x, y, z);
 	}
 	
-	public EntityPC(World world, double x, double y, double z, Vec3d lookAt) {
+	public EntityPC(World world, double x, double y, double z, Vec3d lookAt, UUID owner) {
 		this(EntityList.PC, world);
 		this.updatePosition(x, y, z);
 		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
 		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);
 		this.getDataTracker().set(LOOK_AT_POS_Z, (float)lookAt.z);
+		this.getDataTracker().set(OWNER_UUID, owner.toString());
 	}
 	
-	public EntityPC(World world, double x, double y, double z, Vec3d lookAt, boolean glassSidepanel) {
+	public EntityPC(World world, double x, double y, double z, Vec3d lookAt, UUID owner, boolean glassSidepanel) {
 		this(EntityList.PC, world);
 		this.updatePosition(x, y, z);
 		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
 		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);
 		this.getDataTracker().set(LOOK_AT_POS_Z, (float)lookAt.z);
+		this.getDataTracker().set(OWNER_UUID, owner.toString());
 		this.getDataTracker().set(GLASS_SIDEPANEL, glassSidepanel);
 	}
 	
@@ -85,6 +92,7 @@ public class EntityPC extends Entity{
 	protected void initDataTracker() {
 		this.getDataTracker().startTracking(HARD_DRIVE_FILE_NAME, "");
 		this.getDataTracker().startTracking(ISO_FILE_NAME, "");
+		this.getDataTracker().startTracking(OWNER_UUID, "");
 		this.getDataTracker().startTracking(LOOK_AT_POS_X, 0f);
 		this.getDataTracker().startTracking(LOOK_AT_POS_Y, 0f);
 		this.getDataTracker().startTracking(LOOK_AT_POS_Z, 0f);
@@ -101,6 +109,10 @@ public class EntityPC extends Entity{
 		this.getDataTracker().set(LOOK_AT_POS_X, tag.getFloat("LookAtX"));
 		this.getDataTracker().set(LOOK_AT_POS_Y, tag.getFloat("LookAtY"));
 		this.getDataTracker().set(LOOK_AT_POS_Z, tag.getFloat("LookAtZ"));
+		
+		if(tag.contains("Owner")){
+			this.getDataTracker().set(OWNER_UUID, tag.getString("Owner"));
+		}
 		
 		if(tag.contains("X64")) {
 			this.getDataTracker().set(SIXTY_FOUR_BIT, tag.getBoolean("X64"));
@@ -147,10 +159,12 @@ public class EntityPC extends Entity{
 		tag.putBoolean("GpuInstalled", this.getDataTracker().get(GPU_IN_PCI_SLOT));
 		tag.putString("HardDriveFileName", this.getDataTracker().get(HARD_DRIVE_FILE_NAME));
 		tag.putBoolean("MotherboardInstalled", this.getDataTracker().get(MOTHERBOARD_INSTALLED));
+		tag.putString("Owner", this.getDataTracker().get(OWNER_UUID));
 	}
 	
 	public String getHardDriveFileName() { return this.getDataTracker().get(HARD_DRIVE_FILE_NAME); }
 	public String getIsoFileName() { return this.getDataTracker().get(ISO_FILE_NAME); }
+	public String getOwner() { return this.getDataTracker().get(OWNER_UUID); }
 	public int getGigsOfRamInSlot0() { return this.getDataTracker().get(GB_OF_RAM_IN_SLOT_0); }
 	public int getGigsOfRamInSlot1() { return this.getDataTracker().get(GB_OF_RAM_IN_SLOT_1); }
 	public int getCpuDividedBy() { return this.getDataTracker().get(CPU_DIVIDED_BY); }
@@ -159,6 +173,7 @@ public class EntityPC extends Entity{
 	public boolean getGlassSidepanel() { return this.getDataTracker().get(GLASS_SIDEPANEL); }
 	public boolean get64Bit() { return this.getDataTracker().get(SIXTY_FOUR_BIT); }
 	
+	public void setOwner(String uid) { this.getDataTracker().set(OWNER_UUID, uid); }
 	public void setGigsOfRamInSlot0(int gb) { this.getDataTracker().set(GB_OF_RAM_IN_SLOT_0, gb); }
 	public void setGigsOfRamInSlot1(int gb) { this.getDataTracker().set(GB_OF_RAM_IN_SLOT_1, gb); }
 	public void setGpuInstalled(boolean installed) { this.getDataTracker().set(GPU_IN_PCI_SLOT, installed); }
@@ -171,7 +186,7 @@ public class EntityPC extends Entity{
 	@Override
 	public boolean interact(PlayerEntity player, Hand hand) {
 		if(!player.world.isClient) {
-			if(player.isSneaking() && MCVmComputersMod.vmEntityID != this.getEntityId()) {
+			if(player.isSneaking() && player.getUuid().toString().equals(this.getOwner())) {
 				this.kill();
 				if(this.getGlassSidepanel()) {
 					player.world.spawnEntity(new ItemEntity(player.world,
@@ -210,7 +225,7 @@ public class EntityPC extends Entity{
 				if(!this.getHardDriveFileName().isEmpty()) {
 					player.world.spawnEntity(new ItemEntity(player.world,
 							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							ItemHarddrive.createHardDrive(this.getHardDriveFileName())));
+							ItemHarddrive.createHardDrive(this.getHardDriveFileName(), this.getOwner())));
 				}
 				if(this.getMotherboardInstalled()) {
 					player.world.spawnEntity(new ItemEntity(player.world,
@@ -260,7 +275,11 @@ public class EntityPC extends Entity{
 			}
 		}else {
 			if(!player.isSneaking())
-				MinecraftClient.getInstance().openScreen(new GuiPCEditing(this));
+				if(this.getOwner().equals(player.getUuid().toString())) {
+					ClientMod.currentPC = this;
+					MainMod.pcOpenGui.run();
+				}else
+					player.sendMessage(new LiteralText("This computer is not yours!").formatted(Formatting.RED));
 		}
 		return true;
 	}

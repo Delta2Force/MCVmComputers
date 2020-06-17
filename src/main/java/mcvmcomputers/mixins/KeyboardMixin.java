@@ -1,6 +1,6 @@
 package mcvmcomputers.mixins;
 
-import static mcvmcomputers.ClientInitializer.*;
+import static mcvmcomputers.ClientMod.*;
 
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -8,9 +8,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import mcvmcomputers.MCVmComputersMod;
-import mcvmcomputers.gui.GuiFocus;
-import mcvmcomputers.gui.setup.pages.SetupPageUnfocusBinding;
+import mcvmcomputers.ClientMod;
+import mcvmcomputers.MainMod;
+import mcvmcomputers.client.gui.GuiFocus;
+import mcvmcomputers.client.gui.setup.pages.SetupPageUnfocusBinding;
 import mcvmcomputers.utils.KeyConverter;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
@@ -21,9 +22,9 @@ public class KeyboardMixin {
 	public void onKey(long window, int key, int scancode, int i, int j, CallbackInfo ci) {
 		MinecraftClient mcc = MinecraftClient.getInstance();
 		 if (window == mcc.getWindow().getHandle()) {
-			 if(MCVmComputersMod.vmTurnedOn && mcc.currentScreen instanceof GuiFocus) {
+			 if(ClientMod.vmTurnedOn && mcc.currentScreen instanceof GuiFocus) {
 				 if(i != 2) {
-					 MCVmComputersMod.vmKeyboardScancodes.addAll(KeyConverter.toVBKey(key, i));
+					 ClientMod.vmKeyboardScancodes.addAll(KeyConverter.toVBKey(key, i));
 				 }
 			 }else if(SetupPageUnfocusBinding.changeBinding) {
 				 if(i == GLFW.GLFW_PRESS) {
