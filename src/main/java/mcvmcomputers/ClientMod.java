@@ -165,6 +165,7 @@ public class ClientMod implements ClientModInitializer{
 		if(vmTextureBytes != null) {
 			if(vmScreenTextures.containsKey(mcc.player.getUuid())) {
 				MinecraftClient.getInstance().getTextureManager().destroyTexture(vmScreenTextures.get(mcc.player.getUuid()));
+				vmScreenTextures.remove(mcc.player.getUuid());
 			}
 			
 			Deflater def = new Deflater();
@@ -188,9 +189,11 @@ public class ClientMod implements ClientModInitializer{
 			if(ni != null) {
 				if(vmScreenTextureNI.containsKey(mcc.player.getUuid())) {
 					vmScreenTextureNI.get(mcc.player.getUuid()).close();
+					vmScreenTextureNI.remove(mcc.player.getUuid());
 				}
 				if(vmScreenTextureNIBT.containsKey(mcc.player.getUuid())) {
 					vmScreenTextureNIBT.get(mcc.player.getUuid()).close();
+					vmScreenTextureNIBT.remove(mcc.player.getUuid());
 				}
 				vmScreenTextureNI.put(mcc.player.getUuid(), ni);
 				NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
@@ -213,12 +216,15 @@ public class ClientMod implements ClientModInitializer{
 				if(!pcOwner.equals(mcc.player.getUuid())) {
 					if(ClientMod.vmScreenTextures.containsKey(pcOwner)) {
 						mcc.getTextureManager().destroyTexture(ClientMod.vmScreenTextures.get(pcOwner));
+						vmScreenTextures.remove(mcc.player.getUuid());
 					}
 					if(ClientMod.vmScreenTextureNI.containsKey(pcOwner)) {
 						ClientMod.vmScreenTextureNI.get(pcOwner).close();
+						vmScreenTextureNI.remove(mcc.player.getUuid());
 					}
 					if(ClientMod.vmScreenTextureNIBT.containsKey(pcOwner)) {
 						ClientMod.vmScreenTextureNI.get(pcOwner).close();
+						vmScreenTextureNIBT.remove(mcc.player.getUuid());
 					}
 					try {
 						Inflater inf = new Inflater();
@@ -245,12 +251,15 @@ public class ClientMod implements ClientModInitializer{
 				MinecraftClient mcc = MinecraftClient.getInstance();
 				if(ClientMod.vmScreenTextures.containsKey(pcOwner)) {
 					mcc.getTextureManager().destroyTexture(ClientMod.vmScreenTextures.get(pcOwner));
+					vmScreenTextures.remove(mcc.player.getUuid());
 				}
 				if(ClientMod.vmScreenTextureNI.containsKey(pcOwner)) {
 					ClientMod.vmScreenTextureNI.get(pcOwner).close();
+					vmScreenTextureNI.remove(mcc.player.getUuid());
 				}
 				if(ClientMod.vmScreenTextureNIBT.containsKey(pcOwner)) {
 					ClientMod.vmScreenTextureNIBT.get(pcOwner).close();
+					vmScreenTextureNIBT.remove(mcc.player.getUuid());
 				}
 			});
 		});
