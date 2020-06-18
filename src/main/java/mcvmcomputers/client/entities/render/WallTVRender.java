@@ -3,7 +3,7 @@ package mcvmcomputers.client.entities.render;
 import java.util.UUID;
 
 import mcvmcomputers.ClientMod;
-import mcvmcomputers.entities.EntityFlatscreenTVNoStand;
+import mcvmcomputers.entities.EntityWallTV;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
@@ -20,18 +20,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
-public class FlatscreenTVNoStandRender extends EntityRenderer<EntityFlatscreenTVNoStand>{
-	public FlatscreenTVNoStandRender(EntityRenderDispatcher dispatcher) {
+public class WallTVRender extends EntityRenderer<EntityWallTV>{
+	public WallTVRender(EntityRenderDispatcher dispatcher) {
 		super(dispatcher);
 	}
 
 	@Override
-	public Identifier getTexture(EntityFlatscreenTVNoStand entity) {
+	public Identifier getTexture(EntityWallTV entity) {
 		return null;
 	}
 	
 	@Override
-	public void render(EntityFlatscreenTVNoStand entity, float yaw, float tickDelta, MatrixStack matrices,
+	public void render(EntityWallTV entity, float yaw, float tickDelta, MatrixStack matrices,
 			VertexConsumerProvider vertexConsumers, int light) {
 		if(entity.getOwnerUUID().isEmpty()) {
 			return;
@@ -41,7 +41,10 @@ public class FlatscreenTVNoStandRender extends EntityRenderer<EntityFlatscreenTV
 		matrices.translate(0, 0.5, 0);
 		Quaternion look = MVCUtils.lookAt(entity.getPosVector(), entity.getLookAtPos());
 		matrices.multiply(look);
-		MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemList.ITEM_FLATSCREENTV_NOSTAND), Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
+		matrices.push();
+		matrices.translate(0, 0, -0.1);
+		MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemList.ITEM_WALLTV), Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
+		matrices.pop();
 		if(ClientMod.vmScreenTextures.containsKey(UUID.fromString(entity.getOwnerUUID()))) {
 			matrices.push();
 			matrices.scale(0.0198f, 0.014f, 0.006f);

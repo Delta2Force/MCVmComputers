@@ -25,7 +25,7 @@ import io.netty.buffer.Unpooled;
 import mcvmcomputers.client.entities.render.CRTScreenRender;
 import mcvmcomputers.client.entities.render.DeliveryChestRender;
 import mcvmcomputers.client.entities.render.FlatScreenRender;
-import mcvmcomputers.client.entities.render.FlatscreenTVNoStandRender;
+import mcvmcomputers.client.entities.render.WallTVRender;
 import mcvmcomputers.client.entities.render.ItemPreviewRender;
 import mcvmcomputers.client.entities.render.KeyboardRender;
 import mcvmcomputers.client.entities.render.MouseRender;
@@ -326,7 +326,7 @@ public class ClientMod implements ClientModInitializer{
 		EntityRendererRegistry.INSTANCE.register(EntityList.FLATSCREEN,
 				(entityRenderDispatcher, context) -> new FlatScreenRender(entityRenderDispatcher));
 		EntityRendererRegistry.INSTANCE.register(EntityList.FLATSCREENTV_NOSTAND,
-				(entityRenderDispatcher, context) -> new FlatscreenTVNoStandRender(entityRenderDispatcher));
+				(entityRenderDispatcher, context) -> new WallTVRender(entityRenderDispatcher));
 		EntityRendererRegistry.INSTANCE.register(EntityList.PC,
 				(entityRenderDispatcher, context) -> new PCRender(entityRenderDispatcher));
 		EntityRendererRegistry.INSTANCE.register(EntityList.DELIVERY_CHEST,

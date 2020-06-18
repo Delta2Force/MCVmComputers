@@ -41,8 +41,8 @@ public class EntityList {
 						.size(new EntityDimensions(0.8f, 0.8f, true)).trackable(60, 2,true).build());
 		FLATSCREENTV_NOSTAND = Registry.register(Registry.ENTITY_TYPE, 
 								new Identifier("mcvmcomputers", "flatscreen_tv_nostand"),
-								FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityFlatscreenTVNoStand::new)
-								.size(new EntityDimensions(2f, 1.2f, true)).trackable(60, 2,true).build());
+								FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityWallTV::new)
+								.size(new EntityDimensions(1f, 1.2f, true)).trackable(60, 2,true).build());
 		PC = Registry.register(Registry.ENTITY_TYPE, 
 				new Identifier("mcvmcomputers", "pc"),
 				FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityPC::new)

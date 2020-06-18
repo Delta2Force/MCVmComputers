@@ -17,27 +17,27 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EntityFlatscreenTVNoStand extends Entity{
+public class EntityWallTV extends Entity{
 	private static final TrackedData<Float> LOOK_AT_POS_X =
-			DataTracker.registerData(EntityFlatscreenTVNoStand.class, TrackedDataHandlerRegistry.FLOAT);
+			DataTracker.registerData(EntityWallTV.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Float> LOOK_AT_POS_Y =
-			DataTracker.registerData(EntityFlatscreenTVNoStand.class, TrackedDataHandlerRegistry.FLOAT);
+			DataTracker.registerData(EntityWallTV.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Float> LOOK_AT_POS_Z =
-			DataTracker.registerData(EntityFlatscreenTVNoStand.class, TrackedDataHandlerRegistry.FLOAT);
+			DataTracker.registerData(EntityWallTV.class, TrackedDataHandlerRegistry.FLOAT);
 	
 	private static final TrackedData<String> OWNER_UUID =
-			DataTracker.registerData(EntityFlatscreenTVNoStand.class, TrackedDataHandlerRegistry.STRING);
+			DataTracker.registerData(EntityWallTV.class, TrackedDataHandlerRegistry.STRING);
 	
-	public EntityFlatscreenTVNoStand(EntityType<?> type, World world) {
+	public EntityWallTV(EntityType<?> type, World world) {
 		super(type, world);
 	}
 	
-	public EntityFlatscreenTVNoStand(World world, double x, double y, double z) {
+	public EntityWallTV(World world, double x, double y, double z) {
 		this(EntityList.FLATSCREENTV_NOSTAND, world);
 		this.updatePosition(x, y, z);
 	}
 	
-	public EntityFlatscreenTVNoStand(World world, double x, double y, double z, Vec3d lookAt, String uuid) {
+	public EntityWallTV(World world, double x, double y, double z, Vec3d lookAt, String uuid) {
 		this(EntityList.FLATSCREENTV_NOSTAND, world);
 		this.updatePosition(x, y, z);
 		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
@@ -81,7 +81,7 @@ public class EntityFlatscreenTVNoStand extends Entity{
 				this.kill();
 				player.world.spawnEntity(new ItemEntity(player.world,
 						this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-						new ItemStack(ItemList.ITEM_FLATSCREENTV_NOSTAND)));
+						new ItemStack(ItemList.ITEM_WALLTV)));
 			}
 		}else {
 			if(!player.isSneaking()) {

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import mcvmcomputers.entities.EntityCRTScreen;
 import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.entities.EntityFlatScreen;
-import mcvmcomputers.entities.EntityFlatscreenTVNoStand;
+import mcvmcomputers.entities.EntityWallTV;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.entities.EntityKeyboard;
 import mcvmcomputers.entities.EntityList;
@@ -57,7 +57,7 @@ public class ClientPlayNetworkMixin {
 	    }else if (entityType == EntityList.DELIVERY_CHEST) {
 	    	entity15 = new EntityDeliveryChest(this.world, d, e, f);
 	    }else if (entityType == EntityList.FLATSCREENTV_NOSTAND) {
-	    	entity15 = new EntityFlatscreenTVNoStand(this.world, d, e, f);
+	    	entity15 = new EntityWallTV(this.world, d, e, f);
 	    }
 	    
 	    if (entity15 != null) {

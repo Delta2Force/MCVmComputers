@@ -1,7 +1,7 @@
 package mcvmcomputers.item;
 
 import mcvmcomputers.ClientMod;
-import mcvmcomputers.entities.EntityFlatscreenTVNoStand;
+import mcvmcomputers.entities.EntityWallTV;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -13,9 +13,9 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class ItemFlatscreenTVNoStand extends OrderableItem{
+public class ItemWallTV extends OrderableItem{
 
-	public ItemFlatscreenTVNoStand(Settings settings) {
+	public ItemWallTV(Settings settings) {
 		super(settings, 18);
 	}
 	
@@ -24,7 +24,7 @@ public class ItemFlatscreenTVNoStand extends OrderableItem{
 		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
 			HitResult hr = user.rayTrace(5, 0f, false);
-			EntityFlatscreenTVNoStand ek = new EntityFlatscreenTVNoStand(world, 
+			EntityWallTV ek = new EntityWallTV(world, 
 												hr.getPos().getX(),
 												hr.getPos().getY(),
 												hr.getPos().getZ(),
