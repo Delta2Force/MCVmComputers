@@ -294,8 +294,8 @@ public class TabletOS {
 				}
 				if(targetShopPy < 0) {
 					targetShopPy = 0;
-				}else if(targetShopPy > 135) {
-					targetShopPy = 135;
+				}else if(targetShopPy > offY - 248) {
+					targetShopPy = offY - 248;
 				}
 				if(shopState == ShopState.PC_PARTS) {
 					shopPx = MVCUtils.lerp(shopPx, 256, deltaTime*5f);
@@ -392,8 +392,8 @@ public class TabletOS {
 				}
 				if(targetShopPy < 0) {
 					targetShopPy = 0;
-				}else if(targetShopPy > 190) {
-					targetShopPy = 190;
+				}else if(targetShopPy > offY - 248) {
+					targetShopPy = offY - 248;
 				}
 				if(shopState == ShopState.PERIPHERALS) {
 					shopPx = MVCUtils.lerp(shopPx, 256, deltaTime*5f);
