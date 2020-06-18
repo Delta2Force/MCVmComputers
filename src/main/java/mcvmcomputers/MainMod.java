@@ -3,9 +3,13 @@ package mcvmcomputers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import com.google.common.collect.ImmutableList;
 
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.entities.EntityList;
@@ -401,11 +405,20 @@ public class MainMod implements ModInitializer{
 	}
 	
 	private static void removeStck(PlayerInventory inv, ItemStack is) {
-		for(ItemStack i : inv.main) {
-			if(i.getItem().equals(is.getItem()) && ItemStack.areTagsEqual(i, is)) {
-				i.decrement(1);
-			}
-		}
+		Iterator var2 = ImmutableList.of(inv.main, inv.armor, inv.offHand).iterator();
+
+	      while(var2.hasNext()) {
+	         List<ItemStack> list = (List)var2.next();
+	         Iterator var4 = list.iterator();
+
+	         while(var4.hasNext()) {
+	            ItemStack itemStack = (ItemStack)var4.next();
+	            if (!itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(is)) {
+	            	itemStack.decrement(1);
+	            	return;
+	            }
+	         }
+	      }
 		throw new RuntimeException("Doesn't contain item!");
 	}
 }
