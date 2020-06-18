@@ -1,7 +1,7 @@
 package mcvmcomputers.item;
 
 import mcvmcomputers.ClientMod;
-import mcvmcomputers.entities.EntityKeyboard;
+import mcvmcomputers.entities.EntityFlatscreenTVNoStand;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -13,23 +13,24 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class ItemKeyboard extends OrderableItem{
-	public ItemKeyboard(Settings settings) {
-		super(settings, 4);
+public class ItemFlatscreenTVNoStand extends OrderableItem{
+
+	public ItemFlatscreenTVNoStand(Settings settings) {
+		super(settings, 18);
 	}
 	
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
-			HitResult hr = user.rayTrace(10, 0f, false);
-			EntityKeyboard ek = new EntityKeyboard(world, 
-										hr.getPos().getX(),
-										hr.getPos().getY(),
-										hr.getPos().getZ(),
-										new Vec3d(user.getPosVector().x,
-													hr.getPos().getY(),
-													user.getPosVector().z));
+			HitResult hr = user.rayTrace(5, 0f, false);
+			EntityFlatscreenTVNoStand ek = new EntityFlatscreenTVNoStand(world, 
+												hr.getPos().getX(),
+												hr.getPos().getY(),
+												hr.getPos().getZ(),
+												new Vec3d(user.getPosVector().x,
+															hr.getPos().getY(),
+															user.getPosVector().z), user.getUuid().toString());
 			world.spawnEntity(ek);
 		}
 		
@@ -43,4 +44,5 @@ public class ItemKeyboard extends OrderableItem{
 		
 		return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, user.getStackInHand(hand));
 	}
+
 }
