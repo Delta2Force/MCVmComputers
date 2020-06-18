@@ -315,8 +315,8 @@ public class GuiPCEditing extends Screen{
 											xOffCount += 1;
 											if(xOffCount >= 3) {
 												xOffCount = 0;
-											    lastXOffset = 0;
-											    lastYOffset += 13;
+												lastXOffset = 0;
+												lastYOffset += 13;
 											}
 											count++;
 		    							}
