@@ -131,7 +131,6 @@ public class MainMod implements ModInitializer{
 						if(is.getItem() instanceof ItemHarddrive) {
 							CompoundTag ct = is.getOrCreateTag();
 							ct.putString("vhdfile", newHddName);
-							ct.putUuid("owner", packetContext.getPlayer().getUuid());
 							break;
 						}
 					}
@@ -153,7 +152,7 @@ public class MainMod implements ModInitializer{
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(!pc.getMotherboardInstalled()) {
-									packetContext.getPlayer().inventory.removeOne(new ItemStack(lookingFor));
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setMotherboardInstalled(true);
 									pc.set64Bit(x64);
 								}
@@ -178,7 +177,7 @@ public class MainMod implements ModInitializer{
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(!pc.getGpuInstalled()) {
-									packetContext.getPlayer().inventory.removeOne(new ItemStack(lookingFor));
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setGpuInstalled(true);
 								}
 							}
@@ -204,7 +203,7 @@ public class MainMod implements ModInitializer{
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getCpuDividedBy() == 0) {
-									packetContext.getPlayer().inventory.removeOne(new ItemStack(lookingFor));
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setCpuDividedBy(dividedBy);
 								}
 							}
@@ -230,10 +229,10 @@ public class MainMod implements ModInitializer{
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getGigsOfRamInSlot0() == 0) {
-									packetContext.getPlayer().inventory.removeOne(new ItemStack(lookingFor));
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setGigsOfRamInSlot0(gb);
 								} else if(pc.getGigsOfRamInSlot1() == 0) {
-									packetContext.getPlayer().inventory.removeOne(new ItemStack(lookingFor));
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setGigsOfRamInSlot1(gb);
 								}
 							}
@@ -250,7 +249,7 @@ public class MainMod implements ModInitializer{
 			int entityId = attachedData.readInt();
 			
 			packetContext.getTaskQueue().execute(() -> {
-				ItemStack lookingFor = ItemHarddrive.createHardDrive(vhdname, packetContext.getPlayer().getUuid().toString());
+				ItemStack lookingFor = ItemHarddrive.createHardDrive(vhdname);
 				if(packetContext.getPlayer().inventory.contains(lookingFor)) {
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
@@ -258,7 +257,7 @@ public class MainMod implements ModInitializer{
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getHardDriveFileName().isEmpty()) {
-									packetContext.getPlayer().inventory.removeOne(lookingFor);
+									removeStck(packetContext.getPlayer().inventory, lookingFor);
 									pc.setHardDriveFileName(vhdname);
 								}
 							}
@@ -399,5 +398,14 @@ public class MainMod implements ModInitializer{
 				}
 			});
 		});
+	}
+	
+	private static void removeStck(PlayerInventory inv, ItemStack is) {
+		for(ItemStack i : inv.main) {
+			if(i.getItem().equals(is.getItem()) && ItemStack.areTagsEqual(i, is)) {
+				i.decrement(1);
+			}
+		}
+		throw new RuntimeException("Doesn't contain item!");
 	}
 }
