@@ -305,23 +305,23 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.enableDepthTest();
 						for(ItemStack is : minecraft.player.inventory.main) {
 							if(is.getItem() instanceof ItemHarddrive) {
-                                if(is.getTag() != null){
-                                    if(is.getTag().contains("vhdfile")) {
+								if(is.getTag() != null){
+									if(is.getTag().contains("vhdfile")) {
 		    							String file = is.getTag().getString("vhdfile");
-                                        if(new File(ClientMod.vhdDirectory, file).exists()) {
-                                            int w = Math.max(50, this.font.getStringWidth(file)+4);
-                                            this.addButton(new ButtonWidget(this.width/2 + 20 + lastXOffset, this.height / 2 + 40 + lastYOffset, Math.max(50, this.font.getStringWidth(file)+4), 12, file, (btn) -> this.addHardDrive(file)));
-                                            lastXOffset += w+1;
-                                            xOffCount += 1;
-                                            if(xOffCount >= 3) {
-                                                xOffCount = 0;
-                                                lastXOffset = 0;
-                                                lastYOffset += 13;
-                                            }
-                                            count++;
-                                        }
-								    }
-                                }
+		    							if(new File(ClientMod.vhdDirectory, file).exists()) {
+		    								int w = Math.max(50, this.font.getStringWidth(file)+4);
+		    								this.addButton(new ButtonWidget(this.width/2 + 20 + lastXOffset, this.height / 2 + 40 + lastYOffset, Math.max(50, this.font.getStringWidth(file)+4), 12, file, (btn) -> this.addHardDrive(file)));
+		    								lastXOffset += w+1;
+											xOffCount += 1;
+											if(xOffCount >= 3) {
+												xOffCount = 0;
+											    lastXOffset = 0;
+											    lastYOffset += 13;
+											}
+											count++;
+		    							}
+									}
+								}
 							}
 						}
 						if(count == 0) {
