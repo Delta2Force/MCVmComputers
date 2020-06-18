@@ -33,12 +33,12 @@ public class EntityWallTV extends Entity{
 	}
 	
 	public EntityWallTV(World world, double x, double y, double z) {
-		this(EntityList.FLATSCREENTV_NOSTAND, world);
+		this(EntityList.WALLTV, world);
 		this.updatePosition(x, y, z);
 	}
 	
 	public EntityWallTV(World world, double x, double y, double z, Vec3d lookAt, String uuid) {
-		this(EntityList.FLATSCREENTV_NOSTAND, world);
+		this(EntityList.WALLTV, world);
 		this.updatePosition(x, y, z);
 		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
 		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);

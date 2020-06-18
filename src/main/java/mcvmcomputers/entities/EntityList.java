@@ -14,7 +14,7 @@ public class EntityList {
 	public static EntityType<Entity> MOUSE;
 	public static EntityType<Entity> CRT_SCREEN;
 	public static EntityType<Entity> FLATSCREEN;
-	public static EntityType<Entity> FLATSCREENTV_NOSTAND;
+	public static EntityType<Entity> WALLTV;
 	public static EntityType<Entity> PC;
 	public static EntityType<Entity> DELIVERY_CHEST;
 
@@ -39,8 +39,8 @@ public class EntityList {
 						new Identifier("mcvmcomputers", "flat_screen"),
 						FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityFlatScreen::new)
 						.size(new EntityDimensions(0.8f, 0.8f, true)).trackable(60, 2,true).build());
-		FLATSCREENTV_NOSTAND = Registry.register(Registry.ENTITY_TYPE, 
-								new Identifier("mcvmcomputers", "flatscreen_tv_nostand"),
+		WALLTV = Registry.register(Registry.ENTITY_TYPE, 
+								new Identifier("mcvmcomputers", "walltv"),
 								FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityWallTV::new)
 								.size(new EntityDimensions(1f, 1.2f, true)).trackable(60, 2,true).build());
 		PC = Registry.register(Registry.ENTITY_TYPE, 

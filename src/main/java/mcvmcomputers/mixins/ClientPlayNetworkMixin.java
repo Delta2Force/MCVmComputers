@@ -56,7 +56,7 @@ public class ClientPlayNetworkMixin {
 	    	entity15 = new EntityPC(this.world, d, e, f);
 	    }else if (entityType == EntityList.DELIVERY_CHEST) {
 	    	entity15 = new EntityDeliveryChest(this.world, d, e, f);
-	    }else if (entityType == EntityList.FLATSCREENTV_NOSTAND) {
+	    }else if (entityType == EntityList.WALLTV) {
 	    	entity15 = new EntityWallTV(this.world, d, e, f);
 	    }
 	    

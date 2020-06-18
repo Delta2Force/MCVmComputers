@@ -49,7 +49,7 @@ public class WallTVRender extends EntityRenderer<EntityWallTV>{
 			matrices.push();
 			matrices.scale(0.0198f, 0.014f, 0.006f);
 			matrices.multiply(new Quaternion(0, 0, 180, true));
-			matrices.translate(-63.1f, -45.7f, -8f);
+			matrices.translate(-63.1f, -45.7f, -24.4f);
 			matrices.scale(0.736f, 0.597f, 1f);
 			matrices.translate(22, 1.6f, 7.6f);
 			Matrix4f matrix4f = matrices.peek().getModel();

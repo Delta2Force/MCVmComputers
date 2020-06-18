@@ -325,7 +325,7 @@ public class ClientMod implements ClientModInitializer{
 				(entityRenderDispatcher, context) -> new CRTScreenRender(entityRenderDispatcher));
 		EntityRendererRegistry.INSTANCE.register(EntityList.FLATSCREEN,
 				(entityRenderDispatcher, context) -> new FlatScreenRender(entityRenderDispatcher));
-		EntityRendererRegistry.INSTANCE.register(EntityList.FLATSCREENTV_NOSTAND,
+		EntityRendererRegistry.INSTANCE.register(EntityList.WALLTV,
 				(entityRenderDispatcher, context) -> new WallTVRender(entityRenderDispatcher));
 		EntityRendererRegistry.INSTANCE.register(EntityList.PC,
 				(entityRenderDispatcher, context) -> new PCRender(entityRenderDispatcher));
