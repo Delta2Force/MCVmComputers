@@ -47,7 +47,9 @@ public class EntityCRTScreen extends Entity{
 	}
 	
 	public Vec3d getLookAtPos() {
-		return new Vec3d(this.getDataTracker().get(LOOK_AT_POS_X), this.getDataTracker().get(LOOK_AT_POS_Y), this.getDataTracker().get(LOOK_AT_POS_Z));
+		return new Vec3d(this.getDataTracker().get(LOOK_AT_POS_X),
+						 this.getDataTracker().get(LOOK_AT_POS_Y),
+						 this.getDataTracker().get(LOOK_AT_POS_Z));
 	}
 
 	@Override
@@ -83,7 +85,9 @@ public class EntityCRTScreen extends Entity{
 			}
 		}else {
 			if(!player.isSneaking()) {
-				MainMod.focus.run();
+				if(this.getOwnerUUID().equals(player.getUuid().toString())) {
+					MainMod.focus.run();
+				}
 			}
 		}
 		return true;
