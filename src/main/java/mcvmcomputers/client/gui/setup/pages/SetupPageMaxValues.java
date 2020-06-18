@@ -208,7 +208,7 @@ public class SetupPageMaxValues extends SetupPage{
 			this.videoMemory(videoMemory.getText());
 			this.setupGui.addElement(maxRam);
 			this.setupGui.addElement(videoMemory);
-			this.setupGui.addButton(new ButtonWidget(setupGui.width/2 - 50, setupGui.height - 50, 100, 20, "Confirm", (btn) -> confirmButton(btn)));
+			this.setupGui.addButton(new ButtonWidget(setupGui.width/2 - 50, setupGui.height - 40, 100, 20, "Confirm", (btn) -> confirmButton(btn)));
 		}
 	}
 
