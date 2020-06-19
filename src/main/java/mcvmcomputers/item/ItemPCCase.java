@@ -5,6 +5,7 @@ import mcvmcomputers.MainMod;
 import mcvmcomputers.entities.EntityPC;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -30,7 +31,7 @@ public class ItemPCCase extends OrderableItem{
 									hr.getPos().getZ(),
 									new Vec3d(user.getPosVector().x,
 												hr.getPos().getY(),
-												user.getPosVector().z), user.getUuid());
+												user.getPosVector().z), user.getUuid(), user.getStackInHand(hand).getTag());
 			world.spawnEntity(ek);
 			MainMod.computers.put(user.getUuid(), ek);
 		}
@@ -44,5 +45,19 @@ public class ItemPCCase extends OrderableItem{
 		}
 		
 		return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, user.getStackInHand(hand));
+	}
+	
+	public static ItemStack createPCStackByEntity(EntityPC pc) {
+		ItemStack is = new ItemStack(ItemList.PC_CASE);
+		CompoundTag ct = is.getOrCreateTag();
+		ct.putBoolean("x64", pc.get64Bit());
+		ct.putBoolean("MoboInstalled", pc.getMotherboardInstalled());
+		ct.putBoolean("GPUInstalled", pc.getGpuInstalled());
+		ct.putInt("CPUDividedBy", pc.getCpuDividedBy());
+		ct.putInt("RAMSlot0", pc.getGigsOfRamInSlot0());
+		ct.putInt("RAMSlot1", pc.getGigsOfRamInSlot1());
+		ct.putString("VHDName", pc.getHardDriveFileName());
+		ct.putString("ISOName", pc.getIsoFileName());
+		return is;
 	}
 }

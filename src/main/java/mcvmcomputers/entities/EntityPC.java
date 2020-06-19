@@ -6,6 +6,8 @@ import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
+import mcvmcomputers.item.ItemPCCase;
+import mcvmcomputers.item.ItemPCCaseSidepanel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -65,22 +67,36 @@ public class EntityPC extends Entity{
 		this.updatePosition(x, y, z);
 	}
 	
-	public EntityPC(World world, double x, double y, double z, Vec3d lookAt, UUID owner) {
+	public EntityPC(World world, double x, double y, double z, Vec3d lookAt, UUID owner, CompoundTag tag) {
 		this(EntityList.PC, world);
 		this.updatePosition(x, y, z);
 		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
 		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);
 		this.getDataTracker().set(LOOK_AT_POS_Z, (float)lookAt.z);
 		this.getDataTracker().set(OWNER_UUID, owner.toString());
+		
+		if(tag != null) {
+			if(tag.contains("x64"))
+				this.getDataTracker().set(SIXTY_FOUR_BIT, tag.getBoolean("x64"));
+			if(tag.contains("MoboInstalled"))
+				this.getDataTracker().set(MOTHERBOARD_INSTALLED, tag.getBoolean("MoboInstalled"));
+			if(tag.contains("GPUInstalled"))
+				this.getDataTracker().set(GPU_IN_PCI_SLOT, tag.getBoolean("GPUInstalled"));
+			if(tag.contains("CPUDividedBy"))
+				this.getDataTracker().set(CPU_DIVIDED_BY, tag.getInt("CPUDividedBy"));
+			if(tag.contains("RAMSlot0"))
+				this.getDataTracker().set(GB_OF_RAM_IN_SLOT_0, tag.getInt("RAMSlot0"));
+			if(tag.contains("RAMSlot1"))
+				this.getDataTracker().set(GB_OF_RAM_IN_SLOT_1, tag.getInt("RAMSlot1"));
+			if(tag.contains("VHDName"))
+				this.getDataTracker().set(HARD_DRIVE_FILE_NAME, tag.getString("VHDName"));
+			if(tag.contains("ISOName"))
+				this.getDataTracker().set(ISO_FILE_NAME, tag.getString("ISOName"));
+		}
 	}
 	
-	public EntityPC(World world, double x, double y, double z, Vec3d lookAt, UUID owner, boolean glassSidepanel) {
-		this(EntityList.PC, world);
-		this.updatePosition(x, y, z);
-		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
-		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);
-		this.getDataTracker().set(LOOK_AT_POS_Z, (float)lookAt.z);
-		this.getDataTracker().set(OWNER_UUID, owner.toString());
+	public EntityPC(World world, double x, double y, double z, Vec3d lookAt, UUID owner, boolean glassSidepanel, CompoundTag tag) {
+		this(world, x, y, z, lookAt, owner, tag);
 		this.getDataTracker().set(GLASS_SIDEPANEL, glassSidepanel);
 	}
 	
@@ -187,91 +203,16 @@ public class EntityPC extends Entity{
 	public boolean interact(PlayerEntity player, Hand hand) {
 		if(!player.world.isClient) {
 			if(player.isSneaking() && player.getUuid().toString().equals(this.getOwner())) {
-				this.kill();
 				if(this.getGlassSidepanel()) {
 					player.world.spawnEntity(new ItemEntity(player.world,
 							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							new ItemStack(ItemList.PC_CASE_SIDEPANEL)));
+							ItemPCCaseSidepanel.createPCStackByEntity(this)));
 				}else {
 					player.world.spawnEntity(new ItemEntity(player.world,
 							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							new ItemStack(ItemList.PC_CASE)));
+							ItemPCCase.createPCStackByEntity(this)));
 				}
-				if(this.getCpuDividedBy() > 0) {
-					Item i = null;
-					switch(this.getGigsOfRamInSlot0()) {
-					case 2:
-						i = ItemList.ITEM_CPU2;
-						break;
-					case 4:
-						i = ItemList.ITEM_CPU4;
-						break;
-					case 6:
-						i = ItemList.ITEM_CPU6;
-						break;
-					default:
-						i = Items.AIR;
-						break;
-					}
-					player.world.spawnEntity(new ItemEntity(player.world,
-							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							new ItemStack(i)));
-				}
-				if(this.getGpuInstalled()) {
-					player.world.spawnEntity(new ItemEntity(player.world,
-							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							new ItemStack(ItemList.ITEM_GPU)));
-				}
-				if(!this.getHardDriveFileName().isEmpty()) {
-					player.world.spawnEntity(new ItemEntity(player.world,
-							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							ItemHarddrive.createHardDrive(this.getHardDriveFileName())));
-				}
-				if(this.getMotherboardInstalled()) {
-					player.world.spawnEntity(new ItemEntity(player.world,
-							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							new ItemStack(ItemList.ITEM_MOTHERBOARD)));
-				}
-				if(this.getGigsOfRamInSlot0() > 0) {
-					Item i = null;
-					switch(this.getGigsOfRamInSlot0()) {
-					case 1:
-						i = ItemList.ITEM_RAM1G;
-						break;
-					case 2:
-						i = ItemList.ITEM_RAM2G;
-						break;
-					case 4:
-						i = ItemList.ITEM_RAM4G;
-						break;
-					default:
-						i = Items.AIR;
-						break;
-					}
-					player.world.spawnEntity(new ItemEntity(player.world,
-							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							new ItemStack(i)));
-				}
-				if(this.getGigsOfRamInSlot1() > 0) {
-					Item i = null;
-					switch(this.getGigsOfRamInSlot1()) {
-					case 1:
-						i = ItemList.ITEM_RAM1G;
-						break;
-					case 2:
-						i = ItemList.ITEM_RAM2G;
-						break;
-					case 4:
-						i = ItemList.ITEM_RAM4G;
-						break;
-					default:
-						i = Items.AIR;
-						break;
-					}
-					player.world.spawnEntity(new ItemEntity(player.world,
-							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-							new ItemStack(i)));
-				}
+				this.kill();
 			}
 		}else {
 			if(!player.isSneaking())
