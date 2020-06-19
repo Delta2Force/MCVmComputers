@@ -90,15 +90,17 @@ public class ItemPCCase extends OrderableItem{
 	
 	public static ItemStack createPCStackByEntity(EntityPC pc) {
 		ItemStack is = new ItemStack(ItemList.PC_CASE);
-		CompoundTag ct = is.getOrCreateTag();
-		ct.putBoolean("x64", pc.get64Bit());
-		ct.putBoolean("MoboInstalled", pc.getMotherboardInstalled());
-		ct.putBoolean("GPUInstalled", pc.getGpuInstalled());
-		ct.putInt("CPUDividedBy", pc.getCpuDividedBy());
-		ct.putInt("RAMSlot0", pc.getGigsOfRamInSlot0());
-		ct.putInt("RAMSlot1", pc.getGigsOfRamInSlot1());
-		ct.putString("VHDName", pc.getHardDriveFileName());
-		ct.putString("ISOName", pc.getIsoFileName());
+		if(pc.getMotherboardInstalled()) {
+			CompoundTag ct = is.getOrCreateTag();
+			ct.putBoolean("x64", pc.get64Bit());
+			ct.putBoolean("MoboInstalled", pc.getMotherboardInstalled());
+			ct.putBoolean("GPUInstalled", pc.getGpuInstalled());
+			ct.putInt("CPUDividedBy", pc.getCpuDividedBy());
+			ct.putInt("RAMSlot0", pc.getGigsOfRamInSlot0());
+			ct.putInt("RAMSlot1", pc.getGigsOfRamInSlot1());
+			ct.putString("VHDName", pc.getHardDriveFileName());
+			ct.putString("ISOName", pc.getIsoFileName());
+		}
 		return is;
 	}
 }
