@@ -1,13 +1,19 @@
 package mcvmcomputers.item;
 
+import java.util.List;
+
 import mcvmcomputers.ClientMod;
 import mcvmcomputers.entities.EntityPC;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
@@ -43,6 +49,41 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 		}
 		
 		return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, user.getStackInHand(hand));
+	}
+	
+	@Override
+	public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+		if(stack.getTag() != null) {
+			if (stack.getTag().contains("MoboInstalled")) {
+				if(stack.getTag().getBoolean("MoboInstalled")) {
+					tooltip.add(new LiteralText((stack.getTag().getBoolean("x64") ? "64-bit" : "32-bit") + " Motherboard").formatted(Formatting.GRAY));
+					if(stack.getTag().getBoolean("GPUInstalled"))
+						tooltip.add(new LiteralText("GPU installed").formatted(Formatting.GRAY));
+					if(stack.getTag().getInt("CPUDividedBy") > 0)
+						tooltip.add(new LiteralText("1/" + stack.getTag().getInt("CPUDividedBy") + " host CPU installed").formatted(Formatting.GRAY));
+					if(stack.getTag().getInt("RAMSlot0") > 0)
+						tooltip.add(new LiteralText(stack.getTag().getInt("RAMSlot0") + " GB of RAM in slot 1").formatted(Formatting.GRAY));
+					if(stack.getTag().getInt("RAMSlot1") > 0)
+						tooltip.add(new LiteralText(stack.getTag().getInt("RAMSlot1") + " GB of RAM in slot 2").formatted(Formatting.GRAY));
+					if(!stack.getTag().getString("VHDName").isEmpty())
+						tooltip.add(new LiteralText("Inserted hard drive: " + stack.getTag().getString("VHDName")).formatted(Formatting.GRAY));
+					if(!stack.getTag().getString("ISOName").isEmpty())
+						tooltip.add(new LiteralText("Inserted ISO: " + stack.getTag().getString("ISOName")).formatted(Formatting.GRAY));
+				}
+			}
+		}
+	}
+	
+	@Override
+	public Text getName(ItemStack stack) {
+		if(stack.getTag() != null) {
+			if (stack.getTag().contains("MoboInstalled")) {
+				if(stack.getTag().getBoolean("MoboInstalled")) {
+					return new LiteralText("Built PC");
+				}
+			}
+		}
+		return new LiteralText("PC case");
 	}
 	
 	public static ItemStack createPCStackByEntity(EntityPC pc) {
