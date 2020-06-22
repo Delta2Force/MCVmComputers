@@ -31,7 +31,7 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 			user.getStackInHand(hand).decrement(1);
 			HitResult hr = user.rayTrace(10, 0f, false);
 			EntityPC ek = new EntityPC(world, 
-									hr.getPos().getX() + 1,
+									hr.getPos().getX(),
 									hr.getPos().getY(),
 									hr.getPos().getZ(),
 									new Vec3d(user.getPosVector().x,
