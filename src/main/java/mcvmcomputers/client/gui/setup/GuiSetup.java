@@ -78,7 +78,9 @@ public class GuiSetup extends Screen{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			virtualBoxDirectory = set.vboxDirectory;
+			if(set.vboxDirectory != null) {
+				virtualBoxDirectory = set.vboxDirectory;
+			}
 			ClientMod.isoDirectory = new File(set.vmComputersDirectory, "isos");
 			ClientMod.vhdDirectory = new File(set.vmComputersDirectory, "vhds");
 		}
