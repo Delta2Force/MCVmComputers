@@ -30,7 +30,7 @@ public class GuiSetup extends Screen{
 	private int setupIndex;
 	private SetupPage currentSetupPage;
 	private boolean initialized = false;
-	public String virtualBoxDirectory;
+	public String virtualBoxDirectory = "";
 	
 	public GuiSetup() {
 		super(new LiteralText("Setup"));
@@ -79,9 +79,13 @@ public class GuiSetup extends Screen{
 			}
 			if(set.vboxDirectory != null) {
 				virtualBoxDirectory = set.vboxDirectory;
+			}else {
+				virtualBoxDirectory = new VMSettings().vboxDirectory;
 			}
-			ClientMod.isoDirectory = new File(set.vmComputersDirectory, "isos");
-			ClientMod.vhdDirectory = new File(set.vmComputersDirectory, "vhds");
+			if(set.vmComputersDirectory != null) {
+				ClientMod.isoDirectory = new File(set.vmComputersDirectory, "isos");
+				ClientMod.vhdDirectory = new File(set.vmComputersDirectory, "vhds");
+			}
 		}
 		if(!initialized) {
 			setupPages = new ArrayList<>();
