@@ -417,7 +417,7 @@ public class GuiPCEditing extends Screen{
 					boolean ejected = false;
 					
 					try {
-						ejected = ClientMod.vmSession.getMachine().getMediumAttachment("IDE Controller", 0, 0).getIsEjected();
+						ejected = ClientMod.vmSession.getMachine().getMediumAttachment("IDE Controller", 1, 0).getIsEjected();
 					}catch(VBoxException e) {}
 					
 					if(ejected && !pc_case.getIsoFileName().isEmpty()) {
@@ -469,7 +469,7 @@ public class GuiPCEditing extends Screen{
 	private void removeISO() {
 		if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
 			try {
-				ClientMod.vmSession.getMachine().unmountMedium("IDE Controller", 0, 0, true);
+				ClientMod.vmSession.getMachine().unmountMedium("IDE Controller", 1, 0, true);
 			}catch(VBoxException ex) {}
 		}
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
@@ -480,7 +480,7 @@ public class GuiPCEditing extends Screen{
 	private void insertISO(String name) {
 		if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
 			IMedium m = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, name).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-			ClientMod.vmSession.getMachine().mountMedium("IDE Controller", 0, 0, m, true);
+			ClientMod.vmSession.getMachine().mountMedium("IDE Controller", 1, 0, m, true);
 		}
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeString(name);
@@ -566,24 +566,24 @@ public class GuiPCEditing extends Screen{
 						edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 						edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
 						edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
-						edit.addStorageController("SATA Controller", StorageBus.SATA);
+						//edit.addStorageController("SATA Controller", StorageBus.SATA);
 						edit.addStorageController("IDE Controller", StorageBus.IDE);
 						if(!pc_case.getHardDriveFileName().isEmpty()) {
 							if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
 								IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
-								edit.attachDevice("SATA Controller", 0, 0, DeviceType.HardDisk, medium);
+								edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
 							}
 						}
 						if(!pc_case.getIsoFileName().isEmpty()) {
 							if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
 								IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
 								try {
-									edit.attachDevice("IDE Controller", 0, 0, DeviceType.DVD, cd);
+									edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
 								}catch(VBoxException ex) {}
 							}else if(pc_case.getIsoFileName().equals("Additions")) {
 								IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
 								try {
-									edit.attachDevice("IDE Controller", 0, 0, DeviceType.DVD, cd);
+									edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
 								}catch(VBoxException ex) {}
 							}
 						}
