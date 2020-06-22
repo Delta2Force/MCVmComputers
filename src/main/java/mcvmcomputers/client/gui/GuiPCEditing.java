@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.File;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.glfw.GLFW;
 import org.virtualbox_6_1.AccessMode;
 import org.virtualbox_6_1.CleanupMode;
@@ -241,10 +242,18 @@ public class GuiPCEditing extends Screen{
 				if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
 					openCase = false;
 				}
-				this.font.draw("Put panel back on: Right Ctrl", 4, 14, -1);
-				if(GLFW.glfwGetKey(minecraft.getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS) {
-					openCase = false;
-					panelX = -panelX;
+				if(SystemUtils.IS_OS_MAC) {
+					this.font.draw("Put panel back on: Right Alt", 4, 14, -1);
+					if(GLFW.glfwGetKey(minecraft.getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
+						openCase = false;
+						panelX = -panelX;
+					}
+				}else {
+					this.font.draw("Put panel back on: Right Ctrl", 4, 14, -1);
+					if(GLFW.glfwGetKey(minecraft.getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS) {
+						openCase = false;
+						panelX = -panelX;
+					}
 				}
 				if(pc_case.getMotherboardInstalled()) {
 					this.addButton(new ButtonWidget(this.width/2-70, this.height / 2 - 70, 10, 10, "x", (btn) -> this.removeMotherboard()));
@@ -435,15 +444,6 @@ public class GuiPCEditing extends Screen{
 							offX += this.font.getStringWidth(f.getName())+10;
 						}
 					}
-					/*
-					File f = new File(MCVmComputersMod.vb.getSystemProperties().getDefaultAdditionsISO());
-					if(!f.getName().isEmpty()) {
-						if((this.width/2 - 75 + offX) + this.font.getStringWidth("VirtualBox Guest Additions")+10 > this.width/2 + 105) {
-							offX = 0;
-							offY += 14;
-						}
-						this.addButton(new ButtonWidget(this.width/2 - 75 + offX, this.height / 2 - 62 + offY, this.font.getStringWidth("VirtualBox Guest Additions")+8, 12, "VirtualBox Guest Additions", (btn) -> insertISO(f)));
-					}*/
 				}else {
 					RenderSystem.disableDepthTest();
 					RenderSystem.pushMatrix();
@@ -489,7 +489,6 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	public void turnOffPC(ButtonWidget wdgt) {
-		//this.minecraft.openScreen(null);
 		ClientMod.vmTurningOff = true;
 		ClientMod.vmTurnedOn = false;
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
@@ -528,7 +527,6 @@ public class GuiPCEditing extends Screen{
 			if(ClientMod.vmTurningOn || ClientMod.vmTurnedOn) {
 				return;
 			}
-			//this.minecraft.openScreen(null);
 			ClientMod.vmTurningOn = true;
 			ClientMod.vmEntityID = pc_case.getEntityId();
 			PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());

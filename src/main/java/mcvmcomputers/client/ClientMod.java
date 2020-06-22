@@ -16,6 +16,7 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.glfw.GLFW;
 import org.virtualbox_6_1.ISession;
 import org.virtualbox_6_1.IVirtualBox;
@@ -96,10 +97,24 @@ public class ClientMod implements ClientModInitializer{
 	public static float deltaTime;
 	public static long lastDeltaTimeTime;
 	
-	public static int glfwUnfocusKey1 = GLFW.GLFW_KEY_LEFT_CONTROL;
-	public static int glfwUnfocusKey2 = GLFW.GLFW_KEY_RIGHT_CONTROL;
-	public static int glfwUnfocusKey3 = GLFW.GLFW_KEY_BACKSPACE;
-	public static int glfwUnfocusKey4 = -1;
+	public static int glfwUnfocusKey1;
+	public static int glfwUnfocusKey2;
+	public static int glfwUnfocusKey3;
+	public static int glfwUnfocusKey4;
+	
+	static {
+		if(SystemUtils.IS_OS_MAC) {
+			glfwUnfocusKey1 = GLFW.GLFW_KEY_LEFT_ALT;
+			glfwUnfocusKey2 = GLFW.GLFW_KEY_RIGHT_ALT;
+			glfwUnfocusKey3 = GLFW.GLFW_KEY_BACKSPACE;
+			glfwUnfocusKey4 = -1;
+		}else {
+			glfwUnfocusKey1 = GLFW.GLFW_KEY_LEFT_CONTROL;
+			glfwUnfocusKey2 = GLFW.GLFW_KEY_RIGHT_CONTROL;
+			glfwUnfocusKey3 = GLFW.GLFW_KEY_BACKSPACE;
+			glfwUnfocusKey4 = -1;
+		}
+	}
 	
 	public static EntityDeliveryChest currentDeliveryChest;
 	public static EntityPC currentPC;

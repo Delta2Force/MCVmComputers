@@ -20,7 +20,6 @@ import mcvmcomputers.client.gui.setup.pages.SetupPageVMComputersDirectory;
 import mcvmcomputers.client.gui.setup.pages.SetupPageVboxDirectory;
 import mcvmcomputers.client.utils.VMSettings;
 import mcvmcomputers.utils.MVCUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
