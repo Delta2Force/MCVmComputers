@@ -3,8 +3,8 @@ package mcvmcomputers.client.entities.render;
 import java.awt.Color;
 import java.io.IOException;
 
-import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.entities.model.DeliveryChestModel;
 import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.sound.SoundList;
@@ -26,7 +26,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 
-import static mcvmcomputers.ClientMod.*;
+import static mcvmcomputers.client.ClientMod.*;
 import static mcvmcomputers.utils.MVCUtils.*;
 
 public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{

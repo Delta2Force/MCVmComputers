@@ -7,8 +7,8 @@ import org.apache.commons.lang3.SystemUtils;
 import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VirtualBoxManager;
 
-import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;

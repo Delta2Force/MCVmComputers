@@ -22,7 +22,7 @@
       "mcvmcomputers.MainMod"
     ],
     "client": [
-      "mcvmcomputers.ClientMod"
+      "mcvmcomputers.client.ClientMod"
     ]
   },
   "mixins": [

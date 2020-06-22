@@ -6,8 +6,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.item.ItemOrderingTablet;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;

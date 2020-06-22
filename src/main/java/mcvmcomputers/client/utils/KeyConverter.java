@@ -1,4 +1,4 @@
-package mcvmcomputers.utils;
+package mcvmcomputers.client.utils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -27,11 +27,6 @@ public class GuiSetup extends Screen{
 	
 	public GuiSetup() {
 		super(new LiteralText("Setup"));
-		if(SystemUtils.IS_OS_WINDOWS) {
-			virtualBoxDirectory = "C:\\Program Files\\Oracle\\VirtualBox";
-		}else if(SystemUtils.IS_OS_MAC) {
-			virtualBoxDirectory = "/Applications/VirtualBox.app/Contents/MacOS";
-		}
 	}
 	
 	public void addElement(Element e) {
@@ -75,6 +70,11 @@ public class GuiSetup extends Screen{
 			setupPages.add(new SetupPageUnfocusBinding(this, this.font));
 			setupPages.add(new SetupPageMaxValues(this, this.font));
 			currentSetupPage = setupPages.get(0);
+			if(SystemUtils.IS_OS_WINDOWS) {
+				virtualBoxDirectory = "C:\\Program Files\\Oracle\\VirtualBox";
+			}else if(SystemUtils.IS_OS_MAC) {
+				virtualBoxDirectory = "/Applications/VirtualBox.app/Contents/MacOS";
+			}
 			initialized = true;
 		}
 		this.clearButtons();

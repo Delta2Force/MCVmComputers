@@ -2,8 +2,8 @@ package mcvmcomputers.entities;
 
 import java.util.UUID;
 
-import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.ItemPCCase;

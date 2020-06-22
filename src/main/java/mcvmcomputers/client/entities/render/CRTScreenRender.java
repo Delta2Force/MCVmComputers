@@ -2,7 +2,7 @@ package mcvmcomputers.client.entities.render;
 
 import java.util.UUID;
 
-import mcvmcomputers.ClientMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityCRTScreen;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.utils.MVCUtils;

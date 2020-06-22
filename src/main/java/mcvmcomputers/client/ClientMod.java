@@ -1,4 +1,4 @@
-package mcvmcomputers;
+package mcvmcomputers.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -22,6 +22,7 @@ import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VirtualBoxManager;
 
 import io.netty.buffer.Unpooled;
+import mcvmcomputers.MainMod;
 import mcvmcomputers.client.entities.render.CRTScreenRender;
 import mcvmcomputers.client.entities.render.DeliveryChestRender;
 import mcvmcomputers.client.entities.render.FlatScreenRender;

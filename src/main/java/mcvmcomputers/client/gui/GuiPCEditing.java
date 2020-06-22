@@ -21,7 +21,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import io.netty.buffer.Unpooled;
-import mcvmcomputers.ClientMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;

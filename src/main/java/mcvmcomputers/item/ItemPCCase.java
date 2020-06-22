@@ -2,8 +2,8 @@ package mcvmcomputers.item;
 
 import java.util.List;
 
-import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityPC;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
