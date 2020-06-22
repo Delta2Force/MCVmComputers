@@ -17,28 +17,28 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EntityFlatScreen extends Entity{
+public class EntityWallTV extends Entity{
 	private static final TrackedData<Float> LOOK_AT_POS_X =
-			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.FLOAT);
+			DataTracker.registerData(EntityWallTV.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Float> LOOK_AT_POS_Y =
-			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.FLOAT);
+			DataTracker.registerData(EntityWallTV.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Float> LOOK_AT_POS_Z =
-			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.FLOAT);
+			DataTracker.registerData(EntityWallTV.class, TrackedDataHandlerRegistry.FLOAT);
 	
 	private static final TrackedData<String> OWNER_UUID =
-			DataTracker.registerData(EntityCRTScreen.class, TrackedDataHandlerRegistry.STRING);
+			DataTracker.registerData(EntityWallTV.class, TrackedDataHandlerRegistry.STRING);
 	
-	public EntityFlatScreen(EntityType<?> type, World world) {
+	public EntityWallTV(EntityType<?> type, World world) {
 		super(type, world);
 	}
 	
-	public EntityFlatScreen(World world, double x, double y, double z) {
-		this(EntityList.FLATSCREEN, world);
+	public EntityWallTV(World world, double x, double y, double z) {
+		this(EntityList.WALLTV, world);
 		this.updatePosition(x, y, z);
 	}
 	
-	public EntityFlatScreen(World world, double x, double y, double z, Vec3d lookAt, String uuid) {
-		this(EntityList.FLATSCREEN, world);
+	public EntityWallTV(World world, double x, double y, double z, Vec3d lookAt, String uuid) {
+		this(EntityList.WALLTV, world);
 		this.updatePosition(x, y, z);
 		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
 		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);
@@ -47,7 +47,9 @@ public class EntityFlatScreen extends Entity{
 	}
 	
 	public Vec3d getLookAtPos() {
-		return new Vec3d(this.getDataTracker().get(LOOK_AT_POS_X), this.getDataTracker().get(LOOK_AT_POS_Y), this.getDataTracker().get(LOOK_AT_POS_Z));
+		return new Vec3d(this.getDataTracker().get(LOOK_AT_POS_X),
+						 this.getDataTracker().get(LOOK_AT_POS_Y),
+						 this.getDataTracker().get(LOOK_AT_POS_Z));
 	}
 
 	@Override
@@ -79,7 +81,7 @@ public class EntityFlatScreen extends Entity{
 				this.kill();
 				player.world.spawnEntity(new ItemEntity(player.world,
 						this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
-						new ItemStack(ItemList.ITEM_FLATSCREEN)));
+						new ItemStack(ItemList.ITEM_WALLTV)));
 			}
 		}else {
 			if(!player.isSneaking()) {

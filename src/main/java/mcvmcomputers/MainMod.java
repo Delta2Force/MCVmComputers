@@ -3,9 +3,13 @@ package mcvmcomputers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import com.google.common.collect.ImmutableList;
 
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.entities.EntityList;
@@ -22,6 +26,7 @@ import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -130,7 +135,6 @@ public class MainMod implements ModInitializer{
 						if(is.getItem() instanceof ItemHarddrive) {
 							CompoundTag ct = is.getOrCreateTag();
 							ct.putString("vhdfile", newHddName);
-							ct.putUuid("owner", packetContext.getPlayer().getUuid());
 							break;
 						}
 					}
@@ -146,14 +150,13 @@ public class MainMod implements ModInitializer{
 				Item lookingFor = null;
 				if(x64) {lookingFor = ItemList.ITEM_MOTHERBOARD64;} else {lookingFor = ItemList.ITEM_MOTHERBOARD;}
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(new ItemStack(lookingFor)));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(!pc.getMotherboardInstalled()) {
-									inInv.decrement(1);
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setMotherboardInstalled(true);
 									pc.set64Bit(x64);
 								}
@@ -172,14 +175,13 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Item lookingFor = ItemList.ITEM_GPU;
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(new ItemStack(lookingFor)));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(!pc.getGpuInstalled()) {
-									inInv.decrement(1);
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setGpuInstalled(true);
 								}
 							}
@@ -199,14 +201,13 @@ public class MainMod implements ModInitializer{
 				Item lookingFor = null;
 				if(dividedBy == 2) {lookingFor = ItemList.ITEM_CPU2;} else if(dividedBy == 4) {lookingFor = ItemList.ITEM_CPU4;} else if(dividedBy == 6) {lookingFor = ItemList.ITEM_CPU6;}
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(new ItemStack(lookingFor)));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getCpuDividedBy() == 0) {
-									inInv.decrement(1);
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setCpuDividedBy(dividedBy);
 								}
 							}
@@ -226,17 +227,16 @@ public class MainMod implements ModInitializer{
 				Item lookingFor = null;
 				if(gb == 1) {lookingFor = ItemList.ITEM_RAM1G;} else if(gb == 2) {lookingFor = ItemList.ITEM_RAM2G;} else if(gb == 4) {lookingFor = ItemList.ITEM_RAM4G;}
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(new ItemStack(lookingFor)));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getGigsOfRamInSlot0() == 0) {
-									inInv.decrement(1);
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setGigsOfRamInSlot0(gb);
 								} else if(pc.getGigsOfRamInSlot1() == 0) {
-									inInv.decrement(1);
+									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
 									pc.setGigsOfRamInSlot1(gb);
 								}
 							}
@@ -253,16 +253,15 @@ public class MainMod implements ModInitializer{
 			int entityId = attachedData.readInt();
 			
 			packetContext.getTaskQueue().execute(() -> {
-				ItemStack lookingFor = ItemHarddrive.createHardDrive(vhdname, packetContext.getPlayer().getUuid().toString());
+				ItemStack lookingFor = ItemHarddrive.createHardDrive(vhdname);
 				if(packetContext.getPlayer().inventory.contains(lookingFor)) {
-					ItemStack inInv = packetContext.getPlayer().inventory.getInvStack(packetContext.getPlayer().inventory.method_7371(lookingFor));
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC) {
 							EntityPC pc = (EntityPC) e;
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getHardDriveFileName().isEmpty()) {
-									inInv.decrement(1);
+									removeStck(packetContext.getPlayer().inventory, lookingFor);
 									pc.setHardDriveFileName(vhdname);
 								}
 							}
@@ -404,5 +403,22 @@ public class MainMod implements ModInitializer{
 			});
 		});
 	}
+	
+	private static void removeStck(PlayerInventory inv, ItemStack is) {
+		Iterator var2 = ImmutableList.of(inv.main, inv.armor, inv.offHand).iterator();
 
+	      while(var2.hasNext()) {
+	         List<ItemStack> list = (List)var2.next();
+	         Iterator var4 = list.iterator();
+
+	         while(var4.hasNext()) {
+	            ItemStack itemStack = (ItemStack)var4.next();
+	            if (!itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(is)) {
+	            	itemStack.decrement(1);
+	            	return;
+	            }
+	         }
+	      }
+		throw new RuntimeException("Doesn't contain item!");
+	}
 }

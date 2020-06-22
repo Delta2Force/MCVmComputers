@@ -44,7 +44,7 @@ public class PacketList {
 	
 	public static void removeHdd(EntityPC pc, String uuid) {
 		if(!pc.getHardDriveFileName().isEmpty()) {
-			pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), ItemHarddrive.createHardDrive(pc.getHardDriveFileName(), uuid)));
+			pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), ItemHarddrive.createHardDrive(pc.getHardDriveFileName())));
 			pc.setHardDriveFileName("");
 		}
 	}

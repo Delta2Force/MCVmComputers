@@ -21,6 +21,7 @@ public class ItemList {
 	public static final OrderableItem ITEM_MOTHERBOARD = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 4);
 	public static final OrderableItem ITEM_MOTHERBOARD64 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 8);
 	public static final OrderableItem ITEM_FLATSCREEN = new ItemFlatScreen(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
+	public static final OrderableItem ITEM_WALLTV = new ItemWallTV(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
 	public static final OrderableItem ITEM_CRTSCREEN = new ItemCRTScreen(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
 	public static final OrderableItem ITEM_HARDDRIVE = new ItemHarddrive(new Settings().group(MOD_ITEM_GROUP_PARTS));
 	public static final OrderableItem ITEM_KEYBOARD = new ItemKeyboard(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS));
@@ -39,13 +40,14 @@ public class ItemList {
 	public static final Item PC_CASE_ONLY_PANEL = new Item(new Settings().rarity(Rarity.EPIC));
 	public static final Item PC_CASE_GLASS_PANEL = new Item(new Settings().rarity(Rarity.EPIC));
 	
-	public static final List<Item> PLACABLE_ITEMS = Arrays.asList(PC_CASE, PC_CASE_SIDEPANEL, ITEM_KEYBOARD, ITEM_MOUSE, ITEM_CRTSCREEN, ITEM_FLATSCREEN);
+	public static final List<Item> PLACABLE_ITEMS = Arrays.asList(PC_CASE, PC_CASE_SIDEPANEL, ITEM_KEYBOARD, ITEM_MOUSE, ITEM_CRTSCREEN, ITEM_FLATSCREEN, ITEM_WALLTV);
 	
 	public static void init() {
 		registerItem("pc_case_sidepanel", PC_CASE_SIDEPANEL);
 		registerItem("pc_case", PC_CASE);
 		registerItem("motherboard", ITEM_MOTHERBOARD);
 		registerItem("motherboard64", ITEM_MOTHERBOARD64);
+		registerItem("walltv", ITEM_WALLTV);
 		registerItem("flatscreen", ITEM_FLATSCREEN);
 		registerItem("crtscreen", ITEM_CRTSCREEN);
 		registerItem("harddrive", ITEM_HARDDRIVE);

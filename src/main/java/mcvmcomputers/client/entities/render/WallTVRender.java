@@ -3,7 +3,7 @@ package mcvmcomputers.client.entities.render;
 import java.util.UUID;
 
 import mcvmcomputers.ClientMod;
-import mcvmcomputers.entities.EntityCRTScreen;
+import mcvmcomputers.entities.EntityWallTV;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
@@ -20,18 +20,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
-public class CRTScreenRender extends EntityRenderer<EntityCRTScreen>{
-	public CRTScreenRender(EntityRenderDispatcher dispatcher) {
+public class WallTVRender extends EntityRenderer<EntityWallTV>{
+	public WallTVRender(EntityRenderDispatcher dispatcher) {
 		super(dispatcher);
 	}
 
 	@Override
-	public Identifier getTexture(EntityCRTScreen entity) {
+	public Identifier getTexture(EntityWallTV entity) {
 		return null;
 	}
 	
 	@Override
-	public void render(EntityCRTScreen entity, float yaw, float tickDelta, MatrixStack matrices,
+	public void render(EntityWallTV entity, float yaw, float tickDelta, MatrixStack matrices,
 			VertexConsumerProvider vertexConsumers, int light) {
 		if(entity.getOwnerUUID().isEmpty()) {
 			return;
@@ -41,13 +41,15 @@ public class CRTScreenRender extends EntityRenderer<EntityCRTScreen>{
 		matrices.translate(0, 0.5, 0);
 		Quaternion look = MVCUtils.lookAt(entity.getPosVector(), entity.getLookAtPos());
 		matrices.multiply(look);
-		MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemList.ITEM_CRTSCREEN), Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
+		matrices.push();
+		matrices.translate(0, 0, -0.1);
+		MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemList.ITEM_WALLTV), Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
+		matrices.pop();
 		if(ClientMod.vmScreenTextures.containsKey(UUID.fromString(entity.getOwnerUUID()))) {
 			matrices.push();
-			matrices.scale(0.006f, 0.006f, 0.006f);
-			matrices.multiply(new Quaternion(22.5f, 0f, 0f, true));
+			matrices.scale(0.0198f, 0.014f, 0.006f);
 			matrices.multiply(new Quaternion(0, 0, 180, true));
-			matrices.translate(-63.1f, -27.7f, -20f);
+			matrices.translate(-63.1f, -45.7f, -24.4f);
 			matrices.scale(0.736f, 0.597f, 1f);
 			matrices.translate(22, 1.6f, 7.6f);
 			Matrix4f matrix4f = matrices.peek().getModel();

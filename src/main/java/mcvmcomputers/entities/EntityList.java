@@ -14,6 +14,7 @@ public class EntityList {
 	public static EntityType<Entity> MOUSE;
 	public static EntityType<Entity> CRT_SCREEN;
 	public static EntityType<Entity> FLATSCREEN;
+	public static EntityType<Entity> WALLTV;
 	public static EntityType<Entity> PC;
 	public static EntityType<Entity> DELIVERY_CHEST;
 
@@ -31,17 +32,21 @@ public class EntityList {
 				FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityMouse::new)
 				.size(new EntityDimensions(0.25f, 0.0625f, true)).trackable(60, 2,true).build());
 		CRT_SCREEN = Registry.register(Registry.ENTITY_TYPE, 
-					new Identifier("mcvmcomputers", "crt_screen"),
-					FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityCRTScreen::new)
-					.size(new EntityDimensions(0.8f, 0.8f, true)).trackable(60, 2,true).build());
+						new Identifier("mcvmcomputers", "crt_screen"),
+						FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityCRTScreen::new)
+						.size(new EntityDimensions(0.8f, 0.8f, true)).trackable(60, 2,true).build());
 		FLATSCREEN = Registry.register(Registry.ENTITY_TYPE, 
 						new Identifier("mcvmcomputers", "flat_screen"),
 						FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityFlatScreen::new)
 						.size(new EntityDimensions(0.8f, 0.8f, true)).trackable(60, 2,true).build());
+		WALLTV = Registry.register(Registry.ENTITY_TYPE, 
+								new Identifier("mcvmcomputers", "walltv"),
+								FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityWallTV::new)
+								.size(new EntityDimensions(1f, 1.2f, true)).trackable(60, 2,true).build());
 		PC = Registry.register(Registry.ENTITY_TYPE, 
-					new Identifier("mcvmcomputers", "pc"),
-					FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityPC::new)
-					.size(new EntityDimensions(0.375f, 0.6875f, true)).trackable(60, 2,true).build());
+				new Identifier("mcvmcomputers", "pc"),
+				FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityPC::new)
+				.size(new EntityDimensions(0.375f, 0.6875f, true)).trackable(60, 2,true).build());
 		DELIVERY_CHEST = Registry.register(Registry.ENTITY_TYPE, 
 							new Identifier("mcvmcomputers", "delivery_chest"),
 							FabricEntityTypeBuilder.create(EntityCategory.MISC, EntityDeliveryChest::new)

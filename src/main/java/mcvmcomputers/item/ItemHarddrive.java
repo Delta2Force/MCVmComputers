@@ -41,11 +41,10 @@ public class ItemHarddrive extends OrderableItem{
 		return new LiteralText("Hard Drive (").formatted(Formatting.WHITE).append(new LiteralText("right click").formatted(Formatting.GRAY).append(new LiteralText(")").formatted(Formatting.WHITE)));
 	}
 	
-	public static ItemStack createHardDrive(String fileName, String uuid) {
+	public static ItemStack createHardDrive(String fileName) {
 		ItemStack is = new ItemStack(ItemList.ITEM_HARDDRIVE);
 		CompoundTag ct = is.getOrCreateTag();
 		ct.putString("vhdfile", fileName);
-		ct.putUuid("owner", UUID.fromString(uuid));
 		is.setTag(ct);
 		return is;
 	}

@@ -25,6 +25,7 @@ import io.netty.buffer.Unpooled;
 import mcvmcomputers.client.entities.render.CRTScreenRender;
 import mcvmcomputers.client.entities.render.DeliveryChestRender;
 import mcvmcomputers.client.entities.render.FlatScreenRender;
+import mcvmcomputers.client.entities.render.WallTVRender;
 import mcvmcomputers.client.entities.render.ItemPreviewRender;
 import mcvmcomputers.client.entities.render.KeyboardRender;
 import mcvmcomputers.client.entities.render.MouseRender;
@@ -293,21 +294,18 @@ public class ClientMod implements ClientModInitializer{
 				MinecraftClient.getInstance().openScreen(new GuiPCEditing(currentPC));
 			}
 		};
-		
 		MainMod.hardDriveClick = new Runnable() {
 			@Override
 			public void run() {
 				MinecraftClient.getInstance().openScreen(new GuiCreateHarddrive());
 			}
 		};
-		
 		MainMod.focus = new Runnable() {
 			@Override
 			public void run() {
 				MinecraftClient.getInstance().openScreen(new GuiFocus());
 			}
 		};
-		
 		MainMod.deliveryChestSound = new Runnable() {
 			@Override
 			public void run() {
@@ -333,6 +331,8 @@ public class ClientMod implements ClientModInitializer{
 				(entityRenderDispatcher, context) -> new CRTScreenRender(entityRenderDispatcher));
 		EntityRendererRegistry.INSTANCE.register(EntityList.FLATSCREEN,
 				(entityRenderDispatcher, context) -> new FlatScreenRender(entityRenderDispatcher));
+		EntityRendererRegistry.INSTANCE.register(EntityList.WALLTV,
+				(entityRenderDispatcher, context) -> new WallTVRender(entityRenderDispatcher));
 		EntityRendererRegistry.INSTANCE.register(EntityList.PC,
 				(entityRenderDispatcher, context) -> new PCRender(entityRenderDispatcher));
 		EntityRendererRegistry.INSTANCE.register(EntityList.DELIVERY_CHEST,
