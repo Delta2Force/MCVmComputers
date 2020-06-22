@@ -1,5 +1,7 @@
 package mcvmcomputers.client.gui.setup.pages;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -7,9 +9,12 @@ import org.apache.commons.lang3.SystemUtils;
 import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VirtualBoxManager;
 
-import mcvmcomputers.ClientMod;
+import com.google.gson.Gson;
+
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
+import mcvmcomputers.client.utils.VMSettings;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -138,6 +143,18 @@ public class SetupPageMaxValues extends SetupPage{
 					VirtualBoxManager vm = VirtualBoxManager.createInstance(null);
 					vm.connect("http://localhost:18083", "should", "work");
 					IVirtualBox vb = vm.getVBox();
+					VMSettings set = new VMSettings();
+					set.vboxDirectory = setupGui.virtualBoxDirectory;
+					set.vmComputersDirectory = ClientMod.vhdDirectory.getParentFile().getAbsolutePath();
+					File f = new File(minecraft.runDirectory, "vm_computers/settings.json");
+					if(f.exists()) {
+						f.delete();
+					}
+					f.createNewFile();
+					FileWriter fw = new FileWriter(f);
+					fw.append(new Gson().toJson(set));
+					fw.flush();
+					fw.close();
 					for(int i = 5;i>=0;i--) {
 						try {
 							Thread.sleep(1000);

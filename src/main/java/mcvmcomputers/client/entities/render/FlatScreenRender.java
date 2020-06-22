@@ -2,8 +2,8 @@ package mcvmcomputers.client.entities.render;
 
 import java.util.UUID;
 
-import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityFlatScreen;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.utils.MVCUtils;

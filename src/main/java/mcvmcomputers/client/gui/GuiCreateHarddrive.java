@@ -14,8 +14,8 @@ import org.virtualbox_6_1.IProgress;
 import org.virtualbox_6_1.MediumVariant;
 
 import io.netty.buffer.Unpooled;
-import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.networking.PacketList;

@@ -20,7 +20,7 @@ import javax.imageio.ImageIO;
 import org.lwjgl.glfw.GLFW;
 
 import io.netty.buffer.Unpooled;
-import mcvmcomputers.ClientMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.entities.model.OrderingTabletModel;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.OrderableItem;

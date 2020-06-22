@@ -3,8 +3,8 @@ package mcvmcomputers.client.gui.setup.pages;
 import java.io.File;
 import java.io.IOException;
 
-import mcvmcomputers.ClientMod;
 import mcvmcomputers.MainMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;

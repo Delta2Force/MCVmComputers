@@ -1,6 +1,6 @@
 package mcvmcomputers.mixins;
 
-import static mcvmcomputers.ClientMod.*;
+import static mcvmcomputers.client.ClientMod.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +22,10 @@ import org.virtualbox_6_1.VBoxException;
 
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.tablet.TabletOS;
+import mcvmcomputers.client.utils.VMRunnable;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.ItemOrderingTablet;
-import mcvmcomputers.utils.VMRunnable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;

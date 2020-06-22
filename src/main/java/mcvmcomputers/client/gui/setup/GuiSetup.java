@@ -1,17 +1,24 @@
 package mcvmcomputers.client.gui.setup;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import com.google.gson.Gson;
+
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.pages.SetupPage;
 import mcvmcomputers.client.gui.setup.pages.SetupPageIntroMessage;
 import mcvmcomputers.client.gui.setup.pages.SetupPageMaxValues;
 import mcvmcomputers.client.gui.setup.pages.SetupPageUnfocusBinding;
 import mcvmcomputers.client.gui.setup.pages.SetupPageVMComputersDirectory;
 import mcvmcomputers.client.gui.setup.pages.SetupPageVboxDirectory;
+import mcvmcomputers.client.utils.VMSettings;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -27,11 +34,6 @@ public class GuiSetup extends Screen{
 	
 	public GuiSetup() {
 		super(new LiteralText("Setup"));
-		if(SystemUtils.IS_OS_WINDOWS) {
-			virtualBoxDirectory = "C:\\Program Files\\Oracle\\VirtualBox";
-		}else if(SystemUtils.IS_OS_MAC) {
-			virtualBoxDirectory = "/Applications/VirtualBox.app/Contents/MacOS";
-		}
 	}
 	
 	public void addElement(Element e) {
@@ -65,6 +67,22 @@ public class GuiSetup extends Screen{
 	
 	@Override
 	public void init() {
+		if(new File(minecraft.runDirectory, "vm_computers/settings.json").exists()) {
+			FileReader fr;
+			VMSettings set = null;
+			try {
+				fr = new FileReader(new File(minecraft.runDirectory, "vm_computers/settings.json"));
+				set = new Gson().fromJson(fr, VMSettings.class);
+				fr.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if(set.vboxDirectory != null) {
+				virtualBoxDirectory = set.vboxDirectory;
+			}
+			ClientMod.isoDirectory = new File(set.vmComputersDirectory, "isos");
+			ClientMod.vhdDirectory = new File(set.vmComputersDirectory, "vhds");
+		}
 		if(!initialized) {
 			setupPages = new ArrayList<>();
 			setupPages.add(new SetupPageIntroMessage(this, this.font));

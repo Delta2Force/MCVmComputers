@@ -1,6 +1,6 @@
 package mcvmcomputers.item;
 
-import mcvmcomputers.ClientMod;
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityCRTScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
