@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.UnmodifiableIterator;
 
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.entities.EntityList;
@@ -17,7 +18,6 @@ import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.OrderableItem;
-import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.utils.TabletOrder;
 import net.fabricmc.api.ModInitializer;
@@ -31,6 +31,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.PacketByteBuf;
 
@@ -405,11 +406,11 @@ public class MainMod implements ModInitializer{
 	}
 	
 	private static void removeStck(PlayerInventory inv, ItemStack is) {
-		Iterator var2 = ImmutableList.of(inv.main, inv.armor, inv.offHand).iterator();
+		UnmodifiableIterator<DefaultedList<ItemStack>> var2 = ImmutableList.of(inv.main, inv.armor, inv.offHand).iterator();
 
 	      while(var2.hasNext()) {
-	         List<ItemStack> list = (List)var2.next();
-	         Iterator var4 = list.iterator();
+	         List<ItemStack> list = (List<ItemStack>)var2.next();
+	         Iterator<ItemStack> var4 = list.iterator();
 
 	         while(var4.hasNext()) {
 	            ItemStack itemStack = (ItemStack)var4.next();
