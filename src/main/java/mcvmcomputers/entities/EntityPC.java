@@ -4,8 +4,6 @@ import java.util.UUID;
 
 import mcvmcomputers.MainMod;
 import mcvmcomputers.client.ClientMod;
-import mcvmcomputers.item.ItemHarddrive;
-import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.ItemPCCase;
 import mcvmcomputers.item.ItemPCCaseSidepanel;
 import net.minecraft.entity.Entity;
@@ -15,9 +13,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;

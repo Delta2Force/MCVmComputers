@@ -2,7 +2,6 @@ package mcvmcomputers.client.utils;
 
 import static mcvmcomputers.client.ClientMod.*;
 
-import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
 import org.virtualbox_6_1.BitmapFormat;

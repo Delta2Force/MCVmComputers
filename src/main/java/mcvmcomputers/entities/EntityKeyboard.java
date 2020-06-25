@@ -33,7 +33,7 @@ public class EntityKeyboard extends Entity{
 		this.updatePosition(x, y, z);
 	}
 	
-	public EntityKeyboard(World world, double x, double y, double z, Vec3d lookAt) {
+	public EntityKeyboard(World world, Double x, Double y, Double z, Vec3d lookAt, String uuid) {
 		this(EntityList.KEYBOARD, world);
 		this.updatePosition(x, y, z);
 		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);

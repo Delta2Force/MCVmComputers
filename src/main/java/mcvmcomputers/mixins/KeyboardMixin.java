@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import mcvmcomputers.MainMod;
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.GuiFocus;
 import mcvmcomputers.client.gui.setup.pages.SetupPageUnfocusBinding;

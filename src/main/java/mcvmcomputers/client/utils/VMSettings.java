@@ -20,7 +20,8 @@ public class VMSettings {
 		if(ClientMod.vhdDirectory != null) {
 			vmComputersDirectory = ClientMod.vhdDirectory.getParentFile().getAbsolutePath();
 		}else {
-			vmComputersDirectory = new File(MinecraftClient.getInstance().runDirectory, "vm_computers").getAbsolutePath();
+			MinecraftClient mc = MinecraftClient.getInstance();
+			vmComputersDirectory = new File(mc.runDirectory, "vm_computers").getAbsolutePath();
 		}
 	}
 }

@@ -1,7 +1,5 @@
 package mcvmcomputers.item;
 
-import java.util.UUID;
-
 import mcvmcomputers.MainMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;

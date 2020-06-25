@@ -38,15 +38,12 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation.Mode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.world.dimension.DimensionType;
 
 public class GuiPCEditing extends Screen{
 	private float introScale;
@@ -201,11 +198,14 @@ public class GuiPCEditing extends Screen{
 		b.writeInt(this.pc_case.getEntityId());
 		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_HARD_DRIVE, b);
 	}
+	
+	/*
 	private void removeGPU() {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeInt(this.pc_case.getEntityId());
 		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_GPU, b);
 	}
+	*/
 	
 	private void addRamStick(Item ramItem, int gigs) {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());

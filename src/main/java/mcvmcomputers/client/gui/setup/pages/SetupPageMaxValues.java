@@ -11,7 +11,6 @@ import org.virtualbox_6_1.VirtualBoxManager;
 
 import com.google.gson.Gson;
 
-import mcvmcomputers.MainMod;
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.utils.VMSettings;

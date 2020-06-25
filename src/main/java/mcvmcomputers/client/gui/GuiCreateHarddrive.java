@@ -14,18 +14,12 @@ import org.virtualbox_6_1.IProgress;
 import org.virtualbox_6_1.MediumVariant;
 
 import io.netty.buffer.Unpooled;
-import mcvmcomputers.MainMod;
 import mcvmcomputers.client.ClientMod;
-import mcvmcomputers.item.ItemHarddrive;
-import mcvmcomputers.item.ItemList;
 import mcvmcomputers.networking.PacketList;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.Packet;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.PacketByteBuf;
 
