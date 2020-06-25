@@ -39,7 +39,7 @@ public class PlacableOrderableItem extends OrderableItem{
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
-			HitResult hr = user.rayTrace(10, 0f, false);
+			HitResult hr = user.rayTrace(5, 0f, false);
 			Entity ek;
 			try {
 				ek = constructor.newInstance(world, 
