@@ -27,7 +27,7 @@ public class ItemList {
 	public static final OrderableItem ITEM_MOTHERBOARD = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 4);
 	public static final OrderableItem ITEM_MOTHERBOARD64 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 8);
 	public static final OrderableItem ITEM_FLATSCREEN = new PlacableOrderableItem(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS), EntityFlatScreen.class, SoundEvents.BLOCK_METAL_PLACE, 10);
-	public static final OrderableItem ITEM_WALLTV = new PlacableOrderableItem(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS), EntityWallTV.class, SoundEvents.BLOCK_METAL_PLACE, 14);
+	public static final OrderableItem ITEM_WALLTV = new PlacableOrderableItem(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS), EntityWallTV.class, SoundEvents.BLOCK_METAL_PLACE, 14, true);
 	public static final OrderableItem ITEM_CRTSCREEN = new PlacableOrderableItem(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS), EntityCRTScreen.class, SoundEvents.BLOCK_METAL_PLACE, 10);
 	public static final OrderableItem ITEM_HARDDRIVE = new ItemHarddrive(new Settings().group(MOD_ITEM_GROUP_PARTS));
 	public static final OrderableItem ITEM_KEYBOARD = new PlacableOrderableItem(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS), EntityKeyboard.class, SoundEvents.BLOCK_METAL_PLACE, 4);

@@ -18,15 +18,21 @@ import net.minecraft.world.World;
 public class PlacableOrderableItem extends OrderableItem{
 	private Constructor<? extends Entity> constructor;
 	private SoundEvent placeSound;
+	public final boolean wallTV;
 	
-	public PlacableOrderableItem(Settings settings, Class<? extends Entity> entityPlaced, SoundEvent placeSound, int price) {
+	public PlacableOrderableItem(Settings settings, Class<? extends Entity> entityPlaced, SoundEvent placeSound, int price, boolean wallTV) {
 		super(settings, price);
+		this.wallTV = wallTV;
 		this.placeSound = placeSound;
 		try {
 			constructor = entityPlaced.getConstructor(World.class, Double.class, Double.class, Double.class, Vec3d.class, String.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public PlacableOrderableItem(Settings settings, Class<? extends Entity> entityPlaced, SoundEvent placeSound, int price) {
+		this(settings, entityPlaced, placeSound, price, false);
 	}
 	
 	@Override

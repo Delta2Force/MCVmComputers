@@ -1,7 +1,7 @@
 package mcvmcomputers.client.entities.render;
 
 import mcvmcomputers.entities.EntityItemPreview;
-import mcvmcomputers.item.ItemWallTV;
+import mcvmcomputers.item.PlacableOrderableItem;
 import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -35,8 +35,10 @@ public class ItemPreviewRender extends EntityRenderer<EntityItemPreview>{
 		Quaternion look = MVCUtils.lookAt(entity.getPosVector(), new Vec3d(v.x, entity.getY(), v.z));
 		matrices.multiply(look);
 		matrices.push();
-		if(entity.getPreviewedItemStack().getItem() instanceof ItemWallTV) {
-			matrices.translate(0, 0, -0.1);
+		if(entity.getPreviewedItemStack().getItem() instanceof PlacableOrderableItem) {
+			if(((PlacableOrderableItem)entity.getPreviewedItemStack().getItem()).wallTV) {
+				matrices.translate(0, 0, -0.1);
+			}
 		}
 		MinecraftClient.getInstance().getItemRenderer().renderItem(entity.getPreviewedItemStack(), Mode.NONE, 200, 0, matrices, vertexConsumers);
 		matrices.pop();
