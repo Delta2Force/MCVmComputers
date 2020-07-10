@@ -16,17 +16,20 @@ import org.virtualbox_6_1.MediumVariant;
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.networking.PacketList;
+import mcvmcomputers.utils.MVCUtils;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Language;
 import net.minecraft.util.PacketByteBuf;
 
 public class GuiCreateHarddrive extends Screen{
 	private TextFieldWidget hddSize;
 	private String status;
 	private State currentState = State.MENU;
+	private final Language lang = Language.getInstance();
 	
 	private static final char COLOR_CHAR = (char) (0xfeff00a7);
 	
@@ -38,6 +41,10 @@ public class GuiCreateHarddrive extends Screen{
 	
 	public GuiCreateHarddrive() {
 		super(new TranslatableText("Create Harddrive"));
+	}
+	
+	public String translation(String in) {
+		return lang.translate(in).replace("%c", ""+MVCUtils.COLOR_CHAR);
 	}
 	
 	@Override
@@ -53,11 +60,11 @@ public class GuiCreateHarddrive extends Screen{
 			this.children.add(hddSize);
 			this.hddSizeUpdate(hddSize.getText());
 			
-			this.addButton(new ButtonWidget(this.width/2-100, this.height/2+50, 200, 20, "Create hard drive", (wdgt) -> createNew(wdgt)));
-			this.addButton(new ButtonWidget(this.width - 60, this.height - 30, 50, 20, "Menu", (wdgt) -> switchState(State.MENU)));
+			this.addButton(new ButtonWidget(this.width/2-100, this.height/2+50, 200, 20, translation("mcvmcomputers.vhd_setup.newvhd"), (wdgt) -> createNew(wdgt)));
+			this.addButton(new ButtonWidget(this.width - 60, this.height - 30, 50, 20, translation("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
 		}else if(currentState == State.MENU) {
-			this.addButton(new ButtonWidget(this.width/2 - 100, this.height/2 - 12, 200, 20, "Create new hard drive", (wdgt) -> switchState(State.CREATE_NEW)));
-			this.addButton(new ButtonWidget(this.width/2 - 100, this.height/2 + 12, 200, 20, "Select / delete existing hard drive", (wdgt) -> switchState(State.SELECT_OLD)));
+			this.addButton(new ButtonWidget(this.width/2 - 100, this.height/2 - 12, 200, 20, translation("mcvmcomputers.vhd_setup.newvhd"), (wdgt) -> switchState(State.CREATE_NEW)));
+			this.addButton(new ButtonWidget(this.width/2 - 100, this.height/2 + 12, 200, 20, translation("mcvmcomputers.vhd_setup.oldvhd"), (wdgt) -> switchState(State.SELECT_OLD)));
 		}else {
 			int lastY = 60;
 			ArrayList<File> files = new ArrayList<>();
@@ -73,12 +80,12 @@ public class GuiCreateHarddrive extends Screen{
 				}
 			});
 			for(File f : files) {
-				this.addButton(new ButtonWidget(this.width/2 - 90, lastY, 180, 14, f.getName() + " | " + ((float)f.length()/1024f/1024f) + " MB used", (wdgt) -> selectOld(wdgt)));
+				this.addButton(new ButtonWidget(this.width/2 - 90, lastY, 180, 14, f.getName() + " | " + ((float)f.length()/1024f/1024f) + " " + translation("mcvmcomputers.vhd_setup.mb_used"), (wdgt) -> selectOld(wdgt)));
 				this.addButton(new ButtonWidget(this.width/2 + 92, lastY, 14, 14, "x", (wdgt) -> removevhd(f.getName())));
 				lastY += 16;
 			}
 			
-			this.addButton(new ButtonWidget(this.width - 60, this.height - 30, 50, 20, "Menu", (wdgt) -> switchState(State.MENU)));
+			this.addButton(new ButtonWidget(this.width - 60, this.height - 30, 50, 20, translation("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
 		}
 	}
 	
@@ -131,28 +138,28 @@ public class GuiCreateHarddrive extends Screen{
 			try {
 				i = Long.parseLong(in);
 			}catch(NumberFormatException e) {
-				status = COLOR_CHAR + "cError while parsing number. Number too big?";
+				status = translation("mcvmcomputers.input_parser_error");
 				return;
 			}
 			if(i > 0) {
 				if(i*1024*1024 < 0) { //Buffer overflow
-					status = COLOR_CHAR + "cNumber too big. (max " + Long.MAX_VALUE/1024L/1024L + ")";
+					status = translation("mcvmcomputers.input_too_much").replace("%s", ""+Long.MAX_VALUE/1024L/1024L);
 					return;
 				}
 				
 				if(i*1024*1024 >= new File(".").getFreeSpace()) {
-					status = COLOR_CHAR + "cYou don't have enough space for that.";
+					status = translation("mcvmcomputers.vhd_setup.space");
 					return;
 				}else {
-					status = COLOR_CHAR + "aValid virtual hard drive size. (Check your free space)";
+					status = translation("mcvmcomputers.vhd_setup.validspace");
 					return;
 				}
 			}else {
-				status = COLOR_CHAR + "cToo small. (must be > 0)";
+				status = translation("mcvmcomputers.input_too_little").replace("%s", "0");
 				return;
 			}
 		}else {
-			status = COLOR_CHAR + "cNot a number.";
+			status = translation("mcvmcomputers.input_nan");
 			return;
 		}
 	}
@@ -162,10 +169,11 @@ public class GuiCreateHarddrive extends Screen{
 		this.renderBackground();
 		if(currentState == State.CREATE_NEW) {
 			this.font.draw(status, this.width/2-150, this.height/2+13, -1);
-			this.font.draw("Harddrive size: (in MB) (1024 MB = 1 GB)", this.width/2-150, this.height/2-20, -1);
+			this.font.draw(translation("mcvmcomputers.vhd_setup.vhdsize"), this.width/2-150, this.height/2-20, -1);
 			this.hddSize.render(mouseX, mouseY, delta);
 		}else if(currentState == State.MENU) {
-			this.font.draw("Set up your new hard drive", this.width/2 - this.font.getStringWidth("Set up your new hard drive")/2, this.height/2 - 30, -1);
+			String s = translation("mcvmcomputers.vhd_setup.setupnewvhd");
+			this.font.draw(s, this.width/2 - this.font.getStringWidth(s)/2, this.height/2 - 30, -1);
 		}
 		super.render(mouseX, mouseY, delta);
 	}
