@@ -43,6 +43,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Language;
 import net.minecraft.util.PacketByteBuf;
 
 public class GuiPCEditing extends Screen{
@@ -50,6 +51,8 @@ public class GuiPCEditing extends Screen{
 	private float panelX;
 	private EntityPC pc_case;
 	private boolean openCase;
+	
+	private final Language lang = Language.getInstance();
 	
 	private static final ItemStack CASE_NO_PANEL = new ItemStack(ItemList.PC_CASE_NO_PANEL);
 	private static final ItemStack CASE_ONLY_PANEL = new ItemStack(ItemList.PC_CASE_ONLY_PANEL);
@@ -199,14 +202,6 @@ public class GuiPCEditing extends Screen{
 		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_HARD_DRIVE, b);
 	}
 	
-	/*
-	private void removeGPU() {
-		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_GPU, b);
-	}
-	*/
-	
 	private void addRamStick(Item ramItem, int gigs) {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeInt(gigs);
@@ -243,13 +238,13 @@ public class GuiPCEditing extends Screen{
 					openCase = false;
 				}
 				if(SystemUtils.IS_OS_MAC) {
-					this.font.draw("Put panel back on: Right Alt", 4, 14, -1);
+					this.font.draw(lang.translate("mcvmcomputers.pc_editing.put_panel_back_mac"), 4, 14, -1);
 					if(GLFW.glfwGetKey(minecraft.getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
 						openCase = false;
 						panelX = -panelX;
 					}
 				}else {
-					this.font.draw("Put panel back on: Right Ctrl", 4, 14, -1);
+					this.font.draw(lang.translate("mcvmcomputers.pc_editing.put_panel_back"), 4, 14, -1);
 					if(GLFW.glfwGetKey(minecraft.getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS) {
 						openCase = false;
 						panelX = -panelX;
@@ -261,9 +256,9 @@ public class GuiPCEditing extends Screen{
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef(0, 0, 200);
 					if(pc_case.get64Bit()) {
-						this.font.draw("64-bit", this.width/2 - 66, this.height/2 - 56, -1);
+						this.font.draw(lang.translate("mcvmcomputers.64bit"), this.width/2 - 66, this.height/2 - 56, -1);
 					}else {
-						this.font.draw("32-bit", this.width/2 - 66, this.height/2 - 56, -1);
+						this.font.draw(lang.translate("mcvmcomputers.32bit"), this.width/2 - 66, this.height/2 - 56, -1);
 					}
 					RenderSystem.popMatrix();
 					RenderSystem.enableDepthTest();
@@ -271,12 +266,12 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.disableDepthTest();
 						RenderSystem.pushMatrix();
 						RenderSystem.translatef(0, 0, 200);
-						this.font.draw("Add CPU", this.width/2 - 120, this.height/2 - 40, -1);
+						this.font.draw(lang.translate("mcvmcomputers.pc_editing.add_cpu"), this.width/2 - 120, this.height/2 - 40, -1);
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
-						ButtonWidget div2 = new ButtonWidget(this.width/2 - 120, this.height / 2 - 31, 70, 12, "Add 1/2 CPU", (btn) -> this.addCPU(ItemList.ITEM_CPU2, 2));
-						ButtonWidget div4 = new ButtonWidget(this.width/2 - 120, this.height / 2 - 18, 70, 12, "Add 1/4 CPU", (btn) -> this.addCPU(ItemList.ITEM_CPU4, 4));
-						ButtonWidget div6 = new ButtonWidget(this.width/2 - 120, this.height / 2 - 5, 70, 12, "Add 1/6 CPU", (btn) -> this.addCPU(ItemList.ITEM_CPU6, 6));
+						ButtonWidget div2 = new ButtonWidget(this.width/2 - 120, this.height / 2 - 31, 70, 12, lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "2"), (btn) -> this.addCPU(ItemList.ITEM_CPU2, 2));
+						ButtonWidget div4 = new ButtonWidget(this.width/2 - 120, this.height / 2 - 18, 70, 12, lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "4"), (btn) -> this.addCPU(ItemList.ITEM_CPU4, 4));
+						ButtonWidget div6 = new ButtonWidget(this.width/2 - 120, this.height / 2 - 5, 70, 12, lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "6"), (btn) -> this.addCPU(ItemList.ITEM_CPU6, 6));
 						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_CPU2))) {
 							div2.active = false;
 						}
@@ -309,7 +304,7 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.disableDepthTest();
 						RenderSystem.pushMatrix();
 						RenderSystem.translatef(0, 0, 200);
-						this.font.draw("Add hard drives", this.width/2 + 20, this.height/2 + 30, -1);
+						this.font.draw(lang.translate("mcvmcomputers.pc_editing.add_vhds"), this.width/2 + 20, this.height/2 + 30, -1);
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
 						for(ItemStack is : minecraft.player.inventory.main) {
@@ -337,7 +332,7 @@ public class GuiPCEditing extends Screen{
 							RenderSystem.disableDepthTest();
 							RenderSystem.pushMatrix();
 							RenderSystem.translatef(0, 0, 200);
-							this.font.draw((char) (0xfeff00a7) + "7No valid hard drives found :(", this.width/2 + 20, this.height/2 + 40, -1);
+							this.font.draw((char) (0xfeff00a7) + "7" + lang.translate("mcvmcomputers.pc_editing.no_valid_vhd"), this.width/2 + 20, this.height/2 + 40, -1);
 							RenderSystem.popMatrix();
 							RenderSystem.enableDepthTest();
 						}
@@ -354,12 +349,12 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.disableDepthTest();
 						RenderSystem.pushMatrix();
 						RenderSystem.translatef(0, 0, 200);
-						this.font.draw("Add RAM", this.width/2 + 50, this.height/2 - 60, -1);
+						this.font.draw(lang.translate("mcvmcomputers.pc_editing.add_ram"), this.width/2 + 50, this.height/2 - 60, -1);
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
-						ButtonWidget oneG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 51, 80, 12, "Add 1GB of RAM", (btn) -> this.addRamStick(ItemList.ITEM_RAM1G, 1));
-						ButtonWidget twoG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 38, 80, 12, "Add 2GB of RAM", (btn) -> this.addRamStick(ItemList.ITEM_RAM2G, 2));
-						ButtonWidget fourG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 25, 80, 12, "Add 4GB of RAM", (btn) -> this.addRamStick(ItemList.ITEM_RAM4G, 4));
+						ButtonWidget oneG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 51, 80, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "1"), (btn) -> this.addRamStick(ItemList.ITEM_RAM1G, 1));
+						ButtonWidget twoG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 38, 80, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "2"), (btn) -> this.addRamStick(ItemList.ITEM_RAM2G, 2));
+						ButtonWidget fourG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 25, 80, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "4"), (btn) -> this.addRamStick(ItemList.ITEM_RAM4G, 4));
 						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM1G))) {
 							oneG.active = false;
 						}
@@ -392,8 +387,8 @@ public class GuiPCEditing extends Screen{
 						this.addButton(new ButtonWidget(this.width/2 + 37, this.height / 2 - 70, 10, 10, "x", (btn) -> this.removeRamStick(1)));
 					}
 				}else {
-					ButtonWidget thirtytwo = new ButtonWidget(this.width/2 - 64, this.height / 2 - 23, 128, 14, "Add 32-bit Motherboard", (btn) -> this.addMotherboard(false));
-					ButtonWidget sixtyfour = new ButtonWidget(this.width/2 - 64, this.height / 2 - 7, 128, 14, "Add 64-bit Motherboard", (btn) -> this.addMotherboard(true));
+					ButtonWidget thirtytwo = new ButtonWidget(this.width/2 - 64, this.height / 2 - 23, 128, 14, lang.translate("mcvmcomputers.pc_editing.add_32bit_mobo"), (btn) -> this.addMotherboard(false));
+					ButtonWidget sixtyfour = new ButtonWidget(this.width/2 - 64, this.height / 2 - 7, 128, 14, lang.translate("mcvmcomputers.pc_editing.add_64bit_mobo"), (btn) -> this.addMotherboard(true));
 					
 					if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_MOTHERBOARD))) {
 						thirtytwo.active = false;
@@ -408,9 +403,9 @@ public class GuiPCEditing extends Screen{
 			}else {
 				boolean turnedOn = (ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getEntityId()) || (ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getEntityId());
 				if(turnedOn) {
-					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, "Turn off PC", (btn) -> this.turnOffPC(btn)));
+					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, lang.translate("mcvmcomputers.pc_editing.turn_off"), (btn) -> this.turnOffPC(btn)));
 				}else {
-					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, "Turn on PC", (btn) -> this.turnOnPC(btn)));
+					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, lang.translate("mcvmcomputers.pc_editing.turn_on"), (btn) -> this.turnOnPC(btn)));
 				}
 				
 				if(ClientMod.vmSession != null) {
@@ -429,7 +424,7 @@ public class GuiPCEditing extends Screen{
 					RenderSystem.disableDepthTest();
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef(0, 0, 200);
-					this.font.draw("Select an ISO", this.width/2 - 75, this.height/2 - 75, -1);
+					this.font.draw(lang.translate("mcvmcomputers.pc_editing.select_iso"), this.width/2 - 75, this.height/2 - 75, -1);
 					RenderSystem.popMatrix();
 					RenderSystem.enableDepthTest();
 					int offX = 0;
@@ -448,13 +443,13 @@ public class GuiPCEditing extends Screen{
 					RenderSystem.disableDepthTest();
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef(0, 0, 200);
-					this.font.draw("Inserted ISO", this.width/2 - 75, this.height/2 - 75, -1);
+					this.font.draw(lang.translate("mcvmcomputers.pc_editing.inserted_iso"), this.width/2 - 75, this.height/2 - 75, -1);
 					this.font.draw((char) (0xfeff00a7) + "7" + pc_case.getIsoFileName(), this.width/2 - 75, this.height/2 - 65, -1);
 					RenderSystem.popMatrix();
 					RenderSystem.enableDepthTest();
-					this.addButton(new ButtonWidget(this.width/2 - 75, this.height / 2 - 50, 50, 12, "Eject", (btn) -> removeISO()));
+					this.addButton(new ButtonWidget(this.width/2 - 75, this.height / 2 - 50, 50, 12, lang.translate("mcvmcomputers.pc_editing.eject"), (btn) -> removeISO()));
 				}
-				ButtonWidget bw = new ButtonWidget(this.width/2 - 82, this.height / 2 + 65, 60, 12, "Open Case", (btn) -> openCase = true);
+				ButtonWidget bw = new ButtonWidget(this.width/2 - 82, this.height / 2 + 65, 60, 12, lang.translate("mcvmcomputers.pc_editing.open_case"), (btn) -> openCase = true);
 				bw.active = !turnedOn;
 				this.addButton(bw);
 			}
@@ -462,7 +457,7 @@ public class GuiPCEditing extends Screen{
 		RenderSystem.disableDepthTest();
 		RenderSystem.translatef(0, 0, 200);
 		super.render(mouseX, mouseY, delta);
-		this.font.draw("Close: ESC", 4, 4, -1);
+		this.font.draw(lang.translate("mcvmcomputers.pc_editing.close"), 4, 4, -1);
 		RenderSystem.enableDepthTest();
 	}
 	
