@@ -200,6 +200,7 @@ public class ClientMod implements ClientModInitializer{
 					mcc.player.sendMessage(new LiteralText("Your screen resolution is too high for a live feed to be sent to other players!").formatted(Formatting.RED));
 					failedSend = true;
 				}
+				return;
 			}else {
 				if(failedSend) {
 					mcc.player.sendMessage(new LiteralText("Others can see your screen again!").formatted(Formatting.GREEN));

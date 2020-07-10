@@ -47,7 +47,9 @@ public class EntityFlatScreen extends Entity{
 	}
 	
 	public Vec3d getLookAtPos() {
-		return new Vec3d(this.getDataTracker().get(LOOK_AT_POS_X), this.getDataTracker().get(LOOK_AT_POS_Y), this.getDataTracker().get(LOOK_AT_POS_Z));
+		return new Vec3d(this.getDataTracker().get(LOOK_AT_POS_X),
+						 this.getDataTracker().get(LOOK_AT_POS_Y),
+						 this.getDataTracker().get(LOOK_AT_POS_Z));
 	}
 
 	@Override
