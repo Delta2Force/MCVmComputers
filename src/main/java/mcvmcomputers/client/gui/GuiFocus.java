@@ -9,10 +9,12 @@ import org.lwjgl.glfw.GLFW;
 import mcvmcomputers.client.ClientMod;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Language;
 
 public class GuiFocus extends Screen{
 	private String keyString;
 	private ArrayList<Integer> keys;
+	private final Language lang = Language.getInstance();
 	
 	public GuiFocus() {
 		super(new TranslatableText("Focus"));
@@ -62,7 +64,7 @@ public class GuiFocus extends Screen{
 		ClientMod.middleMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
 		ClientMod.rightMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
 		
-		this.font.draw("Press " + keyString + " to lose focus", 4, 4, -1);
+		this.font.draw(lang.translate("mcvmcomputers.focus.lose").replace("%s", keyString), 4, 4, -1);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
 		
 		boolean pressed = true;
