@@ -50,6 +50,8 @@ import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
@@ -74,6 +76,7 @@ public class ClientMod implements ClientModInitializer{
 	public static Thread vmUpdateThread;
 	public static byte[] vmTextureBytes;
 	public static int vmTextureBytesSize;
+	public static boolean failedSend;
 	
 	public static double mouseLastX = 0;
 	public static double mouseLastY = 0;
@@ -192,8 +195,20 @@ public class ClientMod implements ClientModInitializer{
 			int sz = def.deflate(deflated);
 			def.end();
 			
+			if(sz > 32766) {
+				if(!failedSend){
+					mcc.player.sendMessage(new LiteralText("Your screen resolution is too high for a live feed to be sent to other players!").formatted(Formatting.RED));
+					failedSend = true;
+				}
+			}else {
+				if(failedSend) {
+					mcc.player.sendMessage(new LiteralText("Others can see your screen again!").formatted(Formatting.GREEN));
+					failedSend = false;
+				}
+			}
+			
 			PacketByteBuf p = new PacketByteBuf(Unpooled.buffer());
-			p.writeByteArray(deflated);
+			p.writeByteArray(Arrays.copyOfRange(deflated, 0, sz));
 			p.writeInt(sz);
 			p.writeInt(vmTextureBytesSize);
 			ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
