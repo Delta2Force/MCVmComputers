@@ -21,10 +21,10 @@ public class SetupPageVboxDirectory extends SetupPage{
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
-		this.textRender.draw("VirtualBox installation directory", setupGui.width/2-160, setupGui.height/2-20, -1);
+		this.textRender.draw(setupGui.translation("mcvmcomputers.setup.vbox_dir"), setupGui.width/2-160, setupGui.height/2-20, -1);
 		this.textRender.draw(vboxStatus, setupGui.width/2-160, setupGui.height/2+13, -1);
-		this.textRender.draw(MVCUtils.getColorChar('7') + "If the value is valid, you don't need to change anything.", setupGui.width/2-160, 60, -1);
-		this.textRender.draw(MVCUtils.getColorChar('7') + "Please only change this if you know what you're doing.", setupGui.width/2-160, 70, -1);
+		this.textRender.draw(setupGui.translation("mcvmcomputers.setup.dontchange0"), setupGui.width/2-160, 60, -1);
+		this.textRender.draw(setupGui.translation("mcvmcomputers.setup.dontchange1"), setupGui.width/2-160, 70, -1);
 		this.vboxDirectory.render(mouseX, mouseY, delta);
 	}
 	
@@ -37,42 +37,42 @@ public class SetupPageVboxDirectory extends SetupPage{
 	
 	private boolean checkDirectory(String s) {
 		if(s.isEmpty()) {
-			vboxStatus = MVCUtils.getColorChar('c') + "The string is empty.";
+			vboxStatus = setupGui.translation("mcvmcomputers.input_empty");
 			next.active = false;
 			return false;
 		}
 		File vboxDir = new File(s);
 		if(!vboxDir.exists()) {
-			vboxStatus = MVCUtils.getColorChar('c') + "Directory doesn't exist.";
+			vboxStatus = setupGui.translation("mcvmcomputers.input_empty");
 			next.active = false;
 			return false;
 		}else if(vboxDir.isFile()) {
-			vboxStatus = MVCUtils.getColorChar('c') + "Path points to a file, not a directory.";
+			vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notfound");
 			next.active = false;
 			return false;
 		}else {
 			if(SystemUtils.IS_OS_WINDOWS) {
 				if(!new File(vboxDir, "vboxmanage.exe").exists() || !new File(vboxDir, "vboxwebsrv.exe").exists()) {
-					vboxStatus = MVCUtils.getColorChar('c') + "The directory isn't the VirtualBox directory.";
+					vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notvbox");
 					next.active = false;
 					return false;
 				}
 			}else if(SystemUtils.IS_OS_MAC) {
 				if(!new File(vboxDir, "VBoxManage").exists() || !new File(vboxDir, "vboxwebsrv").exists()) {
-					vboxStatus = MVCUtils.getColorChar('c') + "The directory isn't the VirtualBox directory.";
+					vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notvbox");
 					next.active = false;
 					return false;
 				}
 			}
 		}
-		vboxStatus = MVCUtils.getColorChar('a') + "This should be a valid VirtualBox directory!";
+		vboxStatus = setupGui.translation("mcvmcomputers.input_dir_yesvbox");
 		next.active = true;
 		return true;
 	}
 
 	@Override
 	public void init() {
-		next = new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, "Next", (bw) -> this.next(bw));
+		next = new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.next(bw));
 		String dirText = this.setupGui.virtualBoxDirectory;
 		if(vboxDirectory != null) {
 			dirText = vboxDirectory.getText();

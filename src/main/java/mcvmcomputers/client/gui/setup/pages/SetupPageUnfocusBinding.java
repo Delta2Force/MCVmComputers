@@ -22,7 +22,7 @@ public class SetupPageUnfocusBinding extends SetupPage{
 			setupGui.init();
 			bindingJustChanged = false;
 		}
-		String s = "VM unfocus key combination";
+		String s = setupGui.translation("mcvmcomputers.setup.unfocusCombo");
 		this.textRender.draw(s, setupGui.width/2-this.textRender.getStringWidth(s)/2, setupGui.height/2-20, -1);
 	}
 	
@@ -65,12 +65,12 @@ public class SetupPageUnfocusBinding extends SetupPage{
 			setupGui.addButton(new ButtonWidget(setupGui.width/2+70, setupGui.height/2-10, 60, 20, getKeyName(glfwUnfocusKey4), (bw) -> changeBinding(4)));
 		}
 		
-		setupGui.addButton(new ButtonWidget(setupGui.width/2-130, setupGui.height/2+12, 60, 12, "Clear", (bw) -> clearBinding(1)));
-		setupGui.addButton(new ButtonWidget(setupGui.width/2-64, setupGui.height/2+12, 60, 12, "Clear", (bw) -> clearBinding(2)));
-		setupGui.addButton(new ButtonWidget(setupGui.width/2+3, setupGui.height/2+12, 60, 12, "Clear", (bw) -> clearBinding(3)));
-		setupGui.addButton(new ButtonWidget(setupGui.width/2+70, setupGui.height/2+12, 60, 12, "Clear", (bw) -> clearBinding(4)));
+		setupGui.addButton(new ButtonWidget(setupGui.width/2-130, setupGui.height/2+12, 60, 12, setupGui.translation("mcvmcomputers.setup.clearButton"), (bw) -> clearBinding(1)));
+		setupGui.addButton(new ButtonWidget(setupGui.width/2-64, setupGui.height/2+12, 60, 12, setupGui.translation("mcvmcomputers.setup.clearButton"), (bw) -> clearBinding(2)));
+		setupGui.addButton(new ButtonWidget(setupGui.width/2+3, setupGui.height/2+12, 60, 12, setupGui.translation("mcvmcomputers.setup.clearButton"), (bw) -> clearBinding(3)));
+		setupGui.addButton(new ButtonWidget(setupGui.width/2+70, setupGui.height/2+12, 60, 12, setupGui.translation("mcvmcomputers.setup.clearButton"), (bw) -> clearBinding(4)));
 		
-		setupGui.addButton(new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, "Next", (bw) -> this.setupGui.nextPage()));
+		setupGui.addButton(new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.setupGui.nextPage()));
 	}
 
 }

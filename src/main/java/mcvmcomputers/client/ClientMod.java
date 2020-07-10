@@ -51,6 +51,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
@@ -197,13 +198,13 @@ public class ClientMod implements ClientModInitializer{
 			
 			if(sz > 32766) {
 				if(!failedSend){
-					mcc.player.sendMessage(new LiteralText("Your screen resolution is too high for a live feed to be sent to other players!").formatted(Formatting.RED));
+					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_too_big_mp").formatted(Formatting.RED));
 					failedSend = true;
 				}
 				return;
 			}else {
 				if(failedSend) {
-					mcc.player.sendMessage(new LiteralText("Others can see your screen again!").formatted(Formatting.GREEN));
+					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_ok_mp").formatted(Formatting.GREEN));
 					failedSend = false;
 				}
 			}

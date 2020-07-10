@@ -22,6 +22,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.Language;
 
 public class GuiSetup extends Screen{
 	private List<SetupPage> setupPages;
@@ -29,6 +30,7 @@ public class GuiSetup extends Screen{
 	private SetupPage currentSetupPage;
 	private boolean initialized = false;
 	public String virtualBoxDirectory = "";
+	private final Language LANGUAGE = Language.getInstance();
 	
 	public GuiSetup() {
 		super(new LiteralText("Setup"));
@@ -61,6 +63,10 @@ public class GuiSetup extends Screen{
 	@Override
 	public boolean shouldCloseOnEsc() {
 		return false;
+	}
+	
+	public String translation(String in) {
+		return LANGUAGE.translate(in).replace("%c", ""+MVCUtils.COLOR_CHAR);
 	}
 	
 	@Override
@@ -105,8 +111,9 @@ public class GuiSetup extends Screen{
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderDirtBackground(0);
-		this.font.draw("VM Computers: "+MVCUtils.getColorChar('l')+"Setup", this.width/2 - this.font.getStringWidth("VM Computers: Setup")/2, 20, -1);
-		String s = MVCUtils.getColorChar('7') + "Page " + (setupIndex+1) + "/" + setupPages.size();
+		String title = translation("mcvmcomputers.setup.title");
+		this.font.draw(title, this.width/2 - this.font.getStringWidth(title)/2, 20, -1);
+		String s = translation("mcvmcomputers.setup.page").replaceFirst("%s", ""+(setupIndex+1)).replaceFirst("%s", ""+setupPages.size());
 		this.font.draw(s, this.width/2 - this.font.getStringWidth(s)/2, 30, -1);
 		currentSetupPage.render(mouseX, mouseY, delta);
 		super.render(mouseX, mouseY, delta);

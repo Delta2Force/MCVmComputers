@@ -34,37 +34,37 @@ public class SetupPageMaxValues extends SetupPage{
 	
 	private boolean checkMaxRam(String input) {
 		if(input.isEmpty()) {
-			statusMaxRam = MVCUtils.getColorChar('c') + "Input is empty.";
+			statusMaxRam = setupGui.translation("mcvmcomputers.input_empty");
 			return false;
 		}
 		if(!StringUtils.isNumeric(input)) {
-			statusMaxRam = MVCUtils.getColorChar('c') + "Input is NaN.";
+			statusMaxRam = setupGui.translation("mcvmcomputers.input_nan");
 			return false;
 		}
 		int rm = Integer.parseInt(input);
 		if(rm < 16) {
-			statusMaxRam = MVCUtils.getColorChar('c') + "Too little! Min 16MB.";
+			statusMaxRam = setupGui.translation("mcvmcomputers.input_too_little").replace("%s", "16");
 			return false;
 		}
-		statusMaxRam = MVCUtils.getColorChar('a') + "Input is valid.";
+		statusMaxRam = setupGui.translation("mcvmcomputers.input_valid");
 		return true;
 	}
 	
 	private boolean videoMemory(String input) {
 		if(input.isEmpty()) {
-			statusVideoMemory = MVCUtils.getColorChar('c') + "Input is empty.";
+			statusVideoMemory = setupGui.translation("mcvmcomputers.input_empty");
 			return false;
 		}
 		if(!StringUtils.isNumeric(input)) {
-			statusVideoMemory = MVCUtils.getColorChar('c') + "Input is NaN.";
+			statusVideoMemory = setupGui.translation("mcvmcomputers.input_nan");
 			return false;
 		}
 		int nm = Integer.parseInt(input);
 		if(nm > 256) {
-			statusVideoMemory = MVCUtils.getColorChar('c') + "Too much! Max 256";
+			statusVideoMemory = setupGui.translation("mcvmcomputers.input_too_much").replace("%s", "256");
 			return false;
 		}
-		statusVideoMemory = MVCUtils.getColorChar('a') + "Input is valid.";
+		statusVideoMemory = setupGui.translation("mcvmcomputers.input_valid");
 		return true;
 	}
 	
@@ -134,7 +134,7 @@ public class SetupPageMaxValues extends SetupPage{
 		onlyStatusMessage = true;
 		ClientMod.maxRam = Integer.parseInt(maxRam.getText());
 		ClientMod.videoMem = Integer.parseInt(videoMemory.getText());
-		status = "All values valid. Attempting to start VirtualBox...";
+		status = setupGui.translation("mcvmcomputers.setup.startingStatus");
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -160,7 +160,7 @@ public class SetupPageMaxValues extends SetupPage{
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						status = MVCUtils.getColorChar('a') + "VirtualBox " + vb.getVersion() + " works!\n\n"+"Minecraft will start in " + i + " seconds.";
+						status = setupGui.translation("mcvmcomputers.setup.successStatus").replaceFirst("%s", vb.getVersion()).replaceFirst("%s", ""+i);
 					}
 					ClientMod.vbManager = vm;
 					ClientMod.vb = vb;
@@ -174,7 +174,7 @@ public class SetupPageMaxValues extends SetupPage{
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						status = MVCUtils.getColorChar('c') + "Failed! Error will be printed to log.\n" + MVCUtils.getColorChar('c') + "Maybe vboxwebsrv is already running? In that case,\n" + MVCUtils.getColorChar('c')  + "close it using your Task Manager. If it's a VirtualBox\n" + MVCUtils.getColorChar('c')  + "problem, start it and look at the error.\n\n"+"Settings menu in " + i + " seconds.";
+						status = setupGui.translation("mcvmcomputers.setup.failedStatus").replace("%s", ""+i);
 					}
 					onlyStatusMessage = false;
 					init();
@@ -186,9 +186,9 @@ public class SetupPageMaxValues extends SetupPage{
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		if(!onlyStatusMessage) {
-			this.textRender.draw("Maximum RAM used by VM:", setupGui.width/2 - 160, setupGui.height/2-30, -1);
-			this.textRender.draw("VM Video Memory:", setupGui.width/2 + 10, setupGui.height/2-30, -1);
-			String s = "Set these values in " + MVCUtils.getColorChar('l') + "megabytes." + MVCUtils.getColorChar('r') + " 1 GB = 1024 MB. NaN = Not a Number.";
+			this.textRender.draw(setupGui.translation("mcvmcomputers.setup.max_ram_input"), setupGui.width/2 - 160, setupGui.height/2-30, -1);
+			this.textRender.draw(setupGui.translation("mcvmcomputers.setup.vram_input"), setupGui.width/2 + 10, setupGui.height/2-30, -1);
+			String s = setupGui.translation("mcvmcomputers.setup.ram_input_help");
 			this.textRender.draw(s, setupGui.width/2 - textRender.getStringWidth(s)/2, setupGui.height/2+30, -1);
 			this.textRender.draw(statusMaxRam, setupGui.width / 2 - 160, setupGui.height/2 + 3, -1);
 			this.textRender.draw(statusVideoMemory, setupGui.width / 2 + 10, setupGui.height/2 + 3, -1);
@@ -224,7 +224,7 @@ public class SetupPageMaxValues extends SetupPage{
 			this.videoMemory(videoMemory.getText());
 			this.setupGui.addElement(maxRam);
 			this.setupGui.addElement(videoMemory);
-			this.setupGui.addButton(new ButtonWidget(setupGui.width/2 - 50, setupGui.height - 40, 100, 20, "Confirm", (btn) -> confirmButton(btn)));
+			this.setupGui.addButton(new ButtonWidget(setupGui.width/2 - 50, setupGui.height - 40, 100, 20, setupGui.translation("mcvmcomputers.setup.confirmButton"), (btn) -> confirmButton(btn)));
 		}
 	}
 
