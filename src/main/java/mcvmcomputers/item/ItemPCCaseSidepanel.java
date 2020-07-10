@@ -12,6 +12,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -56,19 +57,19 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 		if(stack.getTag() != null) {
 			if (stack.getTag().contains("MoboInstalled")) {
 				if(stack.getTag().getBoolean("MoboInstalled")) {
-					tooltip.add(new LiteralText((stack.getTag().getBoolean("x64") ? "64-bit" : "32-bit") + " Motherboard").formatted(Formatting.GRAY));
+					tooltip.add(new TranslatableText(stack.getTag().getBoolean("x64") ? "item.mcvmcomputers.motherboard64" : "item.mcvmcomputers.motherboard").formatted(Formatting.GRAY));
 					if(stack.getTag().getBoolean("GPUInstalled"))
-						tooltip.add(new LiteralText("GPU installed").formatted(Formatting.GRAY));
+						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_gpu").formatted(Formatting.GRAY));
 					if(stack.getTag().getInt("CPUDividedBy") > 0)
-						tooltip.add(new LiteralText("1/" + stack.getTag().getInt("CPUDividedBy") + " host CPU installed").formatted(Formatting.GRAY));
+						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_cpu", stack.getTag().getInt("CPUDividedBy")).formatted(Formatting.GRAY));
 					if(stack.getTag().getInt("RAMSlot0") > 0)
-						tooltip.add(new LiteralText(stack.getTag().getInt("RAMSlot0") + " GB of RAM in slot 1").formatted(Formatting.GRAY));
+						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot0", stack.getTag().getInt("RAMSlot0")).formatted(Formatting.GRAY));
 					if(stack.getTag().getInt("RAMSlot1") > 0)
-						tooltip.add(new LiteralText(stack.getTag().getInt("RAMSlot1") + " GB of RAM in slot 2").formatted(Formatting.GRAY));
+						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot1", stack.getTag().getInt("RAMSlot1")).formatted(Formatting.GRAY));
 					if(!stack.getTag().getString("VHDName").isEmpty())
-						tooltip.add(new LiteralText("Inserted hard drive: " + stack.getTag().getString("VHDName")).formatted(Formatting.GRAY));
+						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_hdd", stack.getTag().getString("VHDName")).formatted(Formatting.GRAY));
 					if(!stack.getTag().getString("ISOName").isEmpty())
-						tooltip.add(new LiteralText("Inserted ISO: " + stack.getTag().getString("ISOName")).formatted(Formatting.GRAY));
+						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_iso", stack.getTag().getString("ISOName")).formatted(Formatting.GRAY));
 				}
 			}
 		}
@@ -79,11 +80,11 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 		if(stack.getTag() != null) {
 			if (stack.getTag().contains("MoboInstalled")) {
 				if(stack.getTag().getBoolean("MoboInstalled")) {
-					return new LiteralText("Built PC");
+					return new TranslatableText("mcvmcomputers.pc_item_built");
 				}
 			}
 		}
-		return new LiteralText("PC case");
+		return new TranslatableText("item.mcvmcomputers.pc_case_sidepanel");
 	}
 	
 	public static ItemStack createPCStackByEntity(EntityPC pc) {

@@ -17,6 +17,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -215,7 +216,7 @@ public class EntityPC extends Entity{
 					ClientMod.currentPC = this;
 					MainMod.pcOpenGui.run();
 				}else
-					player.sendMessage(new LiteralText("This computer is not yours!").formatted(Formatting.RED));
+					player.sendMessage(new TranslatableText("mcvmcomputers.not_your_computer").formatted(Formatting.RED));
 		}
 		return true;
 	}

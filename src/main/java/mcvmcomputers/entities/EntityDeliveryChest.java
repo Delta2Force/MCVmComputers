@@ -21,6 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -152,7 +153,7 @@ public class EntityDeliveryChest extends Entity{
 				}
 				
 				if(!flag) {
-					player.sendMessage(new LiteralText("You need to click the chest with ingots in your hand!").formatted(Formatting.RED));
+					player.sendMessage(new TranslatableText("mcvmcomputers.click_with_ingots").formatted(Formatting.RED));
 				}else {
 					if(to.price < 0) {
 						is.increment(to.price * -1);

@@ -513,13 +513,13 @@ public class GuiPCEditing extends Screen{
 		if(pc_case.getCpuDividedBy() > 0 && pc_case.getGpuInstalled() && pc_case.getMotherboardInstalled() && (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1()) >= 1) {
 			if(!pc_case.getHardDriveFileName().isEmpty()) {
 				if(!new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
-					minecraft.player.sendMessage(new LiteralText("The inserted hard drive does not exist on your computer!").formatted(Formatting.RED));
+					minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.hdd_doesnt_exist").formatted(Formatting.RED));
 					return;
 				}
 			}
 			if(!pc_case.getIsoFileName().isEmpty()) {
 				if(!new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
-					minecraft.player.sendMessage(new LiteralText("The inserted ISO does not exist on your computer!").formatted(Formatting.RED));
+					minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.iso_doesnt_exist").formatted(Formatting.RED));
 					return;
 				}
 			}
@@ -596,8 +596,8 @@ public class GuiPCEditing extends Screen{
 						ClientMod.vmTurningOn = false;
 						ClientMod.vmTurnedOn = true;
 					}catch(Exception ex) {
-						minecraft.player.sendMessage(new LiteralText("Failed to start VM, error: " + ex.getMessage()).formatted(Formatting.RED));
-						minecraft.player.sendMessage(new LiteralText("If you can't fix this on your own, contact me on Reddit (u/DeltaTwoForce).").formatted(Formatting.RED));
+						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.failed_to_start" ,ex.getMessage()).formatted(Formatting.RED));
+						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.contact_me").formatted(Formatting.RED));
 						ClientMod.vmTurningOn = false;
 						ClientMod.vmTurnedOn = false;
 						
