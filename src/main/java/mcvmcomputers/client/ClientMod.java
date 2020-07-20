@@ -201,19 +201,18 @@ public class ClientMod implements ClientModInitializer{
 					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_too_big_mp").formatted(Formatting.RED));
 					failedSend = true;
 				}
-				return;
 			}else {
 				if(failedSend) {
 					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_ok_mp").formatted(Formatting.GREEN));
 					failedSend = false;
 				}
+				
+				PacketByteBuf p = new PacketByteBuf(Unpooled.buffer());
+				p.writeByteArray(Arrays.copyOfRange(deflated, 0, sz));
+				p.writeInt(sz);
+				p.writeInt(vmTextureBytesSize);
+				ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
 			}
-			
-			PacketByteBuf p = new PacketByteBuf(Unpooled.buffer());
-			p.writeByteArray(Arrays.copyOfRange(deflated, 0, sz));
-			p.writeInt(sz);
-			p.writeInt(vmTextureBytesSize);
-			ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
 			
 			NativeImage ni = null;
 			try {
