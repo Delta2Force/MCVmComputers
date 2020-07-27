@@ -67,8 +67,8 @@ public class ClientMod implements ClientModInitializer{
 	public static boolean vmTurningOn;
 	public static ISession vmSession;
 	
-	public static int maxRam;
-	public static int videoMem;
+	public static int maxRam = 8192;
+	public static int videoMem = 256;
 	
 	public static VirtualBoxManager vbManager;
 	public static IVirtualBox vb;

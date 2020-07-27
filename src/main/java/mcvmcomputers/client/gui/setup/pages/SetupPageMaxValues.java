@@ -145,7 +145,13 @@ public class SetupPageMaxValues extends SetupPage{
 					VMSettings set = new VMSettings();
 					set.vboxDirectory = setupGui.virtualBoxDirectory;
 					set.vmComputersDirectory = ClientMod.vhdDirectory.getParentFile().getAbsolutePath();
-					File f = new File(minecraft.runDirectory, "vm_computers/settings.json");
+					set.unfocusKey1 = ClientMod.glfwUnfocusKey1;
+					set.unfocusKey2 = ClientMod.glfwUnfocusKey2;
+					set.unfocusKey3 = ClientMod.glfwUnfocusKey3;
+					set.unfocusKey4 = ClientMod.glfwUnfocusKey4;
+					set.maxRam = ClientMod.maxRam;
+					set.videoMem = ClientMod.videoMem;
+					File f = new File(minecraft.runDirectory, "vm_computers/setup.json");
 					if(f.exists()) {
 						f.delete();
 					}
@@ -205,26 +211,26 @@ public class SetupPageMaxValues extends SetupPage{
 
 	@Override
 	public void init() {
-		String maxRamText = "8192";
+		String maxRamText = ""+ClientMod.maxRam;
 		if(maxRam != null) {
 			maxRamText = maxRam.getText();
 		}
-		String videoMemoryText = "256";
+		String videoMemoryText = ""+ClientMod.videoMem;
 		if(videoMemory != null) {
 			videoMemoryText = videoMemory.getText();
 		}
-		if(!this.onlyStatusMessage) {
+		if(!onlyStatusMessage) {
 			maxRam = new TextFieldWidget(this.textRender, setupGui.width/2-160, setupGui.height/2-20, 150, 20, "");
 			maxRam.setText(maxRamText);
 			maxRam.setChangedListener((str) -> checkMaxRam(str));
 			videoMemory = new TextFieldWidget(this.textRender, setupGui.width/2+10, setupGui.height/2-20, 150, 20, "");
 			videoMemory.setText(videoMemoryText);
 			videoMemory.setChangedListener((str) -> videoMemory(str));
-			this.checkMaxRam(maxRam.getText());
-			this.videoMemory(videoMemory.getText());
-			this.setupGui.addElement(maxRam);
-			this.setupGui.addElement(videoMemory);
-			this.setupGui.addButton(new ButtonWidget(setupGui.width/2 - 50, setupGui.height - 40, 100, 20, setupGui.translation("mcvmcomputers.setup.confirmButton"), (btn) -> confirmButton(btn)));
+			checkMaxRam(maxRam.getText());
+			videoMemory(videoMemory.getText());
+			setupGui.addElement(maxRam);
+			setupGui.addElement(videoMemory);
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 50, setupGui.height - 40, 100, 20, setupGui.translation("mcvmcomputers.setup.confirmButton"), (btn) -> confirmButton(btn)));
 		}
 	}
 

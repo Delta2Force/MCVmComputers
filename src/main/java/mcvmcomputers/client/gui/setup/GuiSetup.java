@@ -71,11 +71,11 @@ public class GuiSetup extends Screen{
 	
 	@Override
 	public void init() {
-		if(new File(minecraft.runDirectory, "vm_computers/settings.json").exists()) {
+		if(new File(minecraft.runDirectory, "vm_computers/setup.json").exists()) {
 			FileReader fr;
 			VMSettings set = null;
 			try {
-				fr = new FileReader(new File(minecraft.runDirectory, "vm_computers/settings.json"));
+				fr = new FileReader(new File(minecraft.runDirectory, "vm_computers/setup.json"));
 				set = new Gson().fromJson(fr, VMSettings.class);
 				fr.close();
 			} catch (Exception e) {
@@ -90,6 +90,12 @@ public class GuiSetup extends Screen{
 				ClientMod.isoDirectory = new File(set.vmComputersDirectory, "isos");
 				ClientMod.vhdDirectory = new File(set.vmComputersDirectory, "vhds");
 			}
+			ClientMod.glfwUnfocusKey1 = set.unfocusKey1;
+			ClientMod.glfwUnfocusKey2 = set.unfocusKey2;
+			ClientMod.glfwUnfocusKey3 = set.unfocusKey3;
+			ClientMod.glfwUnfocusKey4 = set.unfocusKey4;
+			ClientMod.maxRam = set.maxRam;
+			ClientMod.videoMem = set.videoMem;
 		}
 		if(!initialized) {
 			setupPages = new ArrayList<>();
