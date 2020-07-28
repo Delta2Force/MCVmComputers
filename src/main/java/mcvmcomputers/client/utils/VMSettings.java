@@ -9,6 +9,7 @@ import mcvmcomputers.client.ClientMod;
 import net.minecraft.client.MinecraftClient;
 
 public class VMSettings {
+	public int settingsVersion;
 	public String vboxDirectory;
 	public String vmComputersDirectory;
 	
@@ -20,6 +21,8 @@ public class VMSettings {
 	public int unfocusKey4 = -1;
 	
 	public VMSettings() {
+		settingsVersion = 1;
+		
 		if(SystemUtils.IS_OS_WINDOWS) {
 			vboxDirectory = "C:\\Program Files\\Oracle\\VirtualBox";
 		}else if(SystemUtils.IS_OS_MAC) {
