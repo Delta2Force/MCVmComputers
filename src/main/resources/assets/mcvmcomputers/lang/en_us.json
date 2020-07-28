@@ -91,6 +91,8 @@
     "mcvmcomputers.setup.vbox_dir": "VirtualBox installation directory",
     "mcvmcomputers.setup.dontchange0": "%c7If the value is valid, you don't need to change anything.",
     "mcvmcomputers.setup.dontchange1": "%c7Please only change this if you know what you're doing.",
+    "mcvmcomputers.setup.useConfig": "Use saved configuration",
+    "mcvmcomputers.setup.redoSetup": "Redo setup",
     "mcvmcomputers.input_valid": "%caInput is valid.",
     "mcvmcomputers.input_empty": "%ccInput is empty.",
     "mcvmcomputers.input_nan": "%ccInput is NaN.",

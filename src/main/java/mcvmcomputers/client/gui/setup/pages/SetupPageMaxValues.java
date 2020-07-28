@@ -231,6 +231,11 @@ public class SetupPageMaxValues extends SetupPage{
 			setupGui.addElement(maxRam);
 			setupGui.addElement(videoMemory);
 			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 50, setupGui.height - 40, 100, 20, setupGui.translation("mcvmcomputers.setup.confirmButton"), (btn) -> confirmButton(btn)));
+			
+			if(setupGui.startVb) {
+				confirmButton(null);
+				setupGui.startVb = false;
+			}
 		}
 	}
 

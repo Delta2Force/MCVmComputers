@@ -29,6 +29,8 @@ public class GuiSetup extends Screen{
 	private int setupIndex;
 	private SetupPage currentSetupPage;
 	private boolean initialized = false;
+	public boolean loadedConfiguration = false;
+	public boolean startVb = false;
 	public String virtualBoxDirectory = "";
 	private final Language LANGUAGE = Language.getInstance();
 	
@@ -69,6 +71,13 @@ public class GuiSetup extends Screen{
 		return LANGUAGE.translate(in).replace("%c", ""+MVCUtils.COLOR_CHAR);
 	}
 	
+	public void lastPage() {
+		startVb = true;
+		setupIndex = setupPages.size() - 1;
+		currentSetupPage = setupPages.get(setupPages.size() - 1);
+		this.init();
+	}
+	
 	@Override
 	public void init() {
 		if(new File(minecraft.runDirectory, "vm_computers/setup.json").exists()) {
@@ -96,6 +105,7 @@ public class GuiSetup extends Screen{
 			ClientMod.glfwUnfocusKey4 = set.unfocusKey4;
 			ClientMod.maxRam = set.maxRam;
 			ClientMod.videoMem = set.videoMem;
+			loadedConfiguration = true;
 		}
 		if(!initialized) {
 			setupPages = new ArrayList<>();
