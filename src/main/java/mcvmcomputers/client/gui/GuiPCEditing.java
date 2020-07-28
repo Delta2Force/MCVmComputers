@@ -2,6 +2,7 @@ package mcvmcomputers.client.gui;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -530,6 +531,7 @@ public class GuiPCEditing extends Screen{
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					ArrayList<ISession> usedSessions = new ArrayList<>();
 					try {
 						IMachine found = null;
 						try {
@@ -546,34 +548,42 @@ public class GuiPCEditing extends Screen{
 							}
 							ISession sess = ClientMod.vbManager.getSessionObject();
 							found.lockMachine(sess, LockType.Write);
-							found.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
-							found.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
-							found.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
-							found.getGraphicsAdapter().setAccelerate3DEnabled(true);
-							found.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
-							found.removeStorageController("IDE Controller");
-							found.addStorageController("IDE Controller", StorageBus.IDE);
+							usedSessions.add(sess);
+							IMachine edit = sess.getMachine();
+							String OSType = "Other";
+							if(pc_case.get64Bit()) {
+								OSType += "_64";
+							}
+							edit.setOSTypeId(OSType);
+							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
+							edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
+							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
+							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
+							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
+							edit.removeStorageController("IDE Controller");
+							edit.addStorageController("IDE Controller", StorageBus.IDE);
 							if(!pc_case.getHardDriveFileName().isEmpty()) {
 								if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
 									IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
-									found.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
+									edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
 								}
 							}
 							if(!pc_case.getIsoFileName().isEmpty()) {
 								if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
 									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
 									try {
-										found.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
 									}catch(VBoxException ex) {}
 								}else if(pc_case.getIsoFileName().equals("Additions")) {
 									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
 									try {
-										found.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
 									}catch(VBoxException ex) {}
 								}
 							}
-							found.saveSettings();
+							edit.saveSettings();
 							sess.unlockMachine();
+							usedSessions.remove(sess);
 						}else {
 							String OSType = "Other";
 							if(pc_case.get64Bit()) {
@@ -583,6 +593,7 @@ public class GuiPCEditing extends Screen{
 							ClientMod.vb.registerMachine(machine);
 							ISession sess = ClientMod.vbManager.getSessionObject();
 							machine.lockMachine(sess, LockType.Write);
+							usedSessions.add(sess);
 							IMachine edit = sess.getMachine();
 							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
 							edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
@@ -611,6 +622,7 @@ public class GuiPCEditing extends Screen{
 							}
 							edit.saveSettings();
 							sess.unlockMachine();
+							usedSessions.remove(sess);
 						}
 						
 						IMachine machine = ClientMod.vb.findMachine("VmComputersVm");
@@ -620,7 +632,12 @@ public class GuiPCEditing extends Screen{
 						ClientMod.vmTurningOn = false;
 						ClientMod.vmTurnedOn = true;
 					}catch(Exception ex) {
-						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.failed_to_start" ,ex.getMessage()).formatted(Formatting.RED));
+						for(ISession is : usedSessions) {
+							try {
+								is.unlockMachine();
+							}catch(Exception exx) {}
+						}
+						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.failed_to_start", ex.getMessage()).formatted(Formatting.RED));
 						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.contact_me").formatted(Formatting.RED));
 						ClientMod.vmTurningOn = false;
 						ClientMod.vmTurnedOn = false;
