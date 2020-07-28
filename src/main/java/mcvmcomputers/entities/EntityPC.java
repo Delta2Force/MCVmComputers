@@ -157,6 +157,10 @@ public class EntityPC extends Entity{
 		if(tag.contains("MotherboardInstalled")) {
 			this.getDataTracker().set(MOTHERBOARD_INSTALLED, tag.getBoolean("MotherboardInstalled"));
 		}
+		
+		if(tag.contains("GlassSidepanel")) {
+			this.getDataTracker().set(GLASS_SIDEPANEL, tag.getBoolean("GlassSidepanel"));
+		}
 	}
 	@Override
 	protected void writeCustomDataToTag(CompoundTag tag) {
@@ -171,6 +175,7 @@ public class EntityPC extends Entity{
 		tag.putBoolean("GpuInstalled", this.getDataTracker().get(GPU_IN_PCI_SLOT));
 		tag.putString("HardDriveFileName", this.getDataTracker().get(HARD_DRIVE_FILE_NAME));
 		tag.putBoolean("MotherboardInstalled", this.getDataTracker().get(MOTHERBOARD_INSTALLED));
+		tag.putBoolean("GlassSidepanel", this.getDataTracker().get(GLASS_SIDEPANEL));
 		tag.putString("Owner", this.getDataTracker().get(OWNER_UUID));
 	}
 	
