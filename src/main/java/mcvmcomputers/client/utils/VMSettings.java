@@ -9,7 +9,7 @@ import mcvmcomputers.client.ClientMod;
 import net.minecraft.client.MinecraftClient;
 
 public class VMSettings {
-	public int settingsVersion;
+	public int settingsVersion = -1;
 	public String vboxDirectory;
 	public String vmComputersDirectory;
 	

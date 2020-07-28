@@ -90,22 +90,24 @@ public class GuiSetup extends Screen{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if(set.vboxDirectory != null) {
-				virtualBoxDirectory = set.vboxDirectory;
-			}else {
-				virtualBoxDirectory = new VMSettings().vboxDirectory;
+			if(set.settingsVersion != -1) {
+				if(set.vboxDirectory != null) {
+					virtualBoxDirectory = set.vboxDirectory;
+				}else {
+					virtualBoxDirectory = new VMSettings().vboxDirectory;
+				}
+				if(set.vmComputersDirectory != null) {
+					ClientMod.isoDirectory = new File(set.vmComputersDirectory, "isos");
+					ClientMod.vhdDirectory = new File(set.vmComputersDirectory, "vhds");
+				}
+				ClientMod.glfwUnfocusKey1 = set.unfocusKey1;
+				ClientMod.glfwUnfocusKey2 = set.unfocusKey2;
+				ClientMod.glfwUnfocusKey3 = set.unfocusKey3;
+				ClientMod.glfwUnfocusKey4 = set.unfocusKey4;
+				ClientMod.maxRam = set.maxRam;
+				ClientMod.videoMem = set.videoMem;
+				loadedConfiguration = true;
 			}
-			if(set.vmComputersDirectory != null) {
-				ClientMod.isoDirectory = new File(set.vmComputersDirectory, "isos");
-				ClientMod.vhdDirectory = new File(set.vmComputersDirectory, "vhds");
-			}
-			ClientMod.glfwUnfocusKey1 = set.unfocusKey1;
-			ClientMod.glfwUnfocusKey2 = set.unfocusKey2;
-			ClientMod.glfwUnfocusKey3 = set.unfocusKey3;
-			ClientMod.glfwUnfocusKey4 = set.unfocusKey4;
-			ClientMod.maxRam = set.maxRam;
-			ClientMod.videoMem = set.videoMem;
-			loadedConfiguration = true;
 		}
 		if(!initialized) {
 			setupPages = new ArrayList<>();

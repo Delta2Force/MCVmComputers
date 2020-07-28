@@ -58,6 +58,7 @@ import net.minecraft.util.PacketByteBuf;
 
 public class ClientMod implements ClientModInitializer{
 	public static final OutputStream discardAllBytes = new OutputStream() { @Override public void write(int b) throws IOException {} };
+	public static boolean qemu = true;
 	public static Map<UUID, Identifier> vmScreenTextures;
 	public static Map<UUID, NativeImage> vmScreenTextureNI;
 	public static Map<UUID, NativeImageBackedTexture> vmScreenTextureNIBT;
