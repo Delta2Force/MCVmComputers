@@ -155,7 +155,7 @@ public class GuiCreateHarddrive extends Screen{
 					return;
 				}
 			}else {
-				status = translation("mcvmcomputers.input_too_little").replace("%s", "0");
+				status = translation("mcvmcomputers.input_too_little").replace("%s", "1");
 				return;
 			}
 		}else {
