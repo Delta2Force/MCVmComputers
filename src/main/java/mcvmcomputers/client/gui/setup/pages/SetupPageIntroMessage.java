@@ -6,6 +6,9 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.util.Language;
 
+import java.io.File;
+import java.io.FileReader;
+
 public class SetupPageIntroMessage extends SetupPage{
 	public SetupPageIntroMessage(GuiSetup setupGui, TextRenderer textRender) {
 		super(setupGui, textRender);
@@ -31,8 +34,15 @@ public class SetupPageIntroMessage extends SetupPage{
 			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.setupGui.nextPage()));
 		}else {
 			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 - 25, 200, 20, setupGui.translation("mcvmcomputers.setup.useConfig"), (bw) -> this.setupGui.lastPage()));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 + 5, 200, 20, setupGui.translation("mcvmcomputers.setup.redoSetup"), (bw) -> this.setupGui.nextPage()));
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 + 5, 200, 20, setupGui.translation("mcvmcomputers.setup.redoSetup"), (bw) -> this.delete()));
 		}
 	}
-
+	public void delete() {
+		setupGui.loadedConfiguration = false;
+		File f = new File(minecraft.runDirectory, "vm_computers/setup.json");
+		if(f.exists()) {
+			f.delete();
+		}
+		this.setupGui.nextPage();
+	}
 }
