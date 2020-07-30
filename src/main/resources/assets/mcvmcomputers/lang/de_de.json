@@ -108,5 +108,6 @@
     "mcvmcomputers.setup.useConfig": "Use saved configuration",
     "mcvmcomputers.setup.redoSetup": "Redo setup",
     "mcvmcomputers.input_parser_error": "%ccError while parsing number. Number too big?",
-    "mcvmcomputers.waitingforvmtostart": "Waiting for VM to start"
+    "mcvmcomputers.waitingforvmtostart": "Waiting for VM to start",
+    "mcvmcomputers.pc_editing.add_gpu": "Add GPU"
 }
