@@ -104,5 +104,9 @@
     "key.mcvmcomputers.unfocuskey1": "Defokussieren (Tastenkombination): Taste 1",
     "key.mcvmcomputers.unfocuskey2": "Defokussieren (Tastenkombination): Taste 2",
     "key.mcvmcomputers.unfocuskey3": "Defokussieren (Tastenkombination): Taste 3",
-    "key.mcvmcomputers.unfocuskey4": "Defokussieren (Tastenkombination): Taste 4"
+    "key.mcvmcomputers.unfocuskey4": "Defokussieren (Tastenkombination): Taste 4",
+    "mcvmcomputers.setup.useConfig": "Use saved configuration",
+    "mcvmcomputers.setup.redoSetup": "Redo setup",
+    "mcvmcomputers.input_parser_error": "%ccError while parsing number. Number too big?",
+    "mcvmcomputers.waitingforvmtostart": "Waiting for VM to start"
 }
