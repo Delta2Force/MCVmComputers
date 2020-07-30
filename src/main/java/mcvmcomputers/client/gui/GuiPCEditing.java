@@ -63,7 +63,9 @@ public class GuiPCEditing extends Screen{
 	private static final ItemStack GPU = new ItemStack(ItemList.ITEM_GPU);
 	private static final ItemStack RAM = new ItemStack(ItemList.ITEM_RAM1G);
 	private static final ItemStack HARD_DRIVE = new ItemStack(ItemList.ITEM_HARDDRIVE);
-	
+
+	private final Object vmTurningON = new Object();
+
 	public GuiPCEditing(EntityPC pc_case) {
 		super(new TranslatableText("text.pc_editor.title"));
 		this.pc_case = pc_case;
@@ -474,9 +476,19 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	private void insertISO(String name) {
-		if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
+		if(ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getEntityId()) {
 			IMedium m = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, name).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
 			ClientMod.vmSession.getMachine().mountMedium("IDE Controller", 1, 0, m, true);
+		}
+		if(ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getEntityId()) {
+			minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.waitingforvmtostart").formatted(Formatting.YELLOW));
+			synchronized (vmTurningON) {
+				try {
+					vmTurningON.wait();
+				} catch (InterruptedException e) {}
+				IMedium m = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, name).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+				ClientMod.vmSession.getMachine().mountMedium("IDE Controller", 1, 0, m, true);
+			}
 		}
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeString(name);
@@ -581,6 +593,9 @@ public class GuiPCEditing extends Screen{
 									}catch(VBoxException ex) {}
 								}
 							}
+							if(pc_case.getIsoFileName().isEmpty()) {
+								edit.attachDevice("IDE Controller",1,0,DeviceType.DVD,null);
+							}
 							edit.saveSettings();
 							sess.unlockMachine();
 							usedSessions.remove(sess);
@@ -620,6 +635,9 @@ public class GuiPCEditing extends Screen{
 									}catch(VBoxException ex) {}
 								}
 							}
+							if(pc_case.getIsoFileName().isEmpty()) {
+								edit.attachDevice("IDE Controller",1,0,DeviceType.DVD,null);
+							}
 							edit.saveSettings();
 							sess.unlockMachine();
 							usedSessions.remove(sess);
@@ -631,6 +649,9 @@ public class GuiPCEditing extends Screen{
 						pr.waitForCompletion(-1);
 						ClientMod.vmTurningOn = false;
 						ClientMod.vmTurnedOn = true;
+						synchronized (vmTurningON) {
+							vmTurningON.notify();
+						}
 					}catch(Exception ex) {
 						for(ISession is : usedSessions) {
 							try {

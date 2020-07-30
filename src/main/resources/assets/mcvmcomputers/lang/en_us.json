@@ -104,6 +104,7 @@
     "mcvmcomputers.input_dir_yesvbox": "%caThis should be a valid VirtualBox directory!",
     "mcvmcomputers.input_dir_yes": "%caValid directory!",
     "mcvmcomputers.input_dir_notdir": "%ccPath points to a file, not a directory.",
+    "mcvmcomputers.waitingforvmtostart": "Waiting for VM to start",
     "key.mcvmcomputers.unfocuskey1": "Unfocus key combination: Key 1",
     "key.mcvmcomputers.unfocuskey2": "Unfocus key combination: Key 2",
     "key.mcvmcomputers.unfocuskey3": "Unfocus key combination: Key 3",
