@@ -1,11 +1,14 @@
 package mcvmcomputers.client.gui.setup.pages;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.jline.utils.OSUtils;
 import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VirtualBoxManager;
 
@@ -69,119 +72,188 @@ public class SetupPageMaxValues extends SetupPage{
 	}
 	
 	private void confirmButton(ButtonWidget in) {
-		if(ClientMod.vboxWebSrv != null) {
-			ClientMod.vboxWebSrv.destroy();
-		}
-		
-		if(SystemUtils.IS_OS_WINDOWS) {
-			ProcessBuilder vboxConfig = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\vboxmanage.exe", "setproperty", "websrvauthlibrary", "null");
-			try {
-				vboxConfig.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+		if(ClientMod.qemu) {
+			this.setupGui.clearElements();
+			this.setupGui.clearButtons();
+			onlyStatusMessage = true;
 			
-			ProcessBuilder vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\vboxwebsrv.exe", "--timeout", "0");
-			try {
-				ClientMod.vboxWebSrv = vboxWebSrv.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}else if(SystemUtils.IS_OS_MAC){
-			ProcessBuilder vboxConfig = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "/VBoxManage", "setproperty", "websrvauthlibrary", "null");
-			try {
-				vboxConfig.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			status = setupGui.translation("mcvmcomputers.setup.startingStatusQemu");
 			
-			ProcessBuilder vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "/vboxwebsrv", "--timeout", "0");
-			try {
-				ClientMod.vboxWebSrv = vboxWebSrv.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						ProcessBuilder pb = null;
+						if(SystemUtils.IS_OS_WINDOWS) {
+							pb = new ProcessBuilder();
+							pb.command("qemu-system-x86_64.exe", "--version");
+							pb.directory(new File(setupGui.virtualBoxDirectory));
+						}else {
+							pb = new ProcessBuilder();
+							pb.command("qemu-system-x86_64", "--version");
+						}
+						pb.redirectErrorStream(true);
+						Process process = pb.start();
+						BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+						String line = "";
+						while((line = br.readLine()) != null) {break;}
+						String version = "";
+						if(!line.contains("QEMU emulator")) {
+							throw new RuntimeException("Failed to start QEMU!");
+						}else {
+							version = line.split(" ")[3];
+						}
+						process.waitFor();
+						br.close();
+						writeSettings();
+						for(int i = 5;i>=0;i--) {
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							status = setupGui.translation("mcvmcomputers.setup.successStatusQemu").replaceFirst("%s", version).replaceFirst("%s", ""+i);
+						}
+						minecraft.openScreen(new TitleScreen());
+						return;
+					}catch(Exception ex) {
+						ex.printStackTrace();
+						for(int i = 5;i>=0;i--) {
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							status = setupGui.translation("mcvmcomputers.setup.failedStatusQemu").replace("%s", ""+i);
+						}
+						onlyStatusMessage = false;
+						setupGui.firstPage();
+					}
+				}
+			}).start();
 		}else {
-			ProcessBuilder vboxConfig = new ProcessBuilder("vboxmanage", "setproperty", "websrvauthlibrary", "null");
-			try {
-				vboxConfig.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			if(ClientMod.vboxWebSrv != null) {
+				ClientMod.vboxWebSrv.destroy();
 			}
 			
-			ProcessBuilder vboxWebSrv = new ProcessBuilder("vboxwebsrv", "--timeout", "0");
-			try {
-				ClientMod.vboxWebSrv = vboxWebSrv.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
-		
-		boolean[] bools = new boolean[] {checkMaxRam(maxRam.getText()), videoMemory(videoMemory.getText())};
-		for(boolean b : bools) {
-			if(!b) {
-				return;
-			}
-		}
-		this.setupGui.clearElements();
-		this.setupGui.clearButtons();
-		onlyStatusMessage = true;
-		ClientMod.maxRam = Integer.parseInt(maxRam.getText());
-		ClientMod.videoMem = Integer.parseInt(videoMemory.getText());
-		status = setupGui.translation("mcvmcomputers.setup.startingStatus");
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
+			if(SystemUtils.IS_OS_WINDOWS) {
+				ProcessBuilder vboxConfig = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\vboxmanage.exe", "setproperty", "websrvauthlibrary", "null");
 				try {
-					VirtualBoxManager vm = VirtualBoxManager.createInstance(null);
-					vm.connect("http://localhost:18083", "should", "work");
-					IVirtualBox vb = vm.getVBox();
-					VMSettings set = VMSettings.create();
-					set.vboxDirectory = setupGui.virtualBoxDirectory;
-					set.vmComputersDirectory = ClientMod.vhdDirectory.getParentFile().getAbsolutePath();
-					set.unfocusKey1 = ClientMod.glfwUnfocusKey1;
-					set.unfocusKey2 = ClientMod.glfwUnfocusKey2;
-					set.unfocusKey3 = ClientMod.glfwUnfocusKey3;
-					set.unfocusKey4 = ClientMod.glfwUnfocusKey4;
-					set.maxRam = ClientMod.maxRam;
-					set.videoMem = ClientMod.videoMem;
-					set.qemu = ClientMod.qemu;
-					File f = new File(minecraft.runDirectory, "vm_computers/setup.json");
-					if(f.exists()) {
-						f.delete();
-					}
-					f.createNewFile();
-					FileWriter fw = new FileWriter(f);
-					fw.append(new Gson().toJson(set));
-					fw.flush();
-					fw.close();
-					for(int i = 5;i>=0;i--) {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						status = setupGui.translation("mcvmcomputers.setup.successStatus").replaceFirst("%s", vb.getVersion()).replaceFirst("%s", ""+i);
-					}
-					ClientMod.vbManager = vm;
-					ClientMod.vb = vb;
-					minecraft.openScreen(new TitleScreen());
-					return;
-				}catch(Exception ex) {
-					ex.printStackTrace();
-					for(int i = 5;i>=0;i--) {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						status = setupGui.translation("mcvmcomputers.setup.failedStatus").replace("%s", ""+i);
-					}
-					onlyStatusMessage = false;
-					init();
+					vboxConfig.start();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+				ProcessBuilder vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\vboxwebsrv.exe", "--timeout", "0");
+				try {
+					ClientMod.vboxWebSrv = vboxWebSrv.start();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}else if(SystemUtils.IS_OS_MAC){
+				ProcessBuilder vboxConfig = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "/VBoxManage", "setproperty", "websrvauthlibrary", "null");
+				try {
+					vboxConfig.start();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+				ProcessBuilder vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "/vboxwebsrv", "--timeout", "0");
+				try {
+					ClientMod.vboxWebSrv = vboxWebSrv.start();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}else {
+				ProcessBuilder vboxConfig = new ProcessBuilder("vboxmanage", "setproperty", "websrvauthlibrary", "null");
+				try {
+					vboxConfig.start();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+				ProcessBuilder vboxWebSrv = new ProcessBuilder("vboxwebsrv", "--timeout", "0");
+				try {
+					ClientMod.vboxWebSrv = vboxWebSrv.start();
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
 			}
-		}).start();
+			
+			boolean[] bools = new boolean[] {checkMaxRam(maxRam.getText()), videoMemory(videoMemory.getText())};
+			for(boolean b : bools) {
+				if(!b) {
+					return;
+				}
+			}
+			this.setupGui.clearElements();
+			this.setupGui.clearButtons();
+			onlyStatusMessage = true;
+			ClientMod.maxRam = Integer.parseInt(maxRam.getText());
+			ClientMod.videoMem = Integer.parseInt(videoMemory.getText());
+			status = setupGui.translation("mcvmcomputers.setup.startingStatusVbox");
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						VirtualBoxManager vm = VirtualBoxManager.createInstance(null);
+						vm.connect("http://localhost:18083", "should", "work");
+						IVirtualBox vb = vm.getVBox();
+						writeSettings();
+						for(int i = 5;i>=0;i--) {
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							status = setupGui.translation("mcvmcomputers.setup.successStatusVbox").replaceFirst("%s", vb.getVersion()).replaceFirst("%s", ""+i);
+						}
+						ClientMod.vbManager = vm;
+						ClientMod.vb = vb;
+						minecraft.openScreen(new TitleScreen());
+						return;
+					}catch(Exception ex) {
+						ex.printStackTrace();
+						for(int i = 5;i>=0;i--) {
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							status = setupGui.translation("mcvmcomputers.setup.failedStatusVbox").replace("%s", ""+i);
+						}
+						onlyStatusMessage = false;
+						setupGui.firstPage();
+					}
+				}
+			}).start();
+		}
+	}
+	
+	public void writeSettings() {
+		try {
+			VMSettings set = VMSettings.create();
+			set.vboxDirectory = setupGui.virtualBoxDirectory;
+			set.vmComputersDirectory = ClientMod.vhdDirectory.getParentFile().getAbsolutePath();
+			set.unfocusKey1 = ClientMod.glfwUnfocusKey1;
+			set.unfocusKey2 = ClientMod.glfwUnfocusKey2;
+			set.unfocusKey3 = ClientMod.glfwUnfocusKey3;
+			set.unfocusKey4 = ClientMod.glfwUnfocusKey4;
+			set.maxRam = ClientMod.maxRam;
+			set.videoMem = ClientMod.videoMem;
+			set.qemu = ClientMod.qemu;
+			File f = new File(minecraft.runDirectory, "vm_computers/setup.json");
+			if(f.exists()) {
+				f.delete();
+			}
+			f.createNewFile();
+			FileWriter fw = new FileWriter(f);
+			fw.append(new Gson().toJson(set));
+			fw.flush();
+			fw.close();
+		}catch(IOException e) {
+			System.out.println("Failed to write VM Computers Settings.");
+		}
 	}
 
 	@Override

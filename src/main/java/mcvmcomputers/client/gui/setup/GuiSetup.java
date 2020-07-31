@@ -78,39 +78,46 @@ public class GuiSetup extends Screen{
 		this.init();
 	}
 	
+	public void firstPage() {
+		setupIndex = 0;
+		currentSetupPage = setupPages.get(0);
+		this.init();
+	}
+	
 	@Override
 	public void init() {
-		if(new File(minecraft.runDirectory, "vm_computers/setup.json").exists()) {
-			FileReader fr;
-			VMSettings set = null;
-			try {
-				fr = new FileReader(new File(minecraft.runDirectory, "vm_computers/setup.json"));
-				set = new Gson().fromJson(fr, VMSettings.class);
-				fr.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if(set.settingsVersion == VMSettings.SETTINGS_VERSION) {
-				if(set.vboxDirectory != null) {
-					virtualBoxDirectory = set.vboxDirectory;
-				}else {
-					virtualBoxDirectory = new VMSettings().vboxDirectory;
-				}
-				if(set.vmComputersDirectory != null) {
-					ClientMod.isoDirectory = new File(set.vmComputersDirectory, "isos");
-					ClientMod.vhdDirectory = new File(set.vmComputersDirectory, "vhds");
-				}
-				ClientMod.glfwUnfocusKey1 = set.unfocusKey1;
-				ClientMod.glfwUnfocusKey2 = set.unfocusKey2;
-				ClientMod.glfwUnfocusKey3 = set.unfocusKey3;
-				ClientMod.glfwUnfocusKey4 = set.unfocusKey4;
-				ClientMod.maxRam = set.maxRam;
-				ClientMod.videoMem = set.videoMem;
-				ClientMod.qemu = set.qemu;
-				loadedConfiguration = true;
-			}
-		}
 		if(!initialized) {
+			if(new File(minecraft.runDirectory, "vm_computers/setup.json").exists()) {
+				FileReader fr;
+				VMSettings set = null;
+				try {
+					fr = new FileReader(new File(minecraft.runDirectory, "vm_computers/setup.json"));
+					set = new Gson().fromJson(fr, VMSettings.class);
+					fr.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if(set.settingsVersion == VMSettings.SETTINGS_VERSION) {
+					if(set.vboxDirectory != null) {
+						virtualBoxDirectory = set.vboxDirectory;
+					}else {
+						virtualBoxDirectory = new VMSettings().vboxDirectory;
+					}
+					if(set.vmComputersDirectory != null) {
+						ClientMod.isoDirectory = new File(set.vmComputersDirectory, "isos");
+						ClientMod.vhdDirectory = new File(set.vmComputersDirectory, "vhds");
+					}
+					ClientMod.glfwUnfocusKey1 = set.unfocusKey1;
+					ClientMod.glfwUnfocusKey2 = set.unfocusKey2;
+					ClientMod.glfwUnfocusKey3 = set.unfocusKey3;
+					ClientMod.glfwUnfocusKey4 = set.unfocusKey4;
+					ClientMod.maxRam = set.maxRam;
+					ClientMod.videoMem = set.videoMem;
+					ClientMod.qemu = set.qemu;
+					loadedConfiguration = true;
+				}
+			}
+			
 			setupPages = new ArrayList<>();
 			setupPages.add(new SetupPageIntroMessage(this, this.font));
 			if(SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_MAC) {

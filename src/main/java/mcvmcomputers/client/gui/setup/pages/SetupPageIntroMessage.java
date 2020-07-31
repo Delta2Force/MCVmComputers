@@ -41,6 +41,11 @@ public class SetupPageIntroMessage extends SetupPage{
 		}
 		this.setupGui.nextPage();
 	}
+	
+	public void redoSetup() {
+		setupGui.loadedConfiguration = false;
+		setupGui.init();
+	}
 
 	@Override
 	public void init() {
@@ -49,7 +54,7 @@ public class SetupPageIntroMessage extends SetupPage{
 			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> normalSetup()));
 		}else {
 			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 - 25, 200, 20, setupGui.translation("mcvmcomputers.setup.useConfig"), (bw) -> this.setupGui.lastPage()));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 + 5, 200, 20, setupGui.translation("mcvmcomputers.setup.redoSetup"), (bw) -> normalSetup()));
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 + 5, 200, 20, setupGui.translation("mcvmcomputers.setup.redoSetup"), (bw) -> redoSetup()));
 		}
 	}
 
