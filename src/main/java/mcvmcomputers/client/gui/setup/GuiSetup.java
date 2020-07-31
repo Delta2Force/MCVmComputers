@@ -106,6 +106,7 @@ public class GuiSetup extends Screen{
 				ClientMod.glfwUnfocusKey4 = set.unfocusKey4;
 				ClientMod.maxRam = set.maxRam;
 				ClientMod.videoMem = set.videoMem;
+				ClientMod.qemu = set.qemu;
 				loadedConfiguration = true;
 			}
 		}

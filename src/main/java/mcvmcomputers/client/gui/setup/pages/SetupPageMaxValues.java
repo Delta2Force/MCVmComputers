@@ -145,6 +145,7 @@ public class SetupPageMaxValues extends SetupPage{
 					set.unfocusKey4 = ClientMod.glfwUnfocusKey4;
 					set.maxRam = ClientMod.maxRam;
 					set.videoMem = ClientMod.videoMem;
+					set.qemu = ClientMod.qemu;
 					File f = new File(minecraft.runDirectory, "vm_computers/setup.json");
 					if(f.exists()) {
 						f.delete();

@@ -11,8 +11,9 @@ import net.minecraft.client.MinecraftClient;
 public class VMSettings {
 	public static final int SETTINGS_VERSION = 2;
 	
-	public int settingsVersion = -1;
+	public boolean qemu = false;
 	public String vboxDirectory;
+	public int settingsVersion = -1;
 	public String vmComputersDirectory;
 	
 	public int maxRam = 8192;
