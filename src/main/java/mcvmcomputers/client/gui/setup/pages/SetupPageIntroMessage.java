@@ -1,11 +1,11 @@
 package mcvmcomputers.client.gui.setup.pages;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
-import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.util.Language;
 
 public class SetupPageIntroMessage extends SetupPage{
 	public SetupPageIntroMessage(GuiSetup setupGui, TextRenderer textRender) {
@@ -25,8 +25,8 @@ public class SetupPageIntroMessage extends SetupPage{
 				offY+=10;
 			}
 			
-			this.textRender.draw("VM Software", setupGui.width/2-70, setupGui.height/2-69, -1);
-			this.textRender.draw(MVCUtils.getColorChar('e')+"(click to cycle)", setupGui.width/2-70, setupGui.height/2-39, -1);
+			this.textRender.draw(setupGui.translation("mcvmcomputers.setup.vmSoftware"), setupGui.width/2-70, setupGui.height/2-69, -1);
+			this.textRender.draw(setupGui.translation("mcvmcomputers.setup.clickToCycle"), setupGui.width/2-70, setupGui.height/2-39, -1);
 		}
 	}
 	
@@ -34,15 +34,22 @@ public class SetupPageIntroMessage extends SetupPage{
 		ClientMod.qemu = !ClientMod.qemu;
 		setupGui.init();
 	}
+	
+	public void normalSetup() {
+		if(ClientMod.qemu && SystemUtils.IS_OS_MAC){
+			setupGui.setupPages.remove(1);
+		}
+		this.setupGui.nextPage();
+	}
 
 	@Override
 	public void init() {
 		if(!setupGui.loadedConfiguration) {
 			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 70, setupGui.height / 2 - 60, 140, 20, ClientMod.qemu ? "QEMU" : "Oracle VirtualBox", (bw) -> this.changeVMSoftware()));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.setupGui.nextPage()));
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> normalSetup()));
 		}else {
 			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 - 25, 200, 20, setupGui.translation("mcvmcomputers.setup.useConfig"), (bw) -> this.setupGui.lastPage()));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 + 5, 200, 20, setupGui.translation("mcvmcomputers.setup.redoSetup"), (bw) -> this.setupGui.nextPage()));
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 + 5, 200, 20, setupGui.translation("mcvmcomputers.setup.redoSetup"), (bw) -> normalSetup()));
 		}
 	}
 

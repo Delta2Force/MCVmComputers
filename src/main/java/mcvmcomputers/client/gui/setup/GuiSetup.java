@@ -25,7 +25,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Language;
 
 public class GuiSetup extends Screen{
-	private List<SetupPage> setupPages;
+	public List<SetupPage> setupPages;
 	private int setupIndex;
 	private SetupPage currentSetupPage;
 	private boolean initialized = false;
