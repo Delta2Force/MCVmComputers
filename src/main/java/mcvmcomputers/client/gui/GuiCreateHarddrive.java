@@ -1,7 +1,9 @@
 package mcvmcomputers.client.gui;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -116,7 +118,12 @@ public class GuiCreateHarddrive extends Screen{
 			int i = ClientMod.latestVHDNum;
 			File vhd = null;
 			if(ClientMod.qemu) {
-				//TODO
+				vhd = new File(ClientMod.vhdDirectory, "vhd" + i + ".qcow2");
+				try {
+					ProcessBuilder pb = ClientMod.createQemuProcess("qemu-img", "create", "-f", "qcow2", vhd.getAbsolutePath(), Integer.parseInt(hddSize.getText())+"M");
+					Process process = pb.start();
+					int status = process.waitFor();
+				}catch(Exception ex) {}
 			}else {
 				vhd = new File(ClientMod.vhdDirectory, "vhd" + i + ".vdi");
 				

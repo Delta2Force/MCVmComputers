@@ -107,6 +107,8 @@ public class ClientMod implements ClientModInitializer{
 	public static int glfwUnfocusKey3;
 	public static int glfwUnfocusKey4;
 	
+	public static String vmSoftwareFolder;
+	
 	static {
 		if(SystemUtils.IS_OS_MAC) {
 			glfwUnfocusKey1 = GLFW.GLFW_KEY_LEFT_ALT;
@@ -129,6 +131,15 @@ public class ClientMod implements ClientModInitializer{
 			return "None";
 		}else {
 			return glfwKey(key);
+		}
+	}
+	
+	public static ProcessBuilder createQemuProcess(String...commands) {
+		if(SystemUtils.IS_OS_WINDOWS) {
+			commands[0] += ".exe";
+			return new ProcessBuilder(commands).directory(new File(vmSoftwareFolder));
+		}else {
+			return new ProcessBuilder(commands);
 		}
 	}
 	

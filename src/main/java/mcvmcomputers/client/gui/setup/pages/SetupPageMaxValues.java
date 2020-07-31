@@ -88,6 +88,7 @@ public class SetupPageMaxValues extends SetupPage{
 							pb = new ProcessBuilder();
 							pb.command("qemu-system-x86_64.exe", "--version");
 							pb.directory(new File(setupGui.virtualBoxDirectory));
+							ClientMod.vmSoftwareFolder = setupGui.virtualBoxDirectory;
 						}else {
 							pb = new ProcessBuilder();
 							pb.command("qemu-system-x86_64", "--version");
