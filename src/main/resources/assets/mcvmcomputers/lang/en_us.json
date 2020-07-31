@@ -64,6 +64,7 @@
     "mcvmcomputers.pc_editing.no_valid_vhd": "No valid hard drives found :(",
     "mcvmcomputers.pc_editing.add_ram": "Add RAM",
     "mcvmcomputers.pc_editing.add_ram_btn": "Add %sGB of RAM",
+    "mcvmcomputers.pc_editing.add_gpu": "Add GPU",
     "mcvmcomputers.pc_editing.add_32bit_mobo": "Add 32-bit Motherboard",
     "mcvmcomputers.pc_editing.add_64bit_mobo": "Add 64-bit Motherboard",
     "mcvmcomputers.pc_editing.turn_off": "Turn off PC",
