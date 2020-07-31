@@ -36,7 +36,7 @@
     "mcvmcomputers.not_your_computer": "Questo computer non è tuo!",
     "mcvmcomputers.hdd_item_name": "Disco Rigido (%s)",
     "mcvmcomputers.hdd_right_click": "tasto destro",
-    "mcvmcomputers.packaged": "Scatola: ",
+    "mcvmcomputers.packaged": "Pacco: ",
     "mcvmcomputers.invalid_package": "Pacco invalido",
     "mcvmcomputers.open_with_right_click": "Apri il pacco cliccando con il tasto destro",
     "mcvmcomputers.pc_item_ramSlot0": "%s GB di RAM nello slot 1",
