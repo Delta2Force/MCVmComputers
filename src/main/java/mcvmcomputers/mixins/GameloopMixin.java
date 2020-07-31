@@ -200,6 +200,11 @@ public class GameloopMixin {
 		}
 	}
 	
+	@Inject(at = @At("HEAD"), method = "cleanUpAfterCrash")
+	private void cleanUpAfterCrash(CallbackInfo info) {
+		this.shutDownVM();
+	}
+	
 	@Inject(at = @At("HEAD"), method = "close")
 	private void close(CallbackInfo info) {
 		System.out.println("Stopping VM Computers Mod...");
@@ -223,34 +228,41 @@ public class GameloopMixin {
 		vmTurnedOn = false;
 		vmTurningOff = false;
 		
-		if(vbManager != null) {
-			boolean vmExists = false;
-			IMachine mach = null;
-			try {
-				mach = vb.findMachine("VmComputersVm");
-				vmExists = true;
-			}catch(VBoxException e) {}
-			
-			if(vmExists) {
-				if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
-					if(vmSession != null) {
-						IProgress ip = vmSession.getConsole().powerDown();
-						ip.waitForCompletion(-1);
-						vmSession.unlockMachine();
-					}else {
-						ISession sess = vbManager.getSessionObject();
-						mach.lockMachine(sess, LockType.Shared);
-						IProgress ip = sess.getConsole().powerDown();
-						ip.waitForCompletion(-1);
-						sess.unlockMachine();
+		this.shutDownVM();
+		System.out.println("Stopped VM Computers Mod.");
+	}
+	
+	public void shutDownVM() {
+		try {
+			if(vbManager != null) {
+				boolean vmExists = false;
+				IMachine mach = null;
+				try {
+					mach = vb.findMachine("VmComputersVm");
+					vmExists = true;
+				}catch(VBoxException e) {}
+				
+				if(vmExists) {
+					if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
+						if(vmSession != null) {
+							IProgress ip = vmSession.getConsole().powerDown();
+							ip.waitForCompletion(-1);
+							vmSession.unlockMachine();
+						}else {
+							ISession sess = vbManager.getSessionObject();
+							mach.lockMachine(sess, LockType.Shared);
+							IProgress ip = sess.getConsole().powerDown();
+							ip.waitForCompletion(-1);
+							sess.unlockMachine();
+						}
 					}
 				}
+				vbManager.cleanup();
 			}
-			vbManager.cleanup();
-		}
+		}catch(Exception ex) {}
+		
 		if(vboxWebSrv != null) {
 			vboxWebSrv.destroy();
 		}
-		System.out.println("Stopped VM Computers Mod.");
 	}
 }
