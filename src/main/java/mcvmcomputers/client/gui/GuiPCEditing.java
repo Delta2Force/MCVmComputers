@@ -505,7 +505,7 @@ public class GuiPCEditing extends Screen{
 				while(ClientMod.vmTurningOn) {}
 				IProgress ip = ClientMod.vmSession.getConsole().powerDown();
 				ip.waitForCompletion(-1);
-				ClientMod.vmSession.unlockMachine();
+				//ClientMod.vmSession.unlockMachine();
 				ClientMod.vmSession = null;
 				ClientMod.vmTurnedOn = false;
 				ClientMod.vmTurningOff = false;
