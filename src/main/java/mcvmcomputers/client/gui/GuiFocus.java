@@ -2,6 +2,8 @@ package mcvmcomputers.client.gui;
 
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -23,9 +25,9 @@ public class GuiFocus extends Screen{
 	@Override
 	protected void init() {
 		ClientMod.releaseKeys = false;
-		
+
 		keyString = "";
-		
+
 		int[] unfocusKeys = new int[] {ClientMod.glfwUnfocusKey1,
 									   ClientMod.glfwUnfocusKey2,
 									   ClientMod.glfwUnfocusKey3,
@@ -37,7 +39,7 @@ public class GuiFocus extends Screen{
 				keys.add(key);
 			}
 		}
-		
+
 		boolean plus = false;
 		for(int key : keys) {
 			if(plus) {
@@ -46,6 +48,18 @@ public class GuiFocus extends Screen{
 			keyString += ClientMod.getKeyName(key);
 			plus = true;
 		}
+		class CheckAddress extends TimerTask {
+			public void run() {
+				try {
+					String mcc = minecraft.getCurrentServerEntry().address;
+				} catch (NullPointerException address) {
+					long window = minecraft.getWindow().getHandle();
+					GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+				}
+			}
+		}
+		Timer ServerAddress = new Timer();
+		ServerAddress.schedule(new CheckAddress(), 0, 1000);
 	}
 	
 	@Override
