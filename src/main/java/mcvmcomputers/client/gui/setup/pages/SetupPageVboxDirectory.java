@@ -4,8 +4,8 @@ import java.io.File;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
-import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -21,7 +21,7 @@ public class SetupPageVboxDirectory extends SetupPage{
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
-		this.textRender.draw(setupGui.translation("mcvmcomputers.setup.vbox_dir"), setupGui.width/2-160, setupGui.height/2-20, -1);
+		this.textRender.draw(setupGui.translation(ClientMod.qemu ? "mcvmcomputers.setup.qemu_dir" : "mcvmcomputers.setup.vbox_dir"), setupGui.width/2-160, setupGui.height/2-20, -1);
 		this.textRender.draw(vboxStatus, setupGui.width/2-160, setupGui.height/2+13, -1);
 		this.textRender.draw(setupGui.translation("mcvmcomputers.setup.dontchange0"), setupGui.width/2-160, 60, -1);
 		this.textRender.draw(setupGui.translation("mcvmcomputers.setup.dontchange1"), setupGui.width/2-160, 70, -1);
@@ -51,21 +51,31 @@ public class SetupPageVboxDirectory extends SetupPage{
 			next.active = false;
 			return false;
 		}else {
-			if(SystemUtils.IS_OS_WINDOWS) {
-				if(!new File(vboxDir, "vboxmanage.exe").exists() || !new File(vboxDir, "vboxwebsrv.exe").exists()) {
-					vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notvbox");
-					next.active = false;
-					return false;
+			if(ClientMod.qemu) {
+				if(SystemUtils.IS_OS_WINDOWS) {
+					if(!new File(vboxDir, "qemu-system-x86_64.exe").exists() || !new File(vboxDir, "qemu-system-i386.exe").exists()) {
+						vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notqemu");
+						next.active = false;
+						return false;
+					}
 				}
-			}else if(SystemUtils.IS_OS_MAC) {
-				if(!new File(vboxDir, "VBoxManage").exists() || !new File(vboxDir, "vboxwebsrv").exists()) {
-					vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notvbox");
-					next.active = false;
-					return false;
+			}else {
+				if(SystemUtils.IS_OS_WINDOWS) {
+					if(!new File(vboxDir, "vboxmanage.exe").exists() || !new File(vboxDir, "vboxwebsrv.exe").exists()) {
+						vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notvbox");
+						next.active = false;
+						return false;
+					}
+				}else if(SystemUtils.IS_OS_MAC) {
+					if(!new File(vboxDir, "VBoxManage").exists() || !new File(vboxDir, "vboxwebsrv").exists()) {
+						vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notvbox");
+						next.active = false;
+						return false;
+					}
 				}
 			}
 		}
-		vboxStatus = setupGui.translation("mcvmcomputers.input_dir_yesvbox");
+		vboxStatus = setupGui.translation(ClientMod.qemu ? "mcvmcomputers.input_dir_yesqemu" : "mcvmcomputers.input_dir_yesvbox");
 		next.active = true;
 		return true;
 	}
