@@ -48,17 +48,19 @@ public class GuiFocus extends Screen{
 			keyString += ClientMod.getKeyName(key);
 			plus = true;
 		}
+
+		Timer ServerAddress = new Timer();
 		class CheckAddress extends TimerTask {
 			public void run() {
+				long window = minecraft.getWindow().getHandle();
 				try {
 					String mcc = minecraft.getCurrentServerEntry().address;
 				} catch (NullPointerException address) {
-					long window = minecraft.getWindow().getHandle();
 					GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+					ServerAddress.cancel();
 				}
 			}
 		}
-		Timer ServerAddress = new Timer();
 		ServerAddress.schedule(new CheckAddress(), 0, 1000);
 	}
 	
