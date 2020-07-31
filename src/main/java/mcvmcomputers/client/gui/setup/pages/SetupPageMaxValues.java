@@ -117,12 +117,6 @@ public class SetupPageMaxValues extends SetupPage{
 			}
 		}
 		
-		Runnable runnable = new Runnable() {
-		    public void run() {
-		    	ClientMod.vboxWebSrv.destroy();
-		    }
-		};
-		Runtime.getRuntime().addShutdownHook(new Thread(runnable));
 		boolean[] bools = new boolean[] {checkMaxRam(maxRam.getText()), videoMemory(videoMemory.getText())};
 		for(boolean b : bools) {
 			if(!b) {
@@ -142,7 +136,7 @@ public class SetupPageMaxValues extends SetupPage{
 					VirtualBoxManager vm = VirtualBoxManager.createInstance(null);
 					vm.connect("http://localhost:18083", "should", "work");
 					IVirtualBox vb = vm.getVBox();
-					VMSettings set = new VMSettings();
+					VMSettings set = VMSettings.create();
 					set.vboxDirectory = setupGui.virtualBoxDirectory;
 					set.vmComputersDirectory = ClientMod.vhdDirectory.getParentFile().getAbsolutePath();
 					set.unfocusKey1 = ClientMod.glfwUnfocusKey1;

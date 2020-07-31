@@ -9,6 +9,8 @@ import mcvmcomputers.client.ClientMod;
 import net.minecraft.client.MinecraftClient;
 
 public class VMSettings {
+	public static final int SETTINGS_VERSION = 2;
+	
 	public int settingsVersion = -1;
 	public String vboxDirectory;
 	public String vmComputersDirectory;
@@ -20,8 +22,8 @@ public class VMSettings {
 	public int unfocusKey3 = GLFW.GLFW_KEY_BACKSPACE;
 	public int unfocusKey4 = -1;
 	
-	public VMSettings() {
-		settingsVersion = 1;
+	protected void fillWithDefaults() {
+		settingsVersion = SETTINGS_VERSION;
 		
 		if(SystemUtils.IS_OS_WINDOWS) {
 			vboxDirectory = "C:\\Program Files\\Oracle\\VirtualBox";
@@ -36,5 +38,11 @@ public class VMSettings {
 			MinecraftClient mc = MinecraftClient.getInstance();
 			vmComputersDirectory = new File(mc.runDirectory, "vm_computers").getAbsolutePath();
 		}
+	}
+	
+	public static VMSettings create() {
+		VMSettings set = new VMSettings();
+		set.fillWithDefaults();
+		return set;
 	}
 }

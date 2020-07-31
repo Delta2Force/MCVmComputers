@@ -90,7 +90,7 @@ public class GuiSetup extends Screen{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if(set.settingsVersion != -1) {
+			if(set.settingsVersion == VMSettings.SETTINGS_VERSION) {
 				if(set.vboxDirectory != null) {
 					virtualBoxDirectory = set.vboxDirectory;
 				}else {
