@@ -69,8 +69,14 @@ public class GuiCreateHarddrive extends Screen{
 			int lastY = 60;
 			ArrayList<File> files = new ArrayList<>();
 			for(File f : ClientMod.vhdDirectory.listFiles()) {
-				if(f.getName().endsWith(".vdi")) {
-					files.add(f);
+				if(ClientMod.qemu) {
+					if(f.getName().endsWith(".qcow2")) {
+						files.add(f);
+					}
+				}else {
+					if(f.getName().endsWith(".vdi")) {
+						files.add(f);
+					}
 				}
 			}
 			files.sort(new Comparator<File>() {
@@ -108,11 +114,16 @@ public class GuiCreateHarddrive extends Screen{
 		if(!status.startsWith(COLOR_CHAR + "c")) {
 			Long size = Long.parseLong(hddSize.getText())*1024L*1024L;
 			int i = ClientMod.latestVHDNum;
-			File vhd = new File(ClientMod.vhdDirectory, "vhd" + i + ".vdi");
-			
-			IMedium hdd = ClientMod.vb.createMedium("vdi", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
-			IProgress pr = hdd.createBaseStorage(size, Arrays.asList(MediumVariant.Standard));
-			pr.waitForCompletion(-1);
+			File vhd = null;
+			if(ClientMod.qemu) {
+				//TODO
+			}else {
+				vhd = new File(ClientMod.vhdDirectory, "vhd" + i + ".vdi");
+				
+				IMedium hdd = ClientMod.vb.createMedium("vdi", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
+				IProgress pr = hdd.createBaseStorage(size, Arrays.asList(MediumVariant.Standard));
+				pr.waitForCompletion(-1);
+			}
 			
 			try {
 				ClientMod.increaseVHDNum();

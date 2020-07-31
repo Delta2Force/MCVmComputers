@@ -42,23 +42,22 @@ public class ClientPlayNetworkMixin {
 		double e = packet.getY();
 		double f = packet.getZ();
 	    Object entity15 = null;
-	    if (entityType == EntityList.ITEM_PREVIEW) {
+	    if (entityType == EntityList.ITEM_PREVIEW)
 	    	entity15 = new EntityItemPreview(this.world, d, e, f);
-	    }else if (entityType == EntityList.KEYBOARD) {
+	    else if (entityType == EntityList.KEYBOARD)
 	    	entity15 = new EntityKeyboard(this.world, d, e, f);
-	    }else if (entityType == EntityList.MOUSE) {
+	    else if (entityType == EntityList.MOUSE)
 	    	entity15 = new EntityMouse(this.world, d, e, f);
-	    }else if (entityType == EntityList.CRT_SCREEN) {
+	    else if (entityType == EntityList.CRT_SCREEN)
 	    	entity15 = new EntityCRTScreen(this.world, d, e, f);
-	    }else if (entityType == EntityList.FLATSCREEN) {
+	    else if (entityType == EntityList.FLATSCREEN)
 	    	entity15 = new EntityFlatScreen(this.world, d, e, f);
-	    }else if (entityType == EntityList.PC) {
+	    else if (entityType == EntityList.PC)
 	    	entity15 = new EntityPC(this.world, d, e, f);
-	    }else if (entityType == EntityList.DELIVERY_CHEST) {
+	    else if (entityType == EntityList.DELIVERY_CHEST)
 	    	entity15 = new EntityDeliveryChest(this.world, d, e, f);
-	    }else if (entityType == EntityList.WALLTV) {
+	    else if (entityType == EntityList.WALLTV)
 	    	entity15 = new EntityWallTV(this.world, d, e, f);
-	    }
 	    
 	    if (entity15 != null) {
 	         int i = packet.getId();

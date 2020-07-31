@@ -20,6 +20,7 @@ import org.virtualbox_6_1.LockType;
 import org.virtualbox_6_1.MachineState;
 import org.virtualbox_6_1.VBoxException;
 
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.tablet.TabletOS;
 import mcvmcomputers.client.utils.VMRunnable;
@@ -125,12 +126,16 @@ public class GameloopMixin {
 			if(player == null) {
 				vmUpdateThread.interrupt();
 				
-				IMachine m = vb.findMachine("VmComputersVm");
-				ISession sess = vbManager.getSessionObject();
-				m.lockMachine(sess, LockType.Shared);
-				IProgress pg = sess.getConsole().powerDown();
-				pg.waitForCompletion(-1);
-				sess.unlockMachine();
+				if(ClientMod.qemu) {
+					//TODO: Kill it
+				}else {
+					IMachine m = vb.findMachine("VmComputersVm");
+					ISession sess = vbManager.getSessionObject();
+					m.lockMachine(sess, LockType.Shared);
+					IProgress pg = sess.getConsole().powerDown();
+					pg.waitForCompletion(-1);
+					sess.unlockMachine();
+				}
 				vmTurnedOn = false;
 				vmTurningOff = false;
 				vmTurningOn = false;
@@ -233,36 +238,40 @@ public class GameloopMixin {
 	}
 	
 	public void shutDownVM() {
-		try {
-			if(vbManager != null) {
-				boolean vmExists = false;
-				IMachine mach = null;
-				try {
-					mach = vb.findMachine("VmComputersVm");
-					vmExists = true;
-				}catch(VBoxException e) {}
-				
-				if(vmExists) {
-					if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
-						if(vmSession != null) {
-							IProgress ip = vmSession.getConsole().powerDown();
-							ip.waitForCompletion(-1);
-							vmSession.unlockMachine();
-						}else {
-							ISession sess = vbManager.getSessionObject();
-							mach.lockMachine(sess, LockType.Shared);
-							IProgress ip = sess.getConsole().powerDown();
-							ip.waitForCompletion(-1);
-							sess.unlockMachine();
+		if(ClientMod.qemu) {
+			//TODO
+		}else {
+			try {
+				if(vbManager != null) {
+					boolean vmExists = false;
+					IMachine mach = null;
+					try {
+						mach = vb.findMachine("VmComputersVm");
+						vmExists = true;
+					}catch(VBoxException e) {}
+					
+					if(vmExists) {
+						if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
+							if(vmSession != null) {
+								IProgress ip = vmSession.getConsole().powerDown();
+								ip.waitForCompletion(-1);
+								vmSession.unlockMachine();
+							}else {
+								ISession sess = vbManager.getSessionObject();
+								mach.lockMachine(sess, LockType.Shared);
+								IProgress ip = sess.getConsole().powerDown();
+								ip.waitForCompletion(-1);
+								sess.unlockMachine();
+							}
 						}
 					}
+					vbManager.cleanup();
 				}
-				vbManager.cleanup();
+			}catch(Exception ex) {}
+			
+			if(vboxWebSrv != null) {
+				vboxWebSrv.destroy();
 			}
-		}catch(Exception ex) {}
-		
-		if(vboxWebSrv != null) {
-			vboxWebSrv.destroy();
 		}
 	}
 }

@@ -409,15 +409,17 @@ public class GuiPCEditing extends Screen{
 					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, lang.translate("mcvmcomputers.pc_editing.turn_on"), (btn) -> this.turnOnPC(btn)));
 				}
 				
-				if(ClientMod.vmSession != null) {
-					boolean ejected = false;
-					
-					try {
-						ejected = ClientMod.vmSession.getMachine().getMediumAttachment("IDE Controller", 1, 0).getIsEjected();
-					}catch(VBoxException e) {}
-					
-					if(ejected && !pc_case.getIsoFileName().isEmpty()) {
-						this.removeISO();
+				if(!ClientMod.qemu) {
+					if(ClientMod.vmSession != null) {
+						boolean ejected = false;
+						
+						try {
+							ejected = ClientMod.vmSession.getMachine().getMediumAttachment("IDE Controller", 1, 0).getIsEjected();
+						}catch(VBoxException e) {}
+						
+						if(ejected && !pc_case.getIsoFileName().isEmpty()) {
+							this.removeISO();
+						}
 					}
 				}
 				
@@ -464,9 +466,13 @@ public class GuiPCEditing extends Screen{
 	
 	private void removeISO() {
 		if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
-			try {
-				ClientMod.vmSession.getMachine().unmountMedium("IDE Controller", 1, 0, true);
-			}catch(VBoxException ex) {}
+			if(ClientMod.qemu) {
+				//TODO
+			}else {
+				try {
+					ClientMod.vmSession.getMachine().unmountMedium("IDE Controller", 1, 0, true);
+				}catch(VBoxException ex) {}
+			}
 		}
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeInt(this.pc_case.getEntityId());
@@ -475,8 +481,12 @@ public class GuiPCEditing extends Screen{
 	
 	private void insertISO(String name) {
 		if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
-			IMedium m = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, name).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-			ClientMod.vmSession.getMachine().mountMedium("IDE Controller", 1, 0, m, true);
+			if(ClientMod.qemu) {
+				//TODO
+			}else {
+				IMedium m = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, name).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+				ClientMod.vmSession.getMachine().mountMedium("IDE Controller", 1, 0, m, true);
+			}
 		}
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeString(name);
@@ -492,15 +502,18 @@ public class GuiPCEditing extends Screen{
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while(ClientMod.vmTurningOn) {}
-				IProgress ip = ClientMod.vmSession.getConsole().powerDown();
-				ip.waitForCompletion(-1);
-				ClientMod.vmSession.unlockMachine();
-				ClientMod.vmSession = null;
-				ClientMod.vmTurnedOn = false;
-				ClientMod.vmTurningOff = false;
-				ClientMod.vmEntityID = -1;
-				
+				if(ClientMod.qemu) {
+					//TODO
+				}else {
+					while(ClientMod.vmTurningOn) {}
+					IProgress ip = ClientMod.vmSession.getConsole().powerDown();
+					ip.waitForCompletion(-1);
+					ClientMod.vmSession.unlockMachine();
+					ClientMod.vmSession = null;
+					ClientMod.vmTurnedOn = false;
+					ClientMod.vmTurningOff = false;
+					ClientMod.vmEntityID = -1;
+				}
 			}
 		}, "Turn off PC").start();
 	}
@@ -531,119 +544,123 @@ public class GuiPCEditing extends Screen{
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					ArrayList<ISession> usedSessions = new ArrayList<>();
-					try {
-						IMachine found = null;
+					if(ClientMod.qemu) {
+						//TODO
+					}else {
+						ArrayList<ISession> usedSessions = new ArrayList<>();
 						try {
-							found = ClientMod.vb.findMachine("VmComputersVm");
-						}catch(VBoxException e) {}
-						
-						if(found != null) {
-							if(found.getState() == MachineState.Running) {
-								ISession sess = ClientMod.vbManager.getSessionObject();
-								found.lockMachine(sess, LockType.Shared);
-								IProgress ip = sess.getConsole().powerDown();
-								ip.waitForCompletion(-1);
-								sess.unlockMachine();
-							}
-							ISession sess = ClientMod.vbManager.getSessionObject();
-							found.lockMachine(sess, LockType.Write);
-							usedSessions.add(sess);
-							IMachine edit = sess.getMachine();
-							String OSType = "Other";
-							if(pc_case.get64Bit()) {
-								OSType += "_64";
-							}
-							edit.setOSTypeId(OSType);
-							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
-							edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
-							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
-							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
-							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
-							edit.removeStorageController("IDE Controller");
-							edit.addStorageController("IDE Controller", StorageBus.IDE);
-							if(!pc_case.getHardDriveFileName().isEmpty()) {
-								if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
-									IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
-									edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
-								}
-							}
-							if(!pc_case.getIsoFileName().isEmpty()) {
-								if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
-									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-									try {
-										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
-									}catch(VBoxException ex) {}
-								}else if(pc_case.getIsoFileName().equals("Additions")) {
-									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-									try {
-										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
-									}catch(VBoxException ex) {}
-								}
-							}
-							edit.saveSettings();
-							sess.unlockMachine();
-							usedSessions.remove(sess);
-						}else {
-							String OSType = "Other";
-							if(pc_case.get64Bit()) {
-								OSType += "_64";
-							}
-							IMachine machine = ClientMod.vb.createMachine("", "VmComputersVm", null, OSType, "");
-							ClientMod.vb.registerMachine(machine);
-							ISession sess = ClientMod.vbManager.getSessionObject();
-							machine.lockMachine(sess, LockType.Write);
-							usedSessions.add(sess);
-							IMachine edit = sess.getMachine();
-							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
-							edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
-							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
-							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
-							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
-							edit.addStorageController("IDE Controller", StorageBus.IDE);
-							if(!pc_case.getHardDriveFileName().isEmpty()) {
-								if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
-									IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
-									edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
-								}
-							}
-							if(!pc_case.getIsoFileName().isEmpty()) {
-								if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
-									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-									try {
-										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
-									}catch(VBoxException ex) {}
-								}else if(pc_case.getIsoFileName().equals("Additions")) {
-									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-									try {
-										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
-									}catch(VBoxException ex) {}
-								}
-							}
-							edit.saveSettings();
-							sess.unlockMachine();
-							usedSessions.remove(sess);
-						}
-						
-						IMachine machine = ClientMod.vb.findMachine("VmComputersVm");
-						ClientMod.vmSession = ClientMod.vbManager.getSessionObject();
-						IProgress pr = machine.launchVMProcess(ClientMod.vmSession, "headless", Arrays.asList());
-						pr.waitForCompletion(-1);
-						ClientMod.vmTurningOn = false;
-						ClientMod.vmTurnedOn = true;
-					}catch(Exception ex) {
-						for(ISession is : usedSessions) {
+							IMachine found = null;
 							try {
-								is.unlockMachine();
-							}catch(Exception exx) {}
+								found = ClientMod.vb.findMachine("VmComputersVm");
+							}catch(VBoxException e) {}
+							
+							if(found != null) {
+								if(found.getState() == MachineState.Running) {
+									ISession sess = ClientMod.vbManager.getSessionObject();
+									found.lockMachine(sess, LockType.Shared);
+									IProgress ip = sess.getConsole().powerDown();
+									ip.waitForCompletion(-1);
+									sess.unlockMachine();
+								}
+								ISession sess = ClientMod.vbManager.getSessionObject();
+								found.lockMachine(sess, LockType.Write);
+								usedSessions.add(sess);
+								IMachine edit = sess.getMachine();
+								String OSType = "Other";
+								if(pc_case.get64Bit()) {
+									OSType += "_64";
+								}
+								edit.setOSTypeId(OSType);
+								edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
+								edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
+								edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
+								edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
+								edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
+								edit.removeStorageController("IDE Controller");
+								edit.addStorageController("IDE Controller", StorageBus.IDE);
+								if(!pc_case.getHardDriveFileName().isEmpty()) {
+									if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
+										IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
+										edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
+									}
+								}
+								if(!pc_case.getIsoFileName().isEmpty()) {
+									if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
+										IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+										try {
+											edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+										}catch(VBoxException ex) {}
+									}else if(pc_case.getIsoFileName().equals("Additions")) {
+										IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+										try {
+											edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+										}catch(VBoxException ex) {}
+									}
+								}
+								edit.saveSettings();
+								sess.unlockMachine();
+								usedSessions.remove(sess);
+							}else {
+								String OSType = "Other";
+								if(pc_case.get64Bit()) {
+									OSType += "_64";
+								}
+								IMachine machine = ClientMod.vb.createMachine("", "VmComputersVm", null, OSType, "");
+								ClientMod.vb.registerMachine(machine);
+								ISession sess = ClientMod.vbManager.getSessionObject();
+								machine.lockMachine(sess, LockType.Write);
+								usedSessions.add(sess);
+								IMachine edit = sess.getMachine();
+								edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
+								edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
+								edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
+								edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
+								edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
+								edit.addStorageController("IDE Controller", StorageBus.IDE);
+								if(!pc_case.getHardDriveFileName().isEmpty()) {
+									if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
+										IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
+										edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
+									}
+								}
+								if(!pc_case.getIsoFileName().isEmpty()) {
+									if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
+										IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+										try {
+											edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+										}catch(VBoxException ex) {}
+									}else if(pc_case.getIsoFileName().equals("Additions")) {
+										IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+										try {
+											edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+										}catch(VBoxException ex) {}
+									}
+								}
+								edit.saveSettings();
+								sess.unlockMachine();
+								usedSessions.remove(sess);
+							}
+							
+							IMachine machine = ClientMod.vb.findMachine("VmComputersVm");
+							ClientMod.vmSession = ClientMod.vbManager.getSessionObject();
+							IProgress pr = machine.launchVMProcess(ClientMod.vmSession, "headless", Arrays.asList());
+							pr.waitForCompletion(-1);
+							ClientMod.vmTurningOn = false;
+							ClientMod.vmTurnedOn = true;
+						}catch(Exception ex) {
+							for(ISession is : usedSessions) {
+								try {
+									is.unlockMachine();
+								}catch(Exception exx) {}
+							}
+							minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.failed_to_start", ex.getMessage()).formatted(Formatting.RED));
+							minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.contact_me").formatted(Formatting.RED));
+							ClientMod.vmTurningOn = false;
+							ClientMod.vmTurnedOn = false;
+							
+							PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
+							ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_TURN_OFF_PC, b);
 						}
-						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.failed_to_start", ex.getMessage()).formatted(Formatting.RED));
-						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.contact_me").formatted(Formatting.RED));
-						ClientMod.vmTurningOn = false;
-						ClientMod.vmTurnedOn = false;
-						
-						PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-						ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_TURN_OFF_PC, b);
 					}
 				}
 			}, "Turn on PC").start();
