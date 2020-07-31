@@ -14,7 +14,6 @@ import com.google.gson.Gson;
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.utils.VMSettings;
-import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;

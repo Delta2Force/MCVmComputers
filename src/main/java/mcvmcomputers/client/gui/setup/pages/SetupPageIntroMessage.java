@@ -1,13 +1,10 @@
 package mcvmcomputers.client.gui.setup.pages;
 
+import java.io.File;
+
 import mcvmcomputers.client.gui.setup.GuiSetup;
-import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.util.Language;
-
-import java.io.File;
-import java.io.FileReader;
 
 public class SetupPageIntroMessage extends SetupPage{
 	public SetupPageIntroMessage(GuiSetup setupGui, TextRenderer textRender) {

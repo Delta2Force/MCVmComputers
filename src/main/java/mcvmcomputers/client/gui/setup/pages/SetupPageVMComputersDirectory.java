@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
-import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
