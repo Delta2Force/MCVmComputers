@@ -573,7 +573,9 @@ public class GuiPCEditing extends Screen{
 							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
 							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
-							edit.removeStorageController("IDE Controller");
+							try{
+								edit.removeStorageController("IDE Controller");
+							}catch (VBoxException ex){}
 							edit.addStorageController("IDE Controller", StorageBus.IDE);
 							if(!pc_case.getHardDriveFileName().isEmpty()) {
 								if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {

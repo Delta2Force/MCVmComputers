@@ -199,7 +199,43 @@ public class GameloopMixin {
 			}
 		}
 	}
-	
+
+	@Inject(at = @At("HEAD"), method = "cleanUpAfterCrash")
+	private void cleanUpAfterCrash(CallbackInfo info) {
+		vmTurningOn = false;
+		vmTurnedOn = false;
+		vmTurningOff = false;
+
+		if(vbManager != null) {
+			boolean vmExists = false;
+			IMachine mach = null;
+			try {
+				mach = vb.findMachine("VmComputersVm");
+				vmExists = true;
+			}catch(VBoxException e) {}
+
+			if(vmExists) {
+				if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
+					if(vmSession != null) {
+						IProgress ip = vmSession.getConsole().powerDown();
+						ip.waitForCompletion(-1);
+						vmSession.unlockMachine();
+					}else {
+						ISession sess = vbManager.getSessionObject();
+						mach.lockMachine(sess, LockType.Shared);
+						IProgress ip = sess.getConsole().powerDown();
+						ip.waitForCompletion(-1);
+						sess.unlockMachine();
+					}
+				}
+			}
+			vbManager.cleanup();
+		}
+		if(vboxWebSrv != null) {
+			vboxWebSrv.destroy();
+		}
+	}
+
 	@Inject(at = @At("HEAD"), method = "close")
 	private void close(CallbackInfo info) {
 		System.out.println("Stopping VM Computers Mod...");
