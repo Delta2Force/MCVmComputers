@@ -505,12 +505,15 @@ public class GuiPCEditing extends Screen{
 				while(ClientMod.vmTurningOn) {}
 				IProgress ip = ClientMod.vmSession.getConsole().powerDown();
 				ip.waitForCompletion(-1);
-				//ClientMod.vmSession.unlockMachine();
+
+				try {
+					ClientMod.vmSession.unlockMachine();
+				}catch (VBoxException e) {}
+
 				ClientMod.vmSession = null;
 				ClientMod.vmTurnedOn = false;
 				ClientMod.vmTurningOff = false;
 				ClientMod.vmEntityID = -1;
-				
 			}
 		}, "Turn off PC").start();
 	}
@@ -570,7 +573,9 @@ public class GuiPCEditing extends Screen{
 							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
 							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
-							edit.removeStorageController("IDE Controller");
+							try{
+								edit.removeStorageController("IDE Controller");
+							}catch (VBoxException ex){}
 							edit.addStorageController("IDE Controller", StorageBus.IDE);
 							if(!pc_case.getHardDriveFileName().isEmpty()) {
 								if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
