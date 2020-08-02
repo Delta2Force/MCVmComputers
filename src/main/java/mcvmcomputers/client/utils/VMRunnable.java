@@ -3,7 +3,12 @@ package mcvmcomputers.client.utils;
 import static mcvmcomputers.client.ClientMod.*;
 
 import java.awt.Image;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+
+import javax.imageio.ImageIO;
 
 import org.virtualbox_6_1.BitmapFormat;
 import org.virtualbox_6_1.GuestMonitorStatus;
@@ -37,12 +42,34 @@ public class VMRunnable implements Runnable{
 			vnc_config.setScreenUpdateListener(image -> {
 				vnc_image = image;
 			});
+			vnc_client.start("127.0.0.1", 5901);
 		}
 		MinecraftClient mcc = MinecraftClient.getInstance();
-		while(true) {
-			if(ClientMod.qemu) {
+		
+		if(ClientMod.qemu) {
+			while(true) {
+				if(!ClientMod.isQemuRunning()) {
+					vnc_client.stop();
+					break;
+				}
 				
-			}else {
+				if(vnc_image != null) {
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					try {
+						ImageIO.write((RenderedImage) vnc_image, "PNG", baos);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					byte[] image = baos.toByteArray();
+					vmTextureBytes = image;
+					vmTextureBytesSize = image.length;
+					
+					vnc_image = null;
+				}
+			}
+		}else {
+			while(true) {
 				try {
 					double deltaX = 0;
 					double deltaY = 0;

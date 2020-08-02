@@ -2,6 +2,7 @@ package mcvmcomputers.client.gui;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -402,8 +403,8 @@ public class GuiPCEditing extends Screen{
 					this.addButton(sixtyfour);
 				}
 			}else {
-				boolean turnedOn = ClientMod.qemu ? (ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getEntityId()) || (ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getEntityId())
-						                          : (ClientMod.isQemuRunning() && ClientMod.vmEntityID == pc_case.getEntityId());
+				boolean turnedOn = ClientMod.qemu ? (ClientMod.isQemuRunning() && ClientMod.vmEntityID == pc_case.getEntityId())
+						                          : (ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getEntityId()) || (ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getEntityId());
 				if(turnedOn) {
 					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, lang.translate("mcvmcomputers.pc_editing.turn_off"), (btn) -> this.turnOffPC(btn)));
 				}else {
@@ -506,7 +507,7 @@ public class GuiPCEditing extends Screen{
 			@Override
 			public void run() {
 				if(ClientMod.qemu) {
-					//TODO
+					ClientMod.killQemu();
 				}else {
 					while(ClientMod.vmTurningOn) {}
 					IProgress ip = ClientMod.vmSession.getConsole().powerDown();
@@ -548,7 +549,12 @@ public class GuiPCEditing extends Screen{
 				@Override
 				public void run() {
 					if(ClientMod.qemu) {
-						//TODO
+						try {
+							ClientMod.startQemu((int)Math.min(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()), Math.min(ClientMod.maxRam,(pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024), pc_case.getHardDriveFileName(), pc_case.getIsoFileName());
+						} catch (IOException e) {
+							minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.failed_to_start", e.getMessage()).formatted(Formatting.RED));
+							minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.contact_me").formatted(Formatting.RED));
+						}
 					}else {
 						ArrayList<ISession> usedSessions = new ArrayList<>();
 						try {
@@ -575,7 +581,7 @@ public class GuiPCEditing extends Screen{
 								}
 								edit.setOSTypeId(OSType);
 								edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
-								edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
+								edit.setCPUCount(Math.min(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()));
 								edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 								edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
 								edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);

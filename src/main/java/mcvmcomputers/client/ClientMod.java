@@ -343,6 +343,32 @@ public class ClientMod implements ClientModInitializer{
 		ClientMod.qemuInstance = null;
 	}
 	
+	public static void startQemu(int cpu, int ram, String vhd, String iso) throws IOException {
+		if(isQemuRunning()) killQemu();
+		ArrayList<String> commands = new ArrayList<>();
+		commands.add("qemu-system-x86_64");
+		commands.add("-vnc");
+		commands.add(":1");
+		commands.add("-monitor");
+		commands.add("telnet:127.0.0.1:55555,server,nowait");
+		commands.add("-smp");
+		commands.add(""+cpu);
+		commands.add("-vga");
+		commands.add("std");
+		commands.add("-m");
+		commands.add(""+ram);
+		if(!vhd.isEmpty()) {
+			commands.add("-hda");
+			commands.add(new File(vhdDirectory.getPath() + File.separator + vhd).getAbsolutePath());
+		}
+		if(!iso.isEmpty()) {
+			commands.add("-cdrom");
+			commands.add(new File(isoDirectory.getPath() + File.separator + iso).getAbsolutePath());
+		}
+		ProcessBuilder pb = createQemuProcess(commands.toArray(new String[] {}));
+		qemuInstance = pb.start();
+	}
+	
 	@Override
 	public void onInitializeClient() {
 		MainMod.pcOpenGui = new Runnable() {
