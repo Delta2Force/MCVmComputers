@@ -80,6 +80,8 @@ public class ClientMod implements ClientModInitializer{
 	public static int vmTextureBytesSize;
 	public static boolean failedSend;
 	
+	public static Process qemuInstance;
+	
 	public static double mouseLastX = 0;
 	public static double mouseLastY = 0;
 	public static double mouseCurX = 0;
@@ -109,6 +111,9 @@ public class ClientMod implements ClientModInitializer{
 	
 	public static String vmSoftwareFolder;
 	
+	public static EntityDeliveryChest currentDeliveryChest;
+	public static EntityPC currentPC;
+	
 	static {
 		if(SystemUtils.IS_OS_MAC) {
 			glfwUnfocusKey1 = GLFW.GLFW_KEY_LEFT_ALT;
@@ -122,9 +127,6 @@ public class ClientMod implements ClientModInitializer{
 			glfwUnfocusKey4 = -1;
 		}
 	}
-	
-	public static EntityDeliveryChest currentDeliveryChest;
-	public static EntityPC currentPC;
 	
 	public static String getKeyName(int key) {
 		if (key < 0) {
@@ -328,6 +330,17 @@ public class ClientMod implements ClientModInitializer{
 				ClientMod.myOrder.currentStatus = status;
 			});
 		});
+	}
+	
+	public static boolean isQemuRunning() {
+		return qemuInstance == null ? false : qemuInstance.isAlive();
+	}
+	
+	public static void killQemu() {
+		try {
+			ClientMod.qemuInstance.destroyForcibly().waitFor();
+		} catch (InterruptedException e) {}
+		ClientMod.qemuInstance = null;
 	}
 	
 	@Override

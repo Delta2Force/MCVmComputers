@@ -127,7 +127,9 @@ public class GameloopMixin {
 				vmUpdateThread.interrupt();
 				
 				if(ClientMod.qemu) {
-					//TODO: Kill it
+					if(ClientMod.isQemuRunning()) {
+						ClientMod.killQemu();
+					}
 				}else {
 					IMachine m = vb.findMachine("VmComputersVm");
 					ISession sess = vbManager.getSessionObject();
@@ -239,7 +241,9 @@ public class GameloopMixin {
 	
 	public void shutDownVM() {
 		if(ClientMod.qemu) {
-			//TODO
+			if(ClientMod.isQemuRunning()) {
+				ClientMod.killQemu();
+			}
 		}else {
 			try {
 				if(vbManager != null) {
