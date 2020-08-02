@@ -26,7 +26,7 @@ public class EntityFlatScreen extends Entity{
 			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.FLOAT);
 	
 	private static final TrackedData<String> OWNER_UUID =
-			DataTracker.registerData(EntityCRTScreen.class, TrackedDataHandlerRegistry.STRING);
+			DataTracker.registerData(EntityFlatScreen.class, TrackedDataHandlerRegistry.STRING);
 	
 	public EntityFlatScreen(EntityType<?> type, World world) {
 		super(type, world);
