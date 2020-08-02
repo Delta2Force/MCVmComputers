@@ -235,7 +235,7 @@ public class GuiPCEditing extends Screen{
 		this.children.clear();
 		if(introScale > 0.99f) {
 			if(openCase) {
-				if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
+				if(ClientMod.qemu ? ClientMod.isQemuRunning() && ClientMod.vmEntityID == pc_case.getEntityId() : (ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
 					openCase = false;
 				}
 				if(SystemUtils.IS_OS_MAC) {
@@ -402,7 +402,8 @@ public class GuiPCEditing extends Screen{
 					this.addButton(sixtyfour);
 				}
 			}else {
-				boolean turnedOn = (ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getEntityId()) || (ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getEntityId());
+				boolean turnedOn = ClientMod.qemu ? (ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getEntityId()) || (ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getEntityId())
+						                          : (ClientMod.isQemuRunning() && ClientMod.vmEntityID == pc_case.getEntityId());
 				if(turnedOn) {
 					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, lang.translate("mcvmcomputers.pc_editing.turn_off"), (btn) -> this.turnOffPC(btn)));
 				}else {
@@ -465,7 +466,8 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	private void removeISO() {
-		if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
+		if(ClientMod.qemu ? ClientMod.isQemuRunning() && ClientMod.vmEntityID == pc_case.getEntityId()
+				          : (ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
 			if(ClientMod.qemu) {
 				//TODO
 			}else {
@@ -480,7 +482,8 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	private void insertISO(String name) {
-		if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
+		if(ClientMod.qemu ? ClientMod.isQemuRunning() && ClientMod.vmEntityID == pc_case.getEntityId()
+				          : (ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
 			if(ClientMod.qemu) {
 				//TODO
 			}else {
@@ -533,7 +536,7 @@ public class GuiPCEditing extends Screen{
 				}
 			}
 			
-			if(ClientMod.vmTurningOn || ClientMod.vmTurnedOn) {
+			if(ClientMod.qemu ? ClientMod.isQemuRunning() : ClientMod.vmTurningOn || ClientMod.vmTurnedOn) {
 				return;
 			}
 			ClientMod.vmTurningOn = true;

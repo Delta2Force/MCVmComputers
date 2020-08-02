@@ -122,14 +122,12 @@ public class GameloopMixin {
 			}
 		}
 		
-		if(vmTurnedOn) {
+		if(ClientMod.qemu ? ClientMod.isQemuRunning() : vmTurnedOn) {
 			if(player == null) {
 				vmUpdateThread.interrupt();
 				
 				if(ClientMod.qemu) {
-					if(ClientMod.isQemuRunning()) {
-						ClientMod.killQemu();
-					}
+					ClientMod.killQemu();
 				}else {
 					IMachine m = vb.findMachine("VmComputersVm");
 					ISession sess = vbManager.getSessionObject();
@@ -137,10 +135,10 @@ public class GameloopMixin {
 					IProgress pg = sess.getConsole().powerDown();
 					pg.waitForCompletion(-1);
 					sess.unlockMachine();
+					vmTurnedOn = false;
+					vmTurningOff = false;
+					vmTurningOn = false;
 				}
-				vmTurnedOn = false;
-				vmTurningOff = false;
-				vmTurningOn = false;
 			}else {
 				if(vmUpdateThread == null) {
 					vmUpdateThread = new Thread(new VMRunnable(), "VM Update Thread");
