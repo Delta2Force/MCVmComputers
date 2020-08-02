@@ -10,30 +10,30 @@ import net.minecraft.util.Identifier;
 
 public class PacketList {
 	//Client-to-server
-	public static final Identifier C2S_ORDER = new Identifier("mcvmcomputers", "c2s_order");
-	public static final Identifier C2S_SCREEN = new Identifier("mcvmcomputers", "c2s_screen");
-	public static final Identifier C2S_CHANGE_HDD = new Identifier("mcvmcomputers", "c2s_change_hdd");
-	public static final Identifier C2S_TURN_ON_PC = new Identifier("mcvmcomputers", "c2s_turn_on_pc");
-	public static final Identifier C2S_TURN_OFF_PC = new Identifier("mcvmcomputers", "c2s_turn_off_pc");
+	public static final Identifier C2S_ORDER =             new Identifier("mcvmcomputers", "c2s_order");
+	public static final Identifier C2S_SCREEN =            new Identifier("mcvmcomputers", "c2s_screen");
+	public static final Identifier C2S_CHANGE_HDD =        new Identifier("mcvmcomputers", "c2s_change_hdd");
+	public static final Identifier C2S_TURN_ON_PC =        new Identifier("mcvmcomputers", "c2s_turn_on_pc");
+	public static final Identifier C2S_TURN_OFF_PC =       new Identifier("mcvmcomputers", "c2s_turn_off_pc");
 	
-	public static final Identifier C2S_ADD_MOBO = new Identifier("mcvmcomputers", "c2s_add_mobo");
-	public static final Identifier C2S_ADD_RAM = new Identifier("mcvmcomputers", "c2s_add_ram");
-	public static final Identifier C2S_ADD_CPU = new Identifier("mcvmcomputers", "c2s_add_cpu");
-	public static final Identifier C2S_ADD_GPU = new Identifier("mcvmcomputers", "c2s_add_gpu");
-	public static final Identifier C2S_ADD_HARD_DRIVE = new Identifier("mcvmcomputers", "c2s_add_hard_drive");
-	public static final Identifier C2S_ADD_ISO = new Identifier("mcvmcomputers", "c2s_add_iso");
+	public static final Identifier C2S_ADD_MOBO =          new Identifier("mcvmcomputers", "c2s_add_mobo");
+	public static final Identifier C2S_ADD_RAM =           new Identifier("mcvmcomputers", "c2s_add_ram");
+	public static final Identifier C2S_ADD_CPU =           new Identifier("mcvmcomputers", "c2s_add_cpu");
+	public static final Identifier C2S_ADD_GPU =           new Identifier("mcvmcomputers", "c2s_add_gpu");
+	public static final Identifier C2S_ADD_HARD_DRIVE =    new Identifier("mcvmcomputers", "c2s_add_hard_drive");
+	public static final Identifier C2S_ADD_ISO =           new Identifier("mcvmcomputers", "c2s_add_iso");
 	
-	public static final Identifier C2S_REMOVE_MOBO = new Identifier("mcvmcomputers", "c2s_remove_mobo");
-	public static final Identifier C2S_REMOVE_RAM = new Identifier("mcvmcomputers", "c2s_remove_ram");
-	public static final Identifier C2S_REMOVE_CPU = new Identifier("mcvmcomputers", "c2s_remove_cpu");
-	public static final Identifier C2S_REMOVE_GPU = new Identifier("mcvmcomputers", "c2s_remove_gpu");
+	public static final Identifier C2S_REMOVE_MOBO =       new Identifier("mcvmcomputers", "c2s_remove_mobo");
+	public static final Identifier C2S_REMOVE_RAM =        new Identifier("mcvmcomputers", "c2s_remove_ram");
+	public static final Identifier C2S_REMOVE_CPU =        new Identifier("mcvmcomputers", "c2s_remove_cpu");
+	public static final Identifier C2S_REMOVE_GPU =        new Identifier("mcvmcomputers", "c2s_remove_gpu");
 	public static final Identifier C2S_REMOVE_HARD_DRIVE = new Identifier("mcvmcomputers", "c2s_remove_hard_drive");
-	public static final Identifier C2S_REMOVE_ISO = new Identifier("mcvmcomputers", "c2s_remove_iso");
+	public static final Identifier C2S_REMOVE_ISO =        new Identifier("mcvmcomputers", "c2s_remove_iso");
 	
 	//Server-to-client
-	public static final Identifier S2C_SCREEN = new Identifier("mcvmcomputers", "s2c_screen");
-	public static final Identifier S2C_STOP_SCREEN = new Identifier("mcvmcomputers", "s2c_stop_screen");
-	public static final Identifier S2C_SYNC_ORDER = new Identifier("mcvmcomputers", "s2c_sync_order");
+	public static final Identifier S2C_SCREEN =            new Identifier("mcvmcomputers", "s2c_screen");
+	public static final Identifier S2C_STOP_SCREEN =       new Identifier("mcvmcomputers", "s2c_stop_screen");
+	public static final Identifier S2C_SYNC_ORDER =        new Identifier("mcvmcomputers", "s2c_sync_order");
 	
 	public static void removeGpu(EntityPC pc) {
 		if(pc.getGpuInstalled()) {
