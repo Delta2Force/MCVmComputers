@@ -12,6 +12,7 @@ import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.GuiFocus;
 import mcvmcomputers.client.gui.setup.pages.SetupPageUnfocusBinding;
 import mcvmcomputers.client.utils.KeyConverter;
+import mcvmcomputers.client.utils.QemuKey;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 
@@ -22,7 +23,10 @@ public class KeyboardMixin {
 		MinecraftClient mcc = MinecraftClient.getInstance();
 		 if (window == mcc.getWindow().getHandle()) {
 			 if((ClientMod.qemu ? ClientMod.isQemuRunning() : ClientMod.vmTurnedOn) && mcc.currentScreen instanceof GuiFocus) {
-				 if(i != 2 && !ClientMod.qemu) {
+				 if(ClientMod.qemu) {
+					 ClientMod.qemuKeys.add(new QemuKey(KeyConverter.keySymFromGLFW(key), i == GLFW.GLFW_PRESS));
+				 }
+				 else if(i != 2) {
 					 ClientMod.vmKeyboardScancodes.addAll(KeyConverter.toVBKey(key, i));
 				 }
 			 }else if(SetupPageUnfocusBinding.changeBinding) {

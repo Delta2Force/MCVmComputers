@@ -36,6 +36,7 @@ import mcvmcomputers.client.gui.GuiCreateHarddrive;
 import mcvmcomputers.client.gui.GuiFocus;
 import mcvmcomputers.client.gui.GuiPCEditing;
 import mcvmcomputers.client.tablet.TabletOS;
+import mcvmcomputers.client.utils.QemuKey;
 import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.entities.EntityList;
@@ -81,6 +82,7 @@ public class ClientMod implements ClientModInitializer{
 	public static boolean failedSend;
 	
 	public static Process qemuInstance;
+	public static ArrayList<QemuKey> qemuKeys = new ArrayList<>();
 	
 	public static double mouseLastX = 0;
 	public static double mouseLastY = 0;

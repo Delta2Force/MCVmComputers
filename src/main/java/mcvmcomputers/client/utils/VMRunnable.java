@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
@@ -71,6 +72,12 @@ public class VMRunnable implements Runnable{
 					mouseY = (int) Math.min(vnc_image.getHeight(null), mouseY+deltaY);
 					
 					vnc_client.moveMouse(mouseX, mouseY);
+					ArrayList<QemuKey> remove = new ArrayList<>();
+					for(QemuKey qk : qemuKeys) {
+						vnc_client.updateKey(qk.keySym, qk.pressed);
+						remove.add(qk);
+					}
+					qemuKeys.removeAll(remove);
 					
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					try {
