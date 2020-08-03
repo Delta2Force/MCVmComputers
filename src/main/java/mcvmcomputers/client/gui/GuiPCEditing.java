@@ -550,7 +550,7 @@ public class GuiPCEditing extends Screen{
 				public void run() {
 					if(ClientMod.qemu) {
 						try {
-							ClientMod.startQemu((int)Math.min(1, Runtime.getRuntime().availableProcessors() / pc_case.getCpuDividedBy()), Math.min(ClientMod.maxRam,(pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024), pc_case.getHardDriveFileName(), pc_case.getIsoFileName());
+							ClientMod.startQemu((int)Math.min(1, Runtime.getRuntime().availableProcessors() / pc_case.getCpuDividedBy()), Math.min(ClientMod.maxRam,(pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024), pc_case.getHardDriveFileName(), pc_case.getIsoFileName(), pc_case.get64Bit());
 						} catch (IOException e) {
 							minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.failed_to_start", e.getMessage()).formatted(Formatting.RED));
 							minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.contact_me").formatted(Formatting.RED));

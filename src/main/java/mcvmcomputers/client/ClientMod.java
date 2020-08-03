@@ -343,10 +343,10 @@ public class ClientMod implements ClientModInitializer{
 		ClientMod.qemuInstance = null;
 	}
 	
-	public static void startQemu(int cpu, int ram, String vhd, String iso) throws IOException {
+	public static void startQemu(int cpu, int ram, String vhd, String iso, boolean x64) throws IOException {
 		if(isQemuRunning()) killQemu();
 		ArrayList<String> commands = new ArrayList<>();
-		commands.add("qemu-system-x86_64");
+		commands.add(x64 ? "qemu-system-x86_64" : "qemu-system-i386");
 		commands.add("-vnc");
 		commands.add(":1");
 		commands.add("-monitor");
