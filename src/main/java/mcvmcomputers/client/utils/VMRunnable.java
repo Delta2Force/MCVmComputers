@@ -45,6 +45,7 @@ public class VMRunnable implements Runnable{
 			vnc_config.setTargetFramesPerSecond(60);
 		}
 		MinecraftClient mcc = MinecraftClient.getInstance();
+		int mouseX = 0, mouseY = 0;
 		
 		if(ClientMod.qemu) {
 			while(true) {
@@ -59,6 +60,18 @@ public class VMRunnable implements Runnable{
 				}
 				
 				if(vnc_image != null) {
+					double deltaX = 0, deltaY = 0;
+					
+					deltaX = mouseCurX - mouseLastX;
+					deltaY = mouseCurY - mouseLastY;
+					mouseLastX = mouseCurX;
+					mouseLastY = mouseCurY;
+					
+					mouseX = (int) Math.min(vnc_image.getWidth(null), mouseX+deltaX);
+					mouseY = (int) Math.min(vnc_image.getHeight(null), mouseY+deltaY);
+					
+					vnc_client.moveMouse(mouseX, mouseY);
+					
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					try {
 						ImageIO.write((RenderedImage) vnc_image, "PNG", baos);
