@@ -124,8 +124,6 @@ public class GameloopMixin {
 		
 		if(ClientMod.qemu ? ClientMod.isQemuRunning() : vmTurnedOn) {
 			if(player == null) {
-				vmUpdateThread.interrupt();
-				
 				if(ClientMod.qemu) {
 					ClientMod.killQemu();
 				}else {

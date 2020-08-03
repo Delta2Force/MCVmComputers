@@ -38,11 +38,11 @@ public class VMRunnable implements Runnable{
 		if(ClientMod.qemu) {
 			vnc_config = new VernacularConfig();
 			vnc_client = new VernacularClient(vnc_config);
-			vnc_config.setColorDepth(ColorDepth.BPP_8_INDEXED);
+			vnc_config.setColorDepth(ColorDepth.BPP_24_TRUE);
 			vnc_config.setScreenUpdateListener(image -> {
 				vnc_image = image;
 			});
-			vnc_client.start("127.0.0.1", 5901);
+			vnc_config.setTargetFramesPerSecond(60);
 		}
 		MinecraftClient mcc = MinecraftClient.getInstance();
 		
@@ -50,7 +50,12 @@ public class VMRunnable implements Runnable{
 			while(true) {
 				if(!ClientMod.isQemuRunning()) {
 					vnc_client.stop();
-					break;
+					vmUpdateThread = null;
+					return;
+				}
+				
+				if(!vnc_client.isRunning()) {
+					vnc_client.start("127.0.0.1", 5901);
 				}
 				
 				if(vnc_image != null) {
