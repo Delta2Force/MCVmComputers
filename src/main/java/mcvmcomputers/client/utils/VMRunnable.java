@@ -68,8 +68,8 @@ public class VMRunnable implements Runnable{
 					mouseLastX = mouseCurX;
 					mouseLastY = mouseCurY;
 					
-					mouseX = (int) Math.min(vnc_image.getWidth(null), mouseX+deltaX);
-					mouseY = (int) Math.min(vnc_image.getHeight(null), mouseY+deltaY);
+					mouseX = (int) Math.max(0, Math.min(vnc_image.getWidth(null), mouseX+deltaX));
+					mouseY = (int) Math.max(0, Math.min(vnc_image.getHeight(null), mouseY+deltaY));
 					
 					vnc_client.moveMouse(mouseX, mouseY);
 					ArrayList<QemuKey> remove = new ArrayList<>();

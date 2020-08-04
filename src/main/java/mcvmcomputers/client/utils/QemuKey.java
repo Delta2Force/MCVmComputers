@@ -8,4 +8,9 @@ public class QemuKey {
 		this.keySym = keySym;
 		this.pressed = pressed;
 	}
+	
+	@Override
+	public String toString() {
+		return Integer.toHexString(keySym) + " " + pressed;
+	}
 }
