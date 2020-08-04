@@ -140,11 +140,9 @@ public class ClientMod implements ClientModInitializer{
 	
 	public static ProcessBuilder createQemuProcess(String...commands) {
 		if(SystemUtils.IS_OS_WINDOWS) {
-			commands[0] += ".exe";
-			return new ProcessBuilder(commands).directory(new File(vmSoftwareFolder));
-		}else {
-			return new ProcessBuilder(commands);
+			commands[0] = vmSoftwareFolder + File.separator + commands[0] + ".exe";
 		}
+		return new ProcessBuilder(commands);
 	}
 	
 	private static String glfwKey(int key) {

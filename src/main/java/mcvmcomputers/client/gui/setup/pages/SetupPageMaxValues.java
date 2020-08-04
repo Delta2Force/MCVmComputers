@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.jline.utils.OSUtils;
 import org.virtualbox_6_1.IVirtualBox;
 import org.virtualbox_6_1.VirtualBoxManager;
 
@@ -86,8 +85,7 @@ public class SetupPageMaxValues extends SetupPage{
 						ProcessBuilder pb = null;
 						if(SystemUtils.IS_OS_WINDOWS) {
 							pb = new ProcessBuilder();
-							pb.command("qemu-system-x86_64.exe", "--version");
-							pb.directory(new File(setupGui.virtualBoxDirectory));
+							pb.command(setupGui.virtualBoxDirectory + File.separator + "qemu-system-x86_64.exe", "--version");
 							ClientMod.vmSoftwareFolder = setupGui.virtualBoxDirectory;
 						}else {
 							pb = new ProcessBuilder();
