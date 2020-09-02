@@ -238,7 +238,7 @@ public class KeyConverter {
 	}
 	
 	//Source: https://cgit.freedesktop.org/xorg/proto/x11proto/plain/keysymdef.h
-	public static int keySymFromGLFW(int glfwKey) {
+	public static int keySymFromGLFW(int glfwKey, boolean capital) {
 		switch(glfwKey) {
 		case GLFW_KEY_BACKSPACE:
 			return 0xff08;
@@ -373,57 +373,136 @@ public class KeyConverter {
 		case GLFW_KEY_SEMICOLON:
 			return 0x003b;
 		case GLFW_KEY_A:
-			return 0x0041;
+			if(capital){
+				return 0x0041;
+			}
+			return 0x0061;
 		case GLFW_KEY_B:
-			return 0x0042;
+			if(capital){
+				return 0x0042;
+			}
+			return 0x0062;
 		case GLFW_KEY_C:
-			return 0x0043;
+			if(capital){
+				return 0x0043;
+			}
+			return 0x0063;
 		case GLFW_KEY_D:
-			return 0x0044;
+			if(capital){
+				return 0x0044;
+			}
+			return 0x0064;
 		case GLFW_KEY_E:
-			return 0x0045;
+			if(capital){
+				return 0x0045;
+			}
+			return 0x0065;
 		case GLFW_KEY_F:
-			return 0x0046;
+			if(capital){
+				return 0x0046;
+			}
+			return 0x0066;
 		case GLFW_KEY_G:
-			return 0x0047;
+			if(capital){
+				return 0x0047;
+			}
+			return 0x0067;
 		case GLFW_KEY_H:
-			return 0x0048;
+			if(capital){
+				return 0x0048;
+			}
+			return 0x0068;
 		case GLFW_KEY_I:
-			return 0x0049;
+			if(capital){
+				return 0x0049;
+			}
+			return 0x0069;
 		case GLFW_KEY_J:
-			return 0x004a;
+			if(capital){
+				return 0x004a;
+			}
+			return 0x006a;
 		case GLFW_KEY_K:
-			return 0x004b;
+			if(capital){
+				return 0x004b;
+			}
+			return 0x006b;
 		case GLFW_KEY_L:
-			return 0x004c;
+			if(capital){
+				return 0x004c;
+			}
+			return 0x006c;
 		case GLFW_KEY_M:
-			return 0x004d;
+			if(capital){
+				return 0x004d;
+			}
+			return 0x006d;
 		case GLFW_KEY_N:
-			return 0x004e;
+			if(capital){
+				return 0x004e;
+			}
+			return 0x006e;
 		case GLFW_KEY_O:
-			return 0x004f;
+			if(capital){
+				return 0x004f;
+			}
+			return 0x006f;
 		case GLFW_KEY_P:
-			return 0x0050;
+			if(capital){
+				return 0x0050;
+			}
+			return 0x0070;
 		case GLFW_KEY_Q:
-			return 0x0051;
+			if(capital){
+				return 0x0051;
+			}
+			return 0x0071;
 		case GLFW_KEY_R:
-			return 0x0052;
+			if(capital){
+				return 0x0052;
+			}
+			return 0x0072;
 		case GLFW_KEY_S:
-			return 0x0053;
+			if(capital){
+				return 0x0053;
+			}
+			return 0x0073;
 		case GLFW_KEY_T:
-			return 0x0054;
+			if(capital){
+				return 0x0054;
+			}
+			return 0x0074;
 		case GLFW_KEY_U:
-			return 0x0055;
+			if(capital){
+				return 0x0055;
+			}
+			return 0x0075;
 		case GLFW_KEY_V:
-			return 0x0056;
+			if(capital){
+				return 0x0056;
+			}
+			return 0x0076;
 		case GLFW_KEY_W:
-			return 0x0057;
+			if(capital){
+				return 0x0057;
+			}
+			return 0x0077;
 		case GLFW_KEY_X:
-			return 0x0058;
+			if(capital){
+				return 0x0058;
+			}
+			return 0x0078;
 		case GLFW_KEY_Y:
-			return 0x0059;
+			if(capital){
+				return 0x0059;
+			}
+			return 0x0079;
 		case GLFW_KEY_Z:
-			return 0x005a;
+			if(capital){
+				return 0x005a;
+			}
+
+			return 0x007a;
 		case GLFW_KEY_LEFT_BRACKET:
 			return 0x005b;
 		case GLFW_KEY_BACKSLASH:
