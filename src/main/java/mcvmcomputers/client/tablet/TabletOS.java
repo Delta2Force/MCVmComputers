@@ -135,8 +135,8 @@ public class TabletOS {
 	public void render() {
 		boolean isTabletInHand = false;
 		if (nonNull(playerEntity)) {
-			isTabletInHand = playerEntity.getStackInHand(Hand.MAIN_HAND).getItem().getName().asString().equals("tablet");
-			isTabletInHand = playerEntity.getStackInHand(Hand.OFF_HAND).getItem().getName().asString().equals("tablet");
+			isTabletInHand = playerEntity.getStackInHand(Hand.OFF_HAND).getItem().getName().asString().equals("tablet")
+					|| playerEntity.getStackInHand(Hand.MAIN_HAND).getItem().getName().asString().equals("tablet");
 		}
 		if(!isTabletInHand){
 			return;

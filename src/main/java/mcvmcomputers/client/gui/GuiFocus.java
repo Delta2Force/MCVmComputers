@@ -2,6 +2,7 @@ package mcvmcomputers.client.gui;
 
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
+import java.util.TimerTask;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -66,17 +67,22 @@ public class GuiFocus extends Screen{
 		
 		this.font.draw(lang.translate("mcvmcomputers.focus.lose").replace("%s", keyString), 4, 4, -1);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-		
-		boolean pressed = true;
+
+		int releaseButtonsPressed = 0;
 		for(int key : keys) {
-			if(GLFW.glfwGetKey(window, key) == GLFW.GLFW_RELEASE) {
-				pressed = false;
-				break;
+			if(GLFW.glfwGetKey(window, key) == GLFW.GLFW_PRESS) {
+				releaseButtonsPressed++;
 			}
 		}
-		
-		if(pressed) {
+
+		if(releaseButtonsPressed == keys.size()) {
 			minecraft.openScreen(null);
+			ClientMod.unfocusTimeoutTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					ClientMod.isAllowedToRecordKeys = false;
+				}
+			},500);
 		}
 		
 		super.render(wmouseX, wmouseY, delta);

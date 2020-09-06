@@ -30,7 +30,7 @@ import net.minecraft.client.MinecraftClient;
 
 public class VMRunnable implements Runnable{
 	private static Image vnc_image;
-	
+
 	@Override
 	public void run() {
 		VernacularClient vnc_client = null;
@@ -42,12 +42,12 @@ public class VMRunnable implements Runnable{
 			vnc_config.setScreenUpdateListener(image -> {
 				vnc_image = image;
 			});
-			vnc_config.setErrorListener(Throwable::printStackTrace);
 			vnc_config.setTargetFramesPerSecond(60);
 		}
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		MinecraftClient mcc = MinecraftClient.getInstance();
 		int mouseX = 0, mouseY = 0;
-		
+
 		if(ClientMod.qemu) {
 			while(true) {
 				if(!ClientMod.isQemuRunning()) {
@@ -55,39 +55,49 @@ public class VMRunnable implements Runnable{
 					vmUpdateThread = null;
 					return;
 				}
-				
+
 				if(!vnc_client.isRunning()) {
-					vnc_client.start("127.0.0.1", 5901);
+					System.out.println("Starting connection to VNC.");
+					do{
+						try{
+							vnc_client.start("127.0.0.1", 5901);
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							break;
+						}
+					} while(!vnc_client.isRunning());
+					System.out.println("Connected to VNC!");
 				}
-				
 				if(vnc_image != null) {
 					double deltaX = 0, deltaY = 0;
-					
+
 					deltaX = mouseCurX - mouseLastX;
 					deltaY = mouseCurY - mouseLastY;
 					mouseLastX = mouseCurX;
 					mouseLastY = mouseCurY;
-					
+
 					mouseX = (int) Math.max(0, Math.min(vnc_image.getWidth(null), mouseX+deltaX));
 					mouseY = (int) Math.max(0, Math.min(vnc_image.getHeight(null), mouseY+deltaY));
-					
+
 					vnc_client.moveMouse(mouseX, mouseY);
-					for(QemuKey qk : qemuKeys) {
-						vnc_client.updateKey(qk.keySym, qk.pressed);
+					synchronized (qemuKeys){
+						for(QemuKey qk : qemuKeys) {
+							vnc_client.updateKey(qk.keySym, qk.pressed);
+						}
+						qemuKeys.clear();
 					}
-					qemuKeys.clear();
-					
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
 					try {
-						ImageIO.write((RenderedImage) vnc_image, "PNG", baos);
+						ImageIO.write((RenderedImage) vnc_image, "PNG", byteStream);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					
-					byte[] image = baos.toByteArray();
+
+					byte[] image = byteStream.toByteArray();
+					byteStream.reset();
 					vmTextureBytes = image;
 					vmTextureBytesSize = image.length;
-					
 					vnc_image = null;
 				}
 			}
@@ -96,12 +106,12 @@ public class VMRunnable implements Runnable{
 				try {
 					double deltaX = 0;
 					double deltaY = 0;
-					
+
 					deltaX = mouseCurX - mouseLastX;
 					deltaY = mouseCurY - mouseLastY;
 					mouseLastX = mouseCurX;
 					mouseLastY = mouseCurY;
-					
+
 					IMachine m = vb.findMachine("VmComputersVm");
 					if(m.getState() == MachineState.PoweredOff) {
 						if(!vmTurningOff && vmTurnedOn) {
