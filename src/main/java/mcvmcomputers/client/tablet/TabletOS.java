@@ -17,6 +17,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
 import io.netty.buffer.Unpooled;
@@ -39,6 +41,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
+
+import static java.util.Objects.nonNull;
 
 public class TabletOS {
 	//Rendering variables
@@ -88,7 +92,8 @@ public class TabletOS {
 	private final Font font;
 	public State tabletState = State.LOOKING_FOR_SATELLITE;
 	private MinecraftClient mcc = MinecraftClient.getInstance();
-	
+	private ClientPlayerEntity playerEntity = mcc.player;
+
 	public TabletOS() throws FontFormatException, IOException {
 		radarSound = new TabletSoundInstance(SoundList.RADAR_SOUND);
 		shopIntroSound = new TabletSoundInstance(SoundList.SHOPINTRO_SOUND);
@@ -128,6 +133,14 @@ public class TabletOS {
 	}
 	
 	public void render() {
+		boolean isTabletInHand = false;
+		if (nonNull(playerEntity)) {
+			isTabletInHand = playerEntity.getStackInHand(Hand.MAIN_HAND).getItem().getName().asString().equals("tablet");
+			isTabletInHand = playerEntity.getStackInHand(Hand.OFF_HAND).getItem().getName().asString().equals("tablet");
+		}
+		if(!isTabletInHand){
+			return;
+		}
 		if(lastDeltaTimeTime == 0) {
 			lastDeltaTimeTime = System.currentTimeMillis();
 		}else {
