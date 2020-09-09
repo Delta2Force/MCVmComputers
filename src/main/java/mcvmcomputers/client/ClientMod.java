@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 import java.util.UUID;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -51,7 +52,6 @@ import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -94,6 +94,8 @@ public class ClientMod implements ClientModInitializer{
 	public static boolean rightMouseButton;
 	public static List<Integer> vmKeyboardScancodes = new ArrayList<>();
 	public static boolean releaseKeys = false;
+	public static boolean isAllowedToRecordKeys = false;
+	public static Timer unfocusTimeoutTimer = new Timer();
 	public static File vhdDirectory;
 	public static File isoDirectory;
 	public static int latestVHDNum = 0;
@@ -357,6 +359,7 @@ public class ClientMod implements ClientModInitializer{
 		commands.add("std");
 		commands.add("-m");
 		commands.add(""+ram);
+		commands.add("-enable-kvm");
 		if(!vhd.isEmpty()) {
 			commands.add("-hda");
 			commands.add(new File(vhdDirectory.getPath() + File.separator + vhd).getAbsolutePath());
@@ -386,6 +389,7 @@ public class ClientMod implements ClientModInitializer{
 		MainMod.focus = new Runnable() {
 			@Override
 			public void run() {
+				ClientMod.isAllowedToRecordKeys = true;
 				MinecraftClient.getInstance().openScreen(new GuiFocus());
 			}
 		};
