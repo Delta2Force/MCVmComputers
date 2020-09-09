@@ -356,7 +356,7 @@ public class ClientMod implements ClientModInitializer{
 		commands.add("-smp");
 		commands.add(""+cpu);
 		commands.add("-vga");
-		commands.add("virtio");
+		commands.add("std");
 		commands.add("-m");
 		commands.add(""+ram);
 		commands.add("-enable-kvm");
