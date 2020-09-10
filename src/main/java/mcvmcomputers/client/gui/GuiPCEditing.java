@@ -203,9 +203,9 @@ public class GuiPCEditing extends Screen{
 		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_HARD_DRIVE, b);
 	}
 	
-	private void addRamStick(Item ramItem, int gigs) {
+	private void addRamStick(Item ramItem, int megs) {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-		b.writeInt(gigs);
+		b.writeInt(megs);
 		b.writeInt(this.pc_case.getEntityId());
 		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_RAM, b);
 	}
@@ -353,9 +353,25 @@ public class GuiPCEditing extends Screen{
 						this.font.draw(lang.translate("mcvmcomputers.pc_editing.add_ram"), this.width/2 + 50, this.height/2 - 60, -1);
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
-						ButtonWidget oneG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 51, 80, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "1"), (btn) -> this.addRamStick(ItemList.ITEM_RAM1G, 1));
-						ButtonWidget twoG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 38, 80, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "2"), (btn) -> this.addRamStick(ItemList.ITEM_RAM2G, 2));
-						ButtonWidget fourG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 25, 80, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "4"), (btn) -> this.addRamStick(ItemList.ITEM_RAM4G, 4));
+						ButtonWidget sixfourM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 64, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "64"), (btn) -> this.addRamStick(ItemList.ITEM_RAM64M, 64));
+						ButtonWidget oneM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 51, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "128"), (btn) -> this.addRamStick(ItemList.ITEM_RAM128M, 128));
+						ButtonWidget twoM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 38, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "256"), (btn) -> this.addRamStick(ItemList.ITEM_RAM256M, 256));
+						ButtonWidget fiveM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 25, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "512"), (btn) -> this.addRamStick(ItemList.ITEM_RAM512M, 512));
+						ButtonWidget oneG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 12, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "1"), (btn) -> this.addRamStick(ItemList.ITEM_RAM1G, 1024));
+						ButtonWidget twoG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 1, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "2"), (btn) -> this.addRamStick(ItemList.ITEM_RAM2G, 2048));
+						ButtonWidget fourG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 14, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "4"), (btn) -> this.addRamStick(ItemList.ITEM_RAM4G, 4096));
+						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM64M))) {
+							sixfourM.active = false;
+						}
+						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM128M))) {
+							oneM.active = false;
+						}
+						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM256M))) {
+							twoM.active = false;
+						}
+						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM512M))) {
+							fiveM.active = false;
+						}
 						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM1G))) {
 							oneG.active = false;
 						}
@@ -365,6 +381,10 @@ public class GuiPCEditing extends Screen{
 						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM4G))) {
 							fourG.active = false;
 						}
+						this.addButton(sixfourM);
+						this.addButton(oneM);
+						this.addButton(twoM);
+						this.addButton(fiveM);
 						this.addButton(oneG);
 						this.addButton(twoG);
 						this.addButton(fourG);
@@ -373,7 +393,13 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.disableDepthTest();
 						RenderSystem.pushMatrix();
 						RenderSystem.translatef(0, 0, 200);
-						this.font.draw((int) pc_case.getGigsOfRamInSlot0() + " GB", this.width/2+8, this.height/2+2, -1);
+						if(pc_case.getGigsOfRamInSlot0() < 1000 && pc_case.getGigsOfRamInSlot0() >= 100) {
+							this.font.draw((int) pc_case.getGigsOfRamInSlot0() + " MB", this.width/2+4, this.height/2+2, -1);
+						}else if(pc_case.getGigsOfRamInSlot0() < 100) {
+							this.font.draw((int) pc_case.getGigsOfRamInSlot0() + " MB", this.width/2+10, this.height/2+2, -1);
+						}else {
+							this.font.draw((int) pc_case.getGigsOfRamInSlot0()/1024 + " GB", this.width / 2 + 16, this.height / 2 + 2, -1);
+						}
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
 						this.addButton(new ButtonWidget(this.width/2+21, this.height / 2 - 70, 10, 10, "x", (btn) -> this.removeRamStick(0)));
@@ -382,7 +408,11 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.disableDepthTest();
 						RenderSystem.pushMatrix();
 						RenderSystem.translatef(0, 0, 200);
-						this.font.draw((int) pc_case.getGigsOfRamInSlot1() + " GB", this.width/2+40, this.height/2+2, -1);
+						if(pc_case.getGigsOfRamInSlot1() < 1000) {
+							this.font.draw((int) pc_case.getGigsOfRamInSlot1() + " MB", this.width/2+42, this.height/2+2, -1);
+						}else {
+							this.font.draw((int) pc_case.getGigsOfRamInSlot1()/1024 + " GB", this.width / 2+42, this.height / 2+2, -1);
+						}
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
 						this.addButton(new ButtonWidget(this.width/2 + 37, this.height / 2 - 70, 10, 10, "x", (btn) -> this.removeRamStick(1)));
@@ -431,7 +461,7 @@ public class GuiPCEditing extends Screen{
 					int offX = 0;
 					int offY = 0;
 					for(File f : ClientMod.isoDirectory.listFiles()) {
-						if(f.getName().endsWith(".iso")) {
+						if(f.getName().endsWith(".iso") || f.getName().endsWith(".ISO")) {
 							if((this.width/2 - 75 + offX) + this.font.getStringWidth(f.getName())+10 > this.width/2 + 105) {
 								offX = 0;
 								offY += 14;
@@ -568,7 +598,7 @@ public class GuiPCEditing extends Screen{
 								OSType += "_64";
 							}
 							edit.setOSTypeId(OSType);
-							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
+							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
 							edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
 							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
@@ -613,7 +643,7 @@ public class GuiPCEditing extends Screen{
 							machine.lockMachine(sess, LockType.Write);
 							usedSessions.add(sess);
 							IMachine edit = sess.getMachine();
-							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())*1024));
+							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
 							edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
 							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);

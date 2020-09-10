@@ -7,6 +7,10 @@
     "item.mcvmcomputers.motherboard": "Scheda Madre a 32-bit",
     "item.mcvmcomputers.motherboard64": "Scheda Madre a 64-bit",
     "item.mcvmcomputers.harddrive": "Disco Rigido",
+    "item.mcvmcomputers.ram64m": "Banco di RAM da 64MB",
+    "item.mcvmcomputers.ram128m": "Banco di RAM da 128MB",
+    "item.mcvmcomputers.ram256m": "Banco di RAM da 256MB",
+    "item.mcvmcomputers.ram512m": "Banco di RAM da 512MB",
     "item.mcvmcomputers.ram1g": "Banco di RAM da 1GB",
     "item.mcvmcomputers.ram2g": "Banco di RAM da 2GB",
     "item.mcvmcomputers.ram4g": "Banco di RAM da 4GB",
@@ -109,5 +113,6 @@
     "key.mcvmcomputers.unfocuskey1": "Combinazione per smettere di interagire con la macchina virtuale: Key 1",
     "key.mcvmcomputers.unfocuskey2": "Combinazione per smettere di interagire con la macchina virtuale: Key 2",
     "key.mcvmcomputers.unfocuskey3": "Combinazione per smettere di interagire con la macchina virtuale: Key 3",
-    "key.mcvmcomputers.unfocuskey4": "Combinazione per smettere di interagire con la macchina virtuale: Key 4"
+    "key.mcvmcomputers.unfocuskey4": "Combinazione per smettere di interagire con la macchina virtuale: Key 4",
+    "mcvmcomputers.pc_editing.add_mbram_btn": "%sMB"
 }

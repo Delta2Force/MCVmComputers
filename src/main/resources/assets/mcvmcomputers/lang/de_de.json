@@ -7,6 +7,10 @@
     "item.mcvmcomputers.motherboard": "32-bit Motherboard",
     "item.mcvmcomputers.motherboard64": "64-bit Motherboard",
     "item.mcvmcomputers.harddrive": "Festplatte",
+    "item.mcvmcomputers.ram64m": "64MB RAM-Riegel",
+    "item.mcvmcomputers.ram128m": "128MB RAM-Riegel",
+    "item.mcvmcomputers.ram256m": "256MB RAM-Riegel",
+    "item.mcvmcomputers.ram512m": "512MB RAM-Riegel",
     "item.mcvmcomputers.ram1g": "1GB RAM-Riegel",
     "item.mcvmcomputers.ram2g": "2GB RAM-Riegel",
     "item.mcvmcomputers.ram4g": "4GB RAM-Riegel",
@@ -109,5 +113,6 @@
     "mcvmcomputers.setup.redoSetup": "Redo setup",
     "mcvmcomputers.input_parser_error": "%ccError while parsing number. Number too big?",
     "mcvmcomputers.waitingforvmtostart": "Waiting for VM to start",
-    "mcvmcomputers.pc_editing.add_gpu": "Add GPU"
+    "mcvmcomputers.pc_editing.add_gpu": "Add GPU",
+    "mcvmcomputers.pc_editing.add_mbram_btn": "%sMB RAM einbauen"
 }
