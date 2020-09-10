@@ -77,6 +77,14 @@ public class GuiSetup extends Screen{
 		currentSetupPage = setupPages.get(setupPages.size() - 1);
 		this.init();
 	}
+
+	public void firstPage() {
+		this.clearButtons();
+		this.clearElements();
+		setupIndex = 0;
+		currentSetupPage = setupPages.get(0);
+		this.init();
+	}
 	
 	@Override
 	public void init() {
