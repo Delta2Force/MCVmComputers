@@ -595,7 +595,8 @@ public class GuiPCEditing extends Screen{
 							IMachine edit = sess.getMachine();
 							String OSType = edit.getOSTypeId();
 							if(pc_case.get64Bit()) {
-								OSType += "_64";
+								if(!OSType.endsWith("_64"))
+									OSType += "_64";
 							}else {
 								OSType = OSType.replace("_64","");
 							}
