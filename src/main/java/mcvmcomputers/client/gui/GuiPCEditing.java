@@ -593,9 +593,11 @@ public class GuiPCEditing extends Screen{
 							found.lockMachine(sess, LockType.Write);
 							usedSessions.add(sess);
 							IMachine edit = sess.getMachine();
-							String OSType = "Other";
+							String OSType = edit.getOSTypeId();
 							if(pc_case.get64Bit()) {
 								OSType += "_64";
+							}else {
+								OSType = OSType.replace("_64","");
 							}
 							edit.setOSTypeId(OSType);
 							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
