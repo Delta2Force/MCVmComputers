@@ -30,13 +30,20 @@ public class GuiCreateHarddrive extends Screen{
 	private String status;
 	private State currentState = State.MENU;
 	private final Language lang = Language.getInstance();
-	
+	private Ext extension = Ext.vdi;
 	private static final char COLOR_CHAR = (char) (0xfeff00a7);
+	private ButtonWidget AA;
+	private ButtonWidget BB;
 	
 	public enum State{
 		MENU,
 		CREATE_NEW,
 		SELECT_OLD
+	}
+
+	public enum Ext{
+		vdi,
+		vmdk
 	}
 	
 	public GuiCreateHarddrive() {
@@ -59,7 +66,9 @@ public class GuiCreateHarddrive extends Screen{
 			hddSize.setChangedListener((st) -> hddSizeUpdate(st));
 			this.children.add(hddSize);
 			this.hddSizeUpdate(hddSize.getText());
-			
+			AA = this.addButton(new ButtonWidget(this.width/2-150, this.height/2+25, 50, 20, "vdi", (wdgt) -> extset(Ext.vdi)));
+			AA.active = false;
+			BB = this.addButton(new ButtonWidget(this.width/2-96, this.height/2+25, 50, 20, "vmdk", (wdgt) -> extset(Ext.vmdk)));
 			this.addButton(new ButtonWidget(this.width/2-100, this.height/2+50, 200, 20, translation("mcvmcomputers.vhd_setup.newvhd"), (wdgt) -> createNew(wdgt)));
 			this.addButton(new ButtonWidget(this.width - 60, this.height - 30, 50, 20, translation("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
 		}else if(currentState == State.MENU) {
@@ -69,7 +78,7 @@ public class GuiCreateHarddrive extends Screen{
 			int lastY = 60;
 			ArrayList<File> files = new ArrayList<>();
 			for(File f : ClientMod.vhdDirectory.listFiles()) {
-				if(f.getName().endsWith(".vdi")) {
+				if(f.getName().endsWith(".vdi") || f.getName().endsWith(".vmdk")) {
 					files.add(f);
 				}
 			}
@@ -88,7 +97,19 @@ public class GuiCreateHarddrive extends Screen{
 			this.addButton(new ButtonWidget(this.width - 60, this.height - 30, 50, 20, translation("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
 		}
 	}
-	
+
+	private void extset(Ext ext){
+		extension=ext;
+		if (extension==Ext.vdi){
+			AA.active=false;
+			BB.active=true;
+		}else if (extension==Ext.vmdk){
+			BB.active=false;
+			AA.active=true;
+		}
+		return;
+	}
+
 	private void switchState(State newState) {
 		this.buttons.clear();
 		this.children.clear();
@@ -108,9 +129,13 @@ public class GuiCreateHarddrive extends Screen{
 		if(!status.startsWith(COLOR_CHAR + "c")) {
 			Long size = Long.parseLong(hddSize.getText())*1024L*1024L;
 			int i = ClientMod.latestVHDNum;
-			File vhd = new File(ClientMod.vhdDirectory, "vhd" + i + ".vdi");
-			
-			IMedium hdd = ClientMod.vb.createMedium("vdi", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
+			File vhd = new File(ClientMod.vhdDirectory, "vhd" + i + "."+extension);
+			IMedium hdd = null;
+			if(extension == Ext.vdi){
+				hdd = ClientMod.vb.createMedium("vdi", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
+			}else if(extension == Ext.vmdk){
+				hdd = ClientMod.vb.createMedium("vmdk", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
+			}
 			IProgress pr = hdd.createBaseStorage(size, Arrays.asList(MediumVariant.Standard));
 			pr.waitForCompletion(-1);
 			

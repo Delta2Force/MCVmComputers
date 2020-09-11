@@ -182,7 +182,7 @@ public class SetupPageMaxValues extends SetupPage{
 						status = setupGui.translation("mcvmcomputers.setup.failedStatus").replace("%s", ""+i);
 					}
 					onlyStatusMessage = false;
-					init();
+					setupGui.firstPage();
 				}
 			}
 		}).start();

@@ -32,9 +32,13 @@ public class ItemList {
 	public static final OrderableItem ITEM_HARDDRIVE = new ItemHarddrive(new Settings().group(MOD_ITEM_GROUP_PARTS));
 	public static final OrderableItem ITEM_KEYBOARD = new PlacableOrderableItem(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS), EntityKeyboard.class, SoundEvents.BLOCK_METAL_PLACE, 4);
 	public static final OrderableItem ITEM_MOUSE = new PlacableOrderableItem(new Settings().group(MOD_ITEM_GROUP_PERIPHERALS), EntityMouse.class, SoundEvents.BLOCK_METAL_PLACE, 4);
-	public static final OrderableItem ITEM_RAM1G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),2);
-	public static final OrderableItem ITEM_RAM2G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),4);
-	public static final OrderableItem ITEM_RAM4G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),8);
+	public static final OrderableItem ITEM_RAM64M = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),2);
+	public static final OrderableItem ITEM_RAM128M = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),2);
+	public static final OrderableItem ITEM_RAM256M = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),3);
+	public static final OrderableItem ITEM_RAM512M = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),4);
+	public static final OrderableItem ITEM_RAM1G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),6);
+	public static final OrderableItem ITEM_RAM2G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),8);
+	public static final OrderableItem ITEM_RAM4G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),14);
 	public static final OrderableItem ITEM_CPU2 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 10);
 	public static final OrderableItem ITEM_CPU4 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 8);
 	public static final OrderableItem ITEM_CPU6 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 6);
@@ -59,6 +63,10 @@ public class ItemList {
 		registerItem("harddrive", ITEM_HARDDRIVE);
 		registerItem("keyboard", ITEM_KEYBOARD);
 		registerItem("mouse", ITEM_MOUSE);
+		registerItem("ram64m", ITEM_RAM64M);
+		registerItem("ram128m", ITEM_RAM128M);
+		registerItem("ram256m", ITEM_RAM256M);
+		registerItem("ram512m", ITEM_RAM512M);
 		registerItem("ram1g", ITEM_RAM1G);
 		registerItem("ram2g", ITEM_RAM2G);
 		registerItem("ram4g", ITEM_RAM4G);

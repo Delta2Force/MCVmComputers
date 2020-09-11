@@ -73,24 +73,40 @@ public class PacketList {
 	public static void removeRam(EntityPC pc, int slot) {
 		Item ramStickItem = null;
 		if(slot == 0) {
-			if(pc.getGigsOfRamInSlot0() == 1) {
+			if(pc.getGigsOfRamInSlot0() == 1024) {
 				ramStickItem = ItemList.ITEM_RAM1G;
-			}else if(pc.getGigsOfRamInSlot0() == 2) {
+			}else if(pc.getGigsOfRamInSlot0() == 2048) {
 				ramStickItem = ItemList.ITEM_RAM2G;
-			}else if(pc.getGigsOfRamInSlot0() == 4) {
+			}else if(pc.getGigsOfRamInSlot0() == 4096) {
 				ramStickItem = ItemList.ITEM_RAM4G;
+			}else if(pc.getGigsOfRamInSlot0() == 256) {
+				ramStickItem = ItemList.ITEM_RAM256M;
+			}else if(pc.getGigsOfRamInSlot0() == 512) {
+				ramStickItem = ItemList.ITEM_RAM512M;
+			}else if(pc.getGigsOfRamInSlot0() == 128) {
+				ramStickItem = ItemList.ITEM_RAM128M;
+			}else if(pc.getGigsOfRamInSlot0() == 64) {
+				ramStickItem = ItemList.ITEM_RAM64M;
 			}else {
 				return;
 			}
 			pc.setGigsOfRamInSlot0(0);
 			pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), new ItemStack(ramStickItem)));
 		}else {
-			if(pc.getGigsOfRamInSlot1() == 1) {
+			if(pc.getGigsOfRamInSlot1() == 1024) {
 				ramStickItem = ItemList.ITEM_RAM1G;
-			}else if(pc.getGigsOfRamInSlot1() == 2) {
+			}else if(pc.getGigsOfRamInSlot1() == 2048) {
 				ramStickItem = ItemList.ITEM_RAM2G;
-			}else if(pc.getGigsOfRamInSlot1() == 4) {
+			}else if(pc.getGigsOfRamInSlot1() == 4096) {
 				ramStickItem = ItemList.ITEM_RAM4G;
+			}else if(pc.getGigsOfRamInSlot1() == 256) {
+				ramStickItem = ItemList.ITEM_RAM256M;
+			}else if(pc.getGigsOfRamInSlot1() == 512) {
+				ramStickItem = ItemList.ITEM_RAM512M;
+			}else if(pc.getGigsOfRamInSlot1() == 128) {
+				ramStickItem = ItemList.ITEM_RAM128M;
+			}else if(pc.getGigsOfRamInSlot1() == 64) {
+				ramStickItem = ItemList.ITEM_RAM64M;
 			}else {
 				return;
 			}

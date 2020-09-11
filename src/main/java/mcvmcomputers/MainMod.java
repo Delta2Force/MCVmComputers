@@ -221,12 +221,12 @@ public class MainMod implements ModInitializer{
 		});
 		
 		ServerSidePacketRegistry.INSTANCE.register(C2S_ADD_RAM, (packetContext, attachedData) -> {
-			int gb = attachedData.readInt();
+			int mb = attachedData.readInt();
 			int entityId = attachedData.readInt();
 			
 			packetContext.getTaskQueue().execute(() -> {
 				Item lookingFor = null;
-				if(gb == 1) {lookingFor = ItemList.ITEM_RAM1G;} else if(gb == 2) {lookingFor = ItemList.ITEM_RAM2G;} else if(gb == 4) {lookingFor = ItemList.ITEM_RAM4G;}
+				if(mb == 64) {lookingFor = ItemList.ITEM_RAM64M;} else if(mb == 128) {lookingFor = ItemList.ITEM_RAM128M;} else if(mb == 256) {lookingFor = ItemList.ITEM_RAM256M;} else if(mb == 512) {lookingFor = ItemList.ITEM_RAM512M;} else if(mb == 1024) {lookingFor = ItemList.ITEM_RAM1G;} else if(mb == 2048) {lookingFor = ItemList.ITEM_RAM2G;} else if(mb == 4096) {lookingFor = ItemList.ITEM_RAM4G;}
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
@@ -235,10 +235,10 @@ public class MainMod implements ModInitializer{
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getGigsOfRamInSlot0() == 0) {
 									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
-									pc.setGigsOfRamInSlot0(gb);
+									pc.setGigsOfRamInSlot0(mb);
 								} else if(pc.getGigsOfRamInSlot1() == 0) {
 									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
-									pc.setGigsOfRamInSlot1(gb);
+									pc.setGigsOfRamInSlot1(mb);
 								}
 							}
 						}
