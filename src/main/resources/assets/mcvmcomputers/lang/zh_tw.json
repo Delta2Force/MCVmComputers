@@ -68,6 +68,7 @@
     "mcvmcomputers.pc_editing.no_valid_vhd": "找不到可用的硬碟 :(",
     "mcvmcomputers.pc_editing.add_ram": "新增記憶體",
     "mcvmcomputers.pc_editing.add_ram_btn": "新增 %sGB 記憶體",
+    "mcvmcomputers.pc_editing.add_mbram_btn": "新增 %sMB 記憶體",
     "mcvmcomputers.pc_editing.add_gpu": "新增圖形處理器",
     "mcvmcomputers.pc_editing.add_32bit_mobo": "新增 32 位元主機板",
     "mcvmcomputers.pc_editing.add_64bit_mobo": "新增 64 位元主機板",
