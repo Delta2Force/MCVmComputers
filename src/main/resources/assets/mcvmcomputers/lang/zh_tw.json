@@ -78,7 +78,7 @@
     "mcvmcomputers.pc_editing.eject": "退出",
     "mcvmcomputers.pc_editing.open_case": "開啟機箱",
     "mcvmcomputers.pc_editing.close": "關閉: ESC",
-    "mcvmcomputers.focus.lose": "按 %s to 取消對焦",
+    "mcvmcomputers.focus.lose": "按 %s 來解除對焦",
     "mcvmcomputers.setup.title": "VM Computers: %cl設定",
     "mcvmcomputers.setup.page": "第 %s/%s 頁",
     "mcvmcomputers.setup.intro_message": "You need to install VirtualBox (version 6.1.*) for this mod to work.\nIf you haven't done it yet, download and install it from %clvirtualbox.org\nor your package manager. If you need to restart, do it and come back.\n\nWARNING! This might cause VirtualBox to stop working, resulting in you having\nto reset your preferences. (If that happens, just google how to reset)",
@@ -90,9 +90,9 @@
     "mcvmcomputers.setup.confirmButton": "確定",
     "mcvmcomputers.setup.clearButton": "清除",
     "mcvmcomputers.setup.nextButton": "下一步",
-    "mcvmcomputers.setup.unfocusCombo": "虛擬機器取消對焦按鍵組合",
+    "mcvmcomputers.setup.unfocusCombo": "虛擬機器解除對焦按鍵組合",
     "mcvmcomputers.setup.vmcomputersdir": "虛擬機器儲存目錄 (虛擬硬碟 和 ISO 檔案會儲存在此路徑)",
-    "mcvmcomputers.setup.failedStatus": "%ccFailed! Error will be printed to log.\n%ccMaybe vboxwebsrv is already running? In that case,\n%ccclose it using your Task Manager. If it's a VirtualBox\n%ccproblem, start it and look at the error.\n\nSettings menu in %s seconds.",
+    "mcvmcomputers.setup.failedStatus": "%cc失敗！ 錯誤將會寫入到日誌內。\n%ccvboxwebsrv 可能已在執行中？ 如果是這樣，\n%cc請使用工作管理員關閉它。如果這是 VirtualBox\n%cc的問題，請開啟它並查看錯誤。\n\n設定選單將在 %s 秒後開啟。",
     "mcvmcomputers.setup.vbox_dir": "VirtualBox 安裝目錄",
     "mcvmcomputers.setup.dontchange0": "%c7如果路徑是有效的，您就無需更改任何內容。",
     "mcvmcomputers.setup.dontchange1": "%c7請只在您知道自己做什麼時才更改此設定。",
@@ -110,8 +110,8 @@
     "mcvmcomputers.input_dir_yes": "%ca有效的目錄！",
     "mcvmcomputers.input_dir_notdir": "%cc路徑指向一個檔案，不是一個目錄。",
     "mcvmcomputers.waitingforvmtostart": "正在等待虛擬機器啟動",
-    "key.mcvmcomputers.unfocuskey1": "取消對焦按鍵組合︰ 按鍵 1",
-    "key.mcvmcomputers.unfocuskey2": "取消對焦按鍵組合︰ 按鍵 2",
-    "key.mcvmcomputers.unfocuskey3": "取消對焦按鍵組合︰ 按鍵 3",
-    "key.mcvmcomputers.unfocuskey4": "取消對焦按鍵組合︰ 按鍵 4"
+    "key.mcvmcomputers.unfocuskey1": "解除對焦按鍵組合︰ 按鍵 1",
+    "key.mcvmcomputers.unfocuskey2": "解除對焦按鍵組合︰ 按鍵 2",
+    "key.mcvmcomputers.unfocuskey3": "解除對焦按鍵組合︰ 按鍵 3",
+    "key.mcvmcomputers.unfocuskey4": "解除對焦按鍵組合︰ 按鍵 4"
 }
