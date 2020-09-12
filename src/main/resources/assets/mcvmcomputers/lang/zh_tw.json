@@ -81,7 +81,7 @@
     "mcvmcomputers.focus.lose": "按 %s 來解除對焦",
     "mcvmcomputers.setup.title": "VM Computers: %cl設定",
     "mcvmcomputers.setup.page": "第 %s/%s 頁",
-    "mcvmcomputers.setup.intro_message": "You need to install VirtualBox (version 6.1.*) for this mod to work.\nIf you haven't done it yet, download and install it from %clvirtualbox.org\nor your package manager. If you need to restart, do it and come back.\n\nWARNING! This might cause VirtualBox to stop working, resulting in you having\nto reset your preferences. (If that happens, just google how to reset)",
+    "mcvmcomputers.setup.intro_message": "您需要安裝 VirtualBox (版本 6.1.*) 才能令這個模組正確運作。\n如果您尚未安裝，請從%clvirtualbox.org\n或軟件包管理系統下載並安裝。如果您的電腦需要重新啟動，請在重新啟動後回來。\n\n警告！ 這可能令 VirtualBox 停止運作，導致您需要\n重設您的喜好設定。 (如果發生了這種情況，請自行搜尋如何重設)",
     "mcvmcomputers.setup.max_ram_input": "虛擬機器最多可使用的記憶體容量︰",
     "mcvmcomputers.setup.vram_input": "虛擬機器視訊記憶體容量︰",
     "mcvmcomputers.setup.ram_input_help": "請以 %clMB %cr為單位輸入。1 GB = 1024 MB。NaN = 不是數字。",
