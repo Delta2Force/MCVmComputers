@@ -45,6 +45,8 @@
     "mcvmcomputers.open_with_right_click": "Apri il pacco cliccando con il tasto destro",
     "mcvmcomputers.pc_item_ramSlot0": "%s GB di RAM nello slot 1",
     "mcvmcomputers.pc_item_ramSlot1": "%s GB di RAM nello slot 2",
+    "mcvmcomputers.pc_item_ramSlot0Mb": "%s MB of RAM in slot 1",
+    "mcvmcomputers.pc_item_ramSlot1Mb": "%s MB of RAM in slot 2",
     "mcvmcomputers.pc_item_cpu": "1/%s del Processore Host installato",
     "mcvmcomputers.pc_item_gpu": "Scheda Video installata",
     "mcvmcomputers.pc_item_hdd": "Disco rigido inserito: %s",

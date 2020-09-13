@@ -63,10 +63,18 @@ public class ItemPCCase extends OrderableItem{
 						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_gpu").formatted(Formatting.GRAY));
 					if(stack.getTag().getInt("CPUDividedBy") > 0)
 						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_cpu", stack.getTag().getInt("CPUDividedBy")).formatted(Formatting.GRAY));
-					if(stack.getTag().getInt("RAMSlot0") > 0)
-						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot0", stack.getTag().getInt("RAMSlot0")).formatted(Formatting.GRAY));
-					if(stack.getTag().getInt("RAMSlot1") > 0)
-						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot1", stack.getTag().getInt("RAMSlot1")).formatted(Formatting.GRAY));
+					if(stack.getTag().getInt("RAMSlot0") > 0) {
+						if((stack.getTag().getInt("RAMSlot0") / 1024) < 1) {
+							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot0Mb", stack.getTag().getInt("RAMSlot0")).formatted(Formatting.GRAY));
+						} else if((stack.getTag().getInt("RAMSlot0") / 1024) >= 1) {
+							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot0", (stack.getTag().getInt("RAMSlot0") / 1024)).formatted(Formatting.GRAY));
+					}}
+					if(stack.getTag().getInt("RAMSlot1") > 0) {
+						if((stack.getTag().getInt("RAMSlot1") / 1024) < 1) {
+							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot1Mb", stack.getTag().getInt("RAMSlot1")).formatted(Formatting.GRAY));
+						} else if((stack.getTag().getInt("RAMSlot1") / 1024) >= 1) {
+							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot1", (stack.getTag().getInt("RAMSlot1") / 1024)).formatted(Formatting.GRAY));
+					}}
 					if(!stack.getTag().getString("VHDName").isEmpty())
 						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_hdd", stack.getTag().getString("VHDName")).formatted(Formatting.GRAY));
 					if(!stack.getTag().getString("ISOName").isEmpty())
