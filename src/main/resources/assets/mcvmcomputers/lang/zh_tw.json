@@ -45,6 +45,8 @@
     "mcvmcomputers.open_with_right_click": "點擊右鍵以打開包裹",
     "mcvmcomputers.pc_item_ramSlot0": "插槽 1 的記憶體容量︰ %s GB",
     "mcvmcomputers.pc_item_ramSlot1": "插槽 2 的記憶體容量︰ %s GB",
+    "mcvmcomputers.pc_item_ramSlot0Mb": "插槽 1 的記憶體容量︰ %s MB",
+    "mcvmcomputers.pc_item_ramSlot1Mb": "插槽 2 的記憶體容量︰ %s MB",
     "mcvmcomputers.pc_item_cpu": "已安裝主機的 1/%s 的處理器",
     "mcvmcomputers.pc_item_gpu": "已安裝圖形處理器",
     "mcvmcomputers.pc_item_hdd": "已插入的硬碟︰ %s",
