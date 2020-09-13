@@ -45,6 +45,8 @@
     "mcvmcomputers.open_with_right_click": "Open package using right click",
     "mcvmcomputers.pc_item_ramSlot0": "%s GB of RAM in slot 1",
     "mcvmcomputers.pc_item_ramSlot1": "%s GB of RAM in slot 2",
+    "mcvmcomputers.pc_item_ramSlot0Mb": "%s MB of RAM in slot 1",
+    "mcvmcomputers.pc_item_ramSlot1Mb": "%s MB of RAM in slot 2",
     "mcvmcomputers.pc_item_cpu": "1/%s host CPU installed",
     "mcvmcomputers.pc_item_gpu": "GPU installed",
     "mcvmcomputers.pc_item_hdd": "Inserted hard drive: %s",
