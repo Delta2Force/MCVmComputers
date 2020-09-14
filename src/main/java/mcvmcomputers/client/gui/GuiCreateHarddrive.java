@@ -172,7 +172,7 @@ public class GuiCreateHarddrive extends Screen{
 					return;
 				}
 				
-				if(i*1024*1024 >= new File(".").getFreeSpace()) {
+				if(i*1024*1024 >= ClientMod.vhdDirectory.getFreeSpace()) {
 					status = translation("mcvmcomputers.vhd_setup.space");
 					return;
 				}else {
