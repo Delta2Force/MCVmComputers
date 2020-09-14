@@ -79,6 +79,8 @@ public class PacketList {
 				ramStickItem = ItemList.ITEM_RAM2G;
 			}else if(pc.getGigsOfRamInSlot0() == 4096) {
 				ramStickItem = ItemList.ITEM_RAM4G;
+			}else if(pc.getGigsOfRamInSlot0() == 8192) {
+				ramStickItem = ItemList.ITEM_RAM8G;
 			}else if(pc.getGigsOfRamInSlot0() == 256) {
 				ramStickItem = ItemList.ITEM_RAM256M;
 			}else if(pc.getGigsOfRamInSlot0() == 512) {
@@ -99,6 +101,8 @@ public class PacketList {
 				ramStickItem = ItemList.ITEM_RAM2G;
 			}else if(pc.getGigsOfRamInSlot1() == 4096) {
 				ramStickItem = ItemList.ITEM_RAM4G;
+			}else if(pc.getGigsOfRamInSlot1() == 8192) {
+				ramStickItem = ItemList.ITEM_RAM8G;
 			}else if(pc.getGigsOfRamInSlot1() == 256) {
 				ramStickItem = ItemList.ITEM_RAM256M;
 			}else if(pc.getGigsOfRamInSlot1() == 512) {
