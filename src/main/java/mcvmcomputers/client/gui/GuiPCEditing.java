@@ -270,9 +270,10 @@ public class GuiPCEditing extends Screen{
 						this.font.draw(lang.translate("mcvmcomputers.pc_editing.add_cpu"), this.width/2 - 120, this.height/2 - 40, -1);
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
-						ButtonWidget div2 = new ButtonWidget(this.width/2 - 120, this.height / 2 - 31, 70, 12, lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "2"), (btn) -> this.addCPU(ItemList.ITEM_CPU2, 2));
-						ButtonWidget div4 = new ButtonWidget(this.width/2 - 120, this.height / 2 - 18, 70, 12, lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "4"), (btn) -> this.addCPU(ItemList.ITEM_CPU4, 4));
-						ButtonWidget div6 = new ButtonWidget(this.width/2 - 120, this.height / 2 - 5, 70, 12, lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "6"), (btn) -> this.addCPU(ItemList.ITEM_CPU6, 6));
+						int addCpuWidth = font.getStringWidth(lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "6"));
+						ButtonWidget div2 = new ButtonWidget(this.width/2 - (addCpuWidth+59), this.height / 2 - 31, addCpuWidth+4, 12, lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "2"), (btn) -> this.addCPU(ItemList.ITEM_CPU2, 2));
+						ButtonWidget div4 = new ButtonWidget(this.width/2 - (addCpuWidth+59), this.height / 2 - 18, addCpuWidth+4, 12, lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "4"), (btn) -> this.addCPU(ItemList.ITEM_CPU4, 4));
+						ButtonWidget div6 = new ButtonWidget(this.width/2 - (addCpuWidth+59), this.height / 2 - 5, addCpuWidth+4, 12, lang.translate("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "6"), (btn) -> this.addCPU(ItemList.ITEM_CPU6, 6));
 						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_CPU2))) {
 							div2.active = false;
 						}
@@ -295,7 +296,11 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.enableDepthTest();
 					}
 					if(!pc_case.getGpuInstalled()) {
-						this.addButton(new ButtonWidget(this.width/2 - 64, this.height / 2 + 33, 68, 12, lang.translate("mcvmcomputers.pc_editing.add_gpu"), (btn) -> this.addGPU()));
+						int addGpuWidth = this.font.getStringWidth(lang.translate("mcvmcomputers.pc_editing.add_gpu"));
+						ButtonWidget bw = new ButtonWidget(this.width/2 - 64, this.height / 2 + 33, addGpuWidth+4, 12, lang.translate("mcvmcomputers.pc_editing.add_gpu"), (btn) -> this.addGPU());
+						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_GPU)))
+							bw.active = false;
+						this.addButton(bw);
 					}
 					if(pc_case.getHardDriveFileName().isEmpty()) {
 						int lastYOffset = 0;
@@ -353,13 +358,14 @@ public class GuiPCEditing extends Screen{
 						this.font.draw(lang.translate("mcvmcomputers.pc_editing.add_ram"), this.width/2 + 50, this.height/2 - 60, -1);
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
-						ButtonWidget sixfourM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 64, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "64"), (btn) -> this.addRamStick(ItemList.ITEM_RAM64M, 64));
-						ButtonWidget oneM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 51, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "128"), (btn) -> this.addRamStick(ItemList.ITEM_RAM128M, 128));
-						ButtonWidget twoM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 38, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "256"), (btn) -> this.addRamStick(ItemList.ITEM_RAM256M, 256));
-						ButtonWidget fiveM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 25, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "512"), (btn) -> this.addRamStick(ItemList.ITEM_RAM512M, 512));
-						ButtonWidget oneG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 12, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "1"), (btn) -> this.addRamStick(ItemList.ITEM_RAM1G, 1024));
-						ButtonWidget twoG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 1, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "2"), (btn) -> this.addRamStick(ItemList.ITEM_RAM2G, 2048));
-						ButtonWidget fourG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 14, 100, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "4"), (btn) -> this.addRamStick(ItemList.ITEM_RAM4G, 4096));
+						int addMBRamWidth = font.getStringWidth(lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "512"))+4;
+						ButtonWidget sixfourM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 64, addMBRamWidth, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "64"), (btn) -> this.addRamStick(ItemList.ITEM_RAM64M, 64));
+						ButtonWidget oneM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 51, addMBRamWidth, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "128"), (btn) -> this.addRamStick(ItemList.ITEM_RAM128M, 128));
+						ButtonWidget twoM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 38, addMBRamWidth, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "256"), (btn) -> this.addRamStick(ItemList.ITEM_RAM256M, 256));
+						ButtonWidget fiveM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 25, addMBRamWidth, 12, lang.translate("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "512"), (btn) -> this.addRamStick(ItemList.ITEM_RAM512M, 512));
+						ButtonWidget oneG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 12, addMBRamWidth, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "1"), (btn) -> this.addRamStick(ItemList.ITEM_RAM1G, 1024));
+						ButtonWidget twoG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 1, addMBRamWidth, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "2"), (btn) -> this.addRamStick(ItemList.ITEM_RAM2G, 2048));
+						ButtonWidget fourG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 14, addMBRamWidth, 12, lang.translate("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "4"), (btn) -> this.addRamStick(ItemList.ITEM_RAM4G, 4096));
 						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM64M))) {
 							sixfourM.active = false;
 						}
@@ -418,8 +424,10 @@ public class GuiPCEditing extends Screen{
 						this.addButton(new ButtonWidget(this.width/2 + 37, this.height / 2 - 70, 10, 10, "x", (btn) -> this.removeRamStick(1)));
 					}
 				}else {
-					ButtonWidget thirtytwo = new ButtonWidget(this.width/2 - 64, this.height / 2 - 23, 128, 14, lang.translate("mcvmcomputers.pc_editing.add_32bit_mobo"), (btn) -> this.addMotherboard(false));
-					ButtonWidget sixtyfour = new ButtonWidget(this.width/2 - 64, this.height / 2 - 7, 128, 14, lang.translate("mcvmcomputers.pc_editing.add_64bit_mobo"), (btn) -> this.addMotherboard(true));
+					int thirtytwow = font.getStringWidth(lang.translate("mcvmcomputers.pc_editing.add_32bit_mobo"))+4;
+					ButtonWidget thirtytwo = new ButtonWidget(this.width/2 - (thirtytwow/2), this.height / 2 - 23, thirtytwow, 14, lang.translate("mcvmcomputers.pc_editing.add_32bit_mobo"), (btn) -> this.addMotherboard(false));
+					int sixtyfourw = font.getStringWidth(lang.translate("mcvmcomputers.pc_editing.add_64bit_mobo"))+4;
+					ButtonWidget sixtyfour = new ButtonWidget(this.width/2 - (sixtyfourw/2), this.height / 2 - 7, sixtyfourw, 14, lang.translate("mcvmcomputers.pc_editing.add_64bit_mobo"), (btn) -> this.addMotherboard(true));
 					
 					if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_MOTHERBOARD))) {
 						thirtytwo.active = false;
@@ -434,9 +442,11 @@ public class GuiPCEditing extends Screen{
 			}else {
 				boolean turnedOn = (ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getEntityId()) || (ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getEntityId());
 				if(turnedOn) {
-					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, lang.translate("mcvmcomputers.pc_editing.turn_off"), (btn) -> this.turnOffPC(btn)));
+					int buttonW = font.getStringWidth(lang.translate("mcvmcomputers.pc_editing.turn_off"))+4;
+					this.addButton(new ButtonWidget((this.width/2 + 103) - buttonW, this.height / 2 - 80, buttonW, 12, lang.translate("mcvmcomputers.pc_editing.turn_off"), (btn) -> this.turnOffPC(btn)));
 				}else {
-					this.addButton(new ButtonWidget(this.width/2 + 35, this.height / 2 - 80, 70, 12, lang.translate("mcvmcomputers.pc_editing.turn_on"), (btn) -> this.turnOnPC(btn)));
+					int buttonW = font.getStringWidth(lang.translate("mcvmcomputers.pc_editing.turn_on"))+4;
+					this.addButton(new ButtonWidget((this.width/2 + 103) - buttonW, this.height / 2 - 80, buttonW, 12, lang.translate("mcvmcomputers.pc_editing.turn_on"), (btn) -> this.turnOnPC(btn)));
 				}
 				
 				if(ClientMod.vmSession != null) {
@@ -478,9 +488,11 @@ public class GuiPCEditing extends Screen{
 					this.font.draw((char) (0xfeff00a7) + "7" + pc_case.getIsoFileName(), this.width/2 - 75, this.height/2 - 65, -1);
 					RenderSystem.popMatrix();
 					RenderSystem.enableDepthTest();
-					this.addButton(new ButtonWidget(this.width/2 - 75, this.height / 2 - 50, 50, 12, lang.translate("mcvmcomputers.pc_editing.eject"), (btn) -> removeISO()));
+					int ejectW = font.getStringWidth(lang.translate("mcvmcomputers.pc_editing.eject"));
+					this.addButton(new ButtonWidget(this.width/2 - 75, this.height / 2 - 50, ejectW+4, 12, lang.translate("mcvmcomputers.pc_editing.eject"), (btn) -> removeISO()));
 				}
-				ButtonWidget bw = new ButtonWidget(this.width/2 - 82, this.height / 2 + 65, 60, 12, lang.translate("mcvmcomputers.pc_editing.open_case"), (btn) -> openCase = true);
+				int openCaseW = font.getStringWidth(lang.translate("mcvmcomputers.pc_editing.open_case"));
+				ButtonWidget bw = new ButtonWidget(this.width/2 - 82, this.height / 2 + 65, openCaseW+4, 12, lang.translate("mcvmcomputers.pc_editing.open_case"), (btn) -> openCase = true);
 				bw.active = !turnedOn;
 				this.addButton(bw);
 			}
@@ -602,7 +614,7 @@ public class GuiPCEditing extends Screen{
 							}
 							edit.setOSTypeId(OSType);
 							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
-							edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
+							edit.setCPUCount(Math.min(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()));
 							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
 							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
@@ -647,7 +659,7 @@ public class GuiPCEditing extends Screen{
 							usedSessions.add(sess);
 							IMachine edit = sess.getMachine();
 							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
-							edit.setCPUCount(ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy());
+							edit.setCPUCount(Math.min(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()));
 							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
 							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
