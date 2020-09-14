@@ -69,11 +69,15 @@ public class GuiCreateHarddrive extends Screen{
 			AA = this.addButton(new ButtonWidget(this.width/2-150, this.height/2+25, 50, 20, "vdi", (wdgt) -> extset(Ext.vdi)));
 			AA.active = false;
 			BB = this.addButton(new ButtonWidget(this.width/2-96, this.height/2+25, 50, 20, "vmdk", (wdgt) -> extset(Ext.vmdk)));
-			this.addButton(new ButtonWidget(this.width/2-100, this.height/2+50, 200, 20, translation("mcvmcomputers.vhd_setup.newvhd"), (wdgt) -> createNew(wdgt)));
-			this.addButton(new ButtonWidget(this.width - 60, this.height - 30, 50, 20, translation("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
+			int newvhdWidth = font.getStringWidth(translation("mcvmcomputers.vhd_setup.newvhd"))+40;
+			this.addButton(new ButtonWidget(this.width/2-(newvhdWidth/2), this.height/2+50, newvhdWidth, 20, translation("mcvmcomputers.vhd_setup.newvhd"), (wdgt) -> createNew(wdgt)));
+			int menuWidth = font.getStringWidth(translation("mcvmcomputers.vhd_setup.menu"))+40;
+			this.addButton(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, translation("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
 		}else if(currentState == State.MENU) {
-			this.addButton(new ButtonWidget(this.width/2 - 100, this.height/2 - 12, 200, 20, translation("mcvmcomputers.vhd_setup.newvhd"), (wdgt) -> switchState(State.CREATE_NEW)));
-			this.addButton(new ButtonWidget(this.width/2 - 100, this.height/2 + 12, 200, 20, translation("mcvmcomputers.vhd_setup.oldvhd"), (wdgt) -> switchState(State.SELECT_OLD)));
+			int newvhdWidth = font.getStringWidth(translation("mcvmcomputers.vhd_setup.newvhd"))+40;
+			this.addButton(new ButtonWidget(this.width/2 - (newvhdWidth/2), this.height/2 - 12, newvhdWidth, 20, translation("mcvmcomputers.vhd_setup.newvhd"), (wdgt) -> switchState(State.CREATE_NEW)));
+			int oldvhdWidth = font.getStringWidth(translation("mcvmcomputers.vhd_setup.oldvhd"))+40;
+			this.addButton(new ButtonWidget(this.width/2 - (oldvhdWidth/2), this.height/2 + 12, oldvhdWidth, 20, translation("mcvmcomputers.vhd_setup.oldvhd"), (wdgt) -> switchState(State.SELECT_OLD)));
 		}else {
 			int lastY = 60;
 			ArrayList<File> files = new ArrayList<>();
@@ -94,7 +98,7 @@ public class GuiCreateHarddrive extends Screen{
 				lastY += 16;
 			}
 			
-			this.addButton(new ButtonWidget(this.width - 60, this.height - 30, 50, 20, translation("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
+			this.addButton(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, translation("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
 		}
 	}
 
