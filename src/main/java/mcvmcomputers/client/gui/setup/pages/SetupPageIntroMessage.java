@@ -28,10 +28,16 @@ public class SetupPageIntroMessage extends SetupPage{
 	@Override
 	public void init() {
 		if(!setupGui.loadedConfiguration) {
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.setupGui.nextPage()));
+			int buttonW = textRender.getStringWidth(setupGui.translation("mcvmcomputers.setup.nextButton"))+20;
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (buttonW/2), setupGui.height - 40, buttonW, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.setupGui.nextPage()));
 		}else {
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 - 25, 200, 20, setupGui.translation("mcvmcomputers.setup.useConfig"), (bw) -> this.setupGui.lastPage()));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - 100, setupGui.height / 2 + 5, 200, 20, setupGui.translation("mcvmcomputers.setup.redoSetup"), (bw) -> this.delete()));
+			int useConfigW = textRender.getStringWidth(setupGui.translation("mcvmcomputers.setup.useConfig"))+20;
+			int redoSetupW = textRender.getStringWidth(setupGui.translation("mcvmcomputers.setup.redoSetup"))+20;
+			int w = useConfigW;
+			if(redoSetupW > useConfigW)
+				w = redoSetupW;
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (w/2), setupGui.height / 2 - 25, w, 20, setupGui.translation("mcvmcomputers.setup.useConfig"), (bw) -> this.setupGui.lastPage()));
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (w/2), setupGui.height / 2 + 5, w, 20, setupGui.translation("mcvmcomputers.setup.redoSetup"), (bw) -> this.delete()));
 		}
 	}
 	public void delete() {

@@ -71,7 +71,8 @@ public class SetupPageVboxDirectory extends SetupPage{
 
 	@Override
 	public void init() {
-		next = new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.next(bw));
+		int nextButtonW = textRender.getStringWidth(setupGui.translation("mcvmcomputers.setup.nextButton"))+40;
+		next = new ButtonWidget(setupGui.width/2 - (nextButtonW/2), setupGui.height - 40, nextButtonW, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.next(bw));
 		String dirText = this.setupGui.virtualBoxDirectory;
 		if(vboxDirectory != null) {
 			dirText = vboxDirectory.getText();

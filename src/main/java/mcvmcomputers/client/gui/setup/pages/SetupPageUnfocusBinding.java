@@ -70,7 +70,8 @@ public class SetupPageUnfocusBinding extends SetupPage{
 		setupGui.addButton(new ButtonWidget(setupGui.width/2+3, setupGui.height/2+12, 60, 12, setupGui.translation("mcvmcomputers.setup.clearButton"), (bw) -> clearBinding(3)));
 		setupGui.addButton(new ButtonWidget(setupGui.width/2+70, setupGui.height/2+12, 60, 12, setupGui.translation("mcvmcomputers.setup.clearButton"), (bw) -> clearBinding(4)));
 		
-		setupGui.addButton(new ButtonWidget(setupGui.width/2 - 40, setupGui.height - 40, 80, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.setupGui.nextPage()));
+		int nextButtonW = textRender.getStringWidth(setupGui.translation("mcvmcomputers.setup.nextButton"))+40;
+		setupGui.addButton(new ButtonWidget(setupGui.width/2 - (nextButtonW/2), setupGui.height - 40, nextButtonW, 20, setupGui.translation("mcvmcomputers.setup.nextButton"), (bw) -> this.setupGui.nextPage()));
 	}
 
 }
