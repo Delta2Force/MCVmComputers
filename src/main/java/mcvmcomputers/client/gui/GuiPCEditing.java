@@ -295,7 +295,7 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.enableDepthTest();
 					}
 					if(!pc_case.getGpuInstalled()) {
-						this.addButton(new ButtonWidget(this.width/2 - 53, this.height / 2 + 33, 48, 12, lang.translate("mcvmcomputers.pc_editing.add_gpu"), (btn) -> this.addGPU()));
+						this.addButton(new ButtonWidget(this.width/2 - 64, this.height / 2 + 33, 68, 12, lang.translate("mcvmcomputers.pc_editing.add_gpu"), (btn) -> this.addGPU()));
 					}
 					if(pc_case.getHardDriveFileName().isEmpty()) {
 						int lastYOffset = 0;
