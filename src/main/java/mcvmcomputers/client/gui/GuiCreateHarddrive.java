@@ -98,6 +98,7 @@ public class GuiCreateHarddrive extends Screen{
 				lastY += 16;
 			}
 			
+			int menuWidth = font.getStringWidth(translation("mcvmcomputers.vhd_setup.menu"))+40;
 			this.addButton(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, translation("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
 		}
 	}
