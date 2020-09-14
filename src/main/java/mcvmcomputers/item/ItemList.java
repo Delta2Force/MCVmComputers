@@ -39,6 +39,7 @@ public class ItemList {
 	public static final OrderableItem ITEM_RAM1G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),6);
 	public static final OrderableItem ITEM_RAM2G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),8);
 	public static final OrderableItem ITEM_RAM4G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),14);
+	public static final OrderableItem ITEM_RAM8G = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS),15);
 	public static final OrderableItem ITEM_CPU2 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 10);
 	public static final OrderableItem ITEM_CPU4 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 8);
 	public static final OrderableItem ITEM_CPU6 = new OrderableItem(new Settings().group(MOD_ITEM_GROUP_PARTS), 6);
@@ -70,6 +71,7 @@ public class ItemList {
 		registerItem("ram1g", ITEM_RAM1G);
 		registerItem("ram2g", ITEM_RAM2G);
 		registerItem("ram4g", ITEM_RAM4G);
+		registerItem("ram8g", ITEM_RAM8G);
 		registerItem("cpu_divided_by_2", ITEM_CPU2);
 		registerItem("cpu_divided_by_4", ITEM_CPU4);
 		registerItem("cpu_divided_by_6", ITEM_CPU6);
