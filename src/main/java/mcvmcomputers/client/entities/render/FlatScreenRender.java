@@ -2,6 +2,8 @@ package mcvmcomputers.client.entities.render;
 
 import java.util.UUID;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityFlatScreen;
 import mcvmcomputers.item.ItemList;
@@ -9,8 +11,10 @@ import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation.Mode;
@@ -21,6 +25,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
 public class FlatScreenRender extends EntityRenderer<EntityFlatScreen>{
+	protected static final RenderPhase.Transparency TRANSLUCENT_TRANSPARENCY = new RenderPhase.Transparency("translucent_transparency", () -> {
+	      RenderSystem.enableBlend();
+	      RenderSystem.defaultBlendFunc();
+	   }, () -> {
+	      RenderSystem.disableBlend();
+	   });
+	protected static final RenderPhase.Alpha ONE_TENTH_ALPHA = new RenderPhase.Alpha(0.003921569F);
+	
 	public FlatScreenRender(EntityRenderDispatcher dispatcher) {
 		super(dispatcher);
 	}
@@ -51,11 +63,11 @@ public class FlatScreenRender extends EntityRenderer<EntityFlatScreen>{
 			matrices.scale(0.8079f, 0.488f, 1f);
 			matrices.translate(10, 5.4f, 7.76f);
 			Matrix4f matrix4f = matrices.peek().getModel();
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getText(ClientMod.vmScreenTextures.get(UUID.fromString(entity.getOwnerUUID()))));
-			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(light).next();
-	        vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(light).next();
-	        vertexConsumer.vertex(matrix4f, 128.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(light).next();
-	        vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(light).next();
+			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.of("vmscreen", VertexFormats.POSITION_COLOR_TEXTURE, 7, 256, false, true, RenderLayer.MultiPhaseParameters.builder().texture(new RenderPhase.Texture(ClientMod.vmScreenTextures.get(UUID.fromString(entity.getOwnerUUID())), false, false)).alpha(ONE_TENTH_ALPHA).transparency(TRANSLUCENT_TRANSPARENCY).build(false)));
+			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).next();
+	        vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).next();
+	        vertexConsumer.vertex(matrix4f, 128.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).next();
+	        vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 0.0F).next();
 			matrices.pop();
 		}
 		matrices.pop();
