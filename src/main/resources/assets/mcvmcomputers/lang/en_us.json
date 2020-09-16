@@ -103,6 +103,7 @@
     "mcvmcomputers.setup.redoSetup": "Redo setup",
     "mcvmcomputers.input_valid": "%caInput is valid.",
     "mcvmcomputers.input_empty": "%ccInput is empty.",
+    "mcvmcomputers.input_space": "%ccInput contains spaces.",
     "mcvmcomputers.input_nan": "%ccInput is NaN.",
     "mcvmcomputers.input_parser_error": "%ccError while parsing number. Number too big?",
     "mcvmcomputers.input_too_little": "%ccToo small! Min %s.",

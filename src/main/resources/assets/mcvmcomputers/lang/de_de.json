@@ -81,6 +81,7 @@
     "mcvmcomputers.setup.dontchange1": "%c7Bitte ändere nur die Werte falls du weißt was du tust.",
     "mcvmcomputers.input_valid": "%caWert ist valide.",
     "mcvmcomputers.input_empty": "%ccWert ist leer",
+    "mcvmcomputers.input_space": "%ccWert enthält Leerzeichen.",
     "mcvmcomputers.input_nan": "%ccWert ist NaN.",
     "mcvmcomputers.input_too_little": "%ccZu wenig! Min %s.",
     "mcvmcomputers.input_too_much": "%ccZu viel! Max %s.",

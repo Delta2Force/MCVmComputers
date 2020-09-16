@@ -113,7 +113,7 @@ public class GuiSetup extends Screen{
 			ClientMod.glfwUnfocusKey4 = set.unfocusKey4;
 			ClientMod.maxRam = set.maxRam;
 			ClientMod.videoMem = set.videoMem;
-			loadedConfiguration = true;
+			loadedConfiguration = !set.vmComputersDirectory.contains(" ");
 		}
 		if(!initialized) {
 			setupPages = new ArrayList<>();
