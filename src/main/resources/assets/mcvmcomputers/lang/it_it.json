@@ -104,7 +104,7 @@
     "mcvmcomputers.input_valid": "%caValore valido.",
     "mcvmcomputers.input_empty": "%ccValore invalido.",
     "mcvmcomputers.input_nan": "%ccValore invalido.",
-	"mcvmcomputers.input_space": "%ccInput contains spaces.",
+    "mcvmcomputers.input_space": "%ccInput contains spaces.",
     "mcvmcomputers.input_parser_error": "%ccErrore durante l'analisi del numero. Forse il numero è troppo grosso?",
     "mcvmcomputers.input_too_little": "%ccTroppo piccolo! Il minimo è %s.",
     "mcvmcomputers.input_too_much": "%ccTroppo! Il massimo è %s.",
