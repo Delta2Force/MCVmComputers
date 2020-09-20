@@ -104,6 +104,7 @@
     "mcvmcomputers.input_valid": "%ca輸入的值是有效的。",
     "mcvmcomputers.input_empty": "%cc輸入欄位是空的。",
     "mcvmcomputers.input_nan": "%cc輸入的值為 NaN.",
+    "mcvmcomputers.input_space": "%cc輸入的值帶有空格。",
     "mcvmcomputers.input_parser_error": "%cc解析數值時發生錯誤。數值是否太大？",
     "mcvmcomputers.input_too_little": "%cc太小了！ 最小值 %s.",
     "mcvmcomputers.input_too_much": "%cc太大了！ 最大值 %s.",

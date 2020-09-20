@@ -104,6 +104,7 @@
   "mcvmcomputers.input_valid": "%caO valor especificado é inválido.",
   "mcvmcomputers.input_empty": "%ccO valor não pode ser vazio.",
   "mcvmcomputers.input_nan": "%ccO valor especificado não é um número.",
+  "mcvmcomputers.input_space": "%ccInput contains spaces.",
   "mcvmcomputers.input_parser_error": "%ccErro ao converter para número. Seria o número grande demais?",
   "mcvmcomputers.input_too_little": "%ccMuito pequeno! Mínimo %s.",
   "mcvmcomputers.input_too_much": "%ccMuito grande! Máximo %s.",
