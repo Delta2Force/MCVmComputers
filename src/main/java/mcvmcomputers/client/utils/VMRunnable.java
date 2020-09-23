@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
@@ -30,14 +31,15 @@ import net.minecraft.client.MinecraftClient;
 
 public class VMRunnable implements Runnable{
 	private static Image vnc_image;
-
+	private static VernacularClient qemu_vnc_client;
+	private static int vncWidth = 0;
+	private static int vncHeight = 0;
 	@Override
 	public void run() {
-		VernacularClient vnc_client = null;
 		VernacularConfig vnc_config = null;
 		if(ClientMod.qemu) {
 			vnc_config = new VernacularConfig();
-			vnc_client = new VernacularClient(vnc_config);
+			qemu_vnc_client = new VernacularClient(vnc_config);
 			vnc_config.setColorDepth(ColorDepth.BPP_24_TRUE);
 			vnc_config.setScreenUpdateListener(image -> {
 				vnc_image = image;
@@ -46,59 +48,69 @@ public class VMRunnable implements Runnable{
 		}
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		MinecraftClient mcc = MinecraftClient.getInstance();
-		int mouseX = 0, mouseY = 0;
+
 
 		if(ClientMod.qemu) {
-			while(true) {
-				if(!ClientMod.isQemuRunning()) {
-					vnc_client.stop();
-					vmUpdateThread = null;
-					return;
-				}
-
-				if(!vnc_client.isRunning()) {
-					System.out.println("Starting connection to VNC.");
-					do{
-						try{
-							vnc_client.start("127.0.0.1", 5901);
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-							break;
-						}
-					} while(!vnc_client.isRunning());
-					System.out.println("Connected to VNC!");
-				}
-				if(vnc_image != null) {
-					double deltaX = 0, deltaY = 0;
+			new Thread(()->{
+				int mouseX = 0, mouseY = 0;
+				double deltaX = 0, deltaY = 0;
+				while(true){
 
 					deltaX = mouseCurX - mouseLastX;
 					deltaY = mouseCurY - mouseLastY;
 					mouseLastX = mouseCurX;
 					mouseLastY = mouseCurY;
-
-					mouseX = (int) Math.max(0, Math.min(vnc_image.getWidth(null), mouseX+deltaX));
-					mouseY = (int) Math.max(0, Math.min(vnc_image.getHeight(null), mouseY+deltaY));
-
-					vnc_client.moveMouse(mouseX, mouseY);
+					if(deltaX != 0 && deltaY != 0){
+						mouseX = (int) Math.max(0, Math.min(vncWidth, mouseX+deltaX));
+						mouseY = (int) Math.max(0, Math.min(vncHeight, mouseY+deltaY));
+						qemu_vnc_client.moveMouse(mouseX, mouseY);
+					}
+					qemu_vnc_client.updateMouseButton(1, leftMouseButton);
+					qemu_vnc_client.updateMouseButton(2, middleMouseButton);
+					qemu_vnc_client.updateMouseButton(3, rightMouseButton);
 					synchronized (qemuKeys){
 						for(QemuKey qk : qemuKeys) {
-							vnc_client.updateKey(qk.keySym, qk.pressed);
+							qemu_vnc_client.updateKey(qk.keySym, qk.pressed);
 						}
 						qemuKeys.clear();
 					}
+				}
+			}, "VMRunnable Keyboard").start();
+			while(true) {
+				if(!ClientMod.isQemuRunning()) {
+					qemu_vnc_client.stop();
+					vmUpdateThread = null;
+					return;
+				}
 
+				if(!qemu_vnc_client.isRunning()) {
+					System.out.println("Starting connection to VNC.");
+					do{
+						try{
+							qemu_vnc_client.start("127.0.0.1", 5901);
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							break;
+						}
+					} while(!qemu_vnc_client.isRunning());
+					System.out.println("Connected to VNC!");
+				}
+				if(vmTextureBytes == null && vnc_image != null) {
 					try {
+						LocalTime time = LocalTime.now();
 						ImageIO.write((RenderedImage) vnc_image, "PNG", byteStream);
+						vncWidth = vnc_image.getWidth(null);
+						vncHeight = vnc_image.getHeight(null);
+						byte[] image = byteStream.toByteArray();
+						byteStream.reset();
+						System.out.println("Write and tobyte serialize: " + (time.getSecond() - LocalTime.now().getSecond()));
+						vmTextureBytes = image;
+						vmTextureBytesSize = image.length;
+						vnc_image = null;
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-
-					byte[] image = byteStream.toByteArray();
-					byteStream.reset();
-					vmTextureBytes = image;
-					vmTextureBytesSize = image.length;
-					vnc_image = null;
 				}
 			}
 		}else {
