@@ -52,18 +52,13 @@ public class GuiFocus extends Screen{
 	@Override
 	public void render(int wmouseX, int wmouseY, float delta) {
 		long window = minecraft.getWindow().getHandle();
-		DoubleBuffer mX = BufferUtils.createDoubleBuffer(1);
-		DoubleBuffer mY = BufferUtils.createDoubleBuffer(1);
+		double[] mX = new double[1];
+		double[] mY = new double[1];
 		GLFW.glfwGetCursorPos(window, mX, mY);
-		double mouseX = mX.get();
-		double mouseY = mY.get();
-		mX.clear();
-		mY.clear();
+		double mouseX = mX[0];
+		double mouseY = mY[0];
 		ClientMod.mouseCurX = mouseX;
 		ClientMod.mouseCurY = mouseY;
-		ClientMod.leftMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-		ClientMod.middleMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
-		ClientMod.rightMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
 		
 		this.font.draw(lang.translate("mcvmcomputers.focus.lose").replace("%s", keyString), 4, 4, -1);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);

@@ -19,8 +19,9 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	 
-	implementation 'com.shinyhut:vernacular:1.9'
+
+	implementation 'com.shinyhut:vernacular:1.10'
+	shadow 'com.shinyhut:vernacular:1.10'
 	implementation files('lib/vboxjws.jar')
 	shadow files('lib/vboxjws.jar')
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
