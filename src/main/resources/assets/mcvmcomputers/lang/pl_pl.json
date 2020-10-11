@@ -104,6 +104,7 @@
     "mcvmcomputers.input_valid": "%caWprowadzona wartość jest poprawna.",
     "mcvmcomputers.input_empty": "%ccWprowadzona wartość jest niepoprawna.",
     "mcvmcomputers.input_nan": "%ccWprowadzona wartość jest NaN.",
+    "mcvmcomputers.input_space": "%ccInput contains spaces.",
     "mcvmcomputers.input_parser_error": "%ccBłąd podczas analizowania liczby. Liczba jest za duża?",
     "mcvmcomputers.input_too_little": "%ccZa mało! Min %s.",
     "mcvmcomputers.input_too_much": "%ccZa dużo! Maks %s.",

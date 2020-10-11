@@ -103,6 +103,7 @@
     "mcvmcomputers.setup.redoSetup": "Volver a hacer la preparación",
     "mcvmcomputers.input_valid": "%caEl campo es válido.",
     "mcvmcomputers.input_empty": "%ccEl campo está vacío.",
+    "mcvmcomputers.input_space": "%ccInput contains spaces.",
     "mcvmcomputers.input_nan": "%ccEl campo no es un número.",
     "mcvmcomputers.input_parser_error": "%ccError al interpretar el número. Es un número muy grande?",
     "mcvmcomputers.input_too_little": "%ccMuy pequeño! Mínimo %s.",
