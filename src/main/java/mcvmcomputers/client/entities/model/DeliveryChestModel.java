@@ -132,12 +132,12 @@ public class DeliveryChestModel extends EntityModel<Entity> {
 		ni.copyFrom(baseTexture);
 		for(int x = 38;x<50;x++) {
 			for(int y = 34;y<40;y++) {
-				ni.setPixelRgba(x, y, randomColor());
+				ni.setPixelColor(x, y, randomColor());
 			}
 		}
 		for(int x = 32;x<56;x++) {
 			for(int y = 40;y<43;y++) {
-				ni.setPixelRgba(x, y, randomColor());
+				ni.setPixelColor(x, y, randomColor());
 			}
 		}
 		nibt = new NativeImageBackedTexture(ni);

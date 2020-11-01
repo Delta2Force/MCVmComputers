@@ -31,8 +31,8 @@ public class ItemPreviewRender extends EntityRenderer<EntityItemPreview>{
 		matrices.push();
 		
 		matrices.translate(0, 0.5, 0);
-		Vec3d v = mcc.player.getPosVector();
-		Quaternion look = MVCUtils.lookAt(entity.getPosVector(), new Vec3d(v.x, entity.getY(), v.z));
+		Vec3d v = mcc.player.getPos();
+		Quaternion look = MVCUtils.lookAt(entity.getPos(), new Vec3d(v.x, entity.getY(), v.z));
 		matrices.multiply(look);
 		matrices.push();
 		if(entity.getPreviewedItemStack().getItem() instanceof PlacableOrderableItem) {

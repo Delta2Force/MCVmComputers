@@ -29,7 +29,7 @@ public class PCRender extends EntityRenderer<EntityPC>{
 			VertexConsumerProvider vertexConsumers, int light) {
 		matrices.push();
 		matrices.translate(0, 0.5, 0);
-		Quaternion look = MVCUtils.lookAt(entity.getPosVector(), entity.getLookAtPos());
+		Quaternion look = MVCUtils.lookAt(entity.getPos(), entity.getLookAtPos());
 		matrices.multiply(look);
 		MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemList.PC_CASE_NO_PANEL), Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
 		
