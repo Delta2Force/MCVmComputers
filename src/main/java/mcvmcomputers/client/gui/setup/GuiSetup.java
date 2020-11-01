@@ -34,7 +34,7 @@ public class GuiSetup extends Screen{
 	public boolean loadedConfiguration = false;
 	public boolean startVb = false;
 	public String virtualBoxDirectory = "";
-	private final Language LANGUAGE = Language.getInstance();
+	private Language language = Language.getInstance();
 	private MinecraftClient minecraft = MinecraftClient.getInstance();
 	
 	public GuiSetup() {
@@ -71,7 +71,7 @@ public class GuiSetup extends Screen{
 	}
 	
 	public String translation(String in) {
-		return LANGUAGE.get(in).replace("%c", ""+MVCUtils.COLOR_CHAR);
+		return language.get(in).replace("%c", ""+MVCUtils.COLOR_CHAR);
 	}
 	
 	public void lastPage() {
@@ -91,6 +91,7 @@ public class GuiSetup extends Screen{
 	
 	@Override
 	public void init() {
+		language = Language.getInstance();
 		if(new File(minecraft.runDirectory, "vm_computers/setup.json").exists()) {
 			FileReader fr;
 			VMSettings set = null;
