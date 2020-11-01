@@ -30,10 +30,10 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.collection.DefaultedList;
 
 import static mcvmcomputers.networking.PacketList.*;
 
@@ -165,7 +165,7 @@ public class MainMod implements ModInitializer{
 						}
 					}
 				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.motherboard_not_present").formatted(Formatting.RED));
+					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.motherboard_not_present").formatted(Formatting.RED), false);
 				}
 			});
 		});
@@ -189,7 +189,7 @@ public class MainMod implements ModInitializer{
 						}
 					}
 				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.gpu_not_present").formatted(Formatting.RED));
+					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.gpu_not_present").formatted(Formatting.RED), false);
 				}
 			});
 		});
@@ -215,7 +215,7 @@ public class MainMod implements ModInitializer{
 						}
 					}
 				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present").formatted(Formatting.RED));
+					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present").formatted(Formatting.RED), false);
 				}
 			});
 		});
@@ -244,7 +244,7 @@ public class MainMod implements ModInitializer{
 						}
 					}
 				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present").formatted(Formatting.RED));
+					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present").formatted(Formatting.RED), false);
 				}
 			});
 		});
@@ -269,7 +269,7 @@ public class MainMod implements ModInitializer{
 						}
 					}
 				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present").formatted(Formatting.RED));
+					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present").formatted(Formatting.RED), false);
 				}
 			});
 		});
