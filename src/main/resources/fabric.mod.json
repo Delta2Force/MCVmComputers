@@ -32,7 +32,7 @@
   "depends": {
     "fabricloader": ">=0.10.0",
     "fabric": "*",
-    "minecraft": "1.16.x"
+    "minecraft": "1.16.3"
   },
   "suggests": {
     "flamingo": "*"
