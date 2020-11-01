@@ -17,6 +17,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -200,16 +201,16 @@ public class EntityPC extends Entity{
 	public void set64Bit(boolean sixtyFourBit) { this.getDataTracker().set(SIXTY_FOUR_BIT, sixtyFourBit); }
 	
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
+	public ActionResult interact(PlayerEntity player, Hand hand) {
 		if(!player.world.isClient) {
 			if(player.isSneaking() && player.getUuid().toString().equals(this.getOwner())) {
 				if(this.getGlassSidepanel()) {
 					player.world.spawnEntity(new ItemEntity(player.world,
-							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
+							this.getPos().x, this.getPos().y, this.getPos().z,
 							ItemPCCaseSidepanel.createPCStackByEntity(this)));
 				}else {
 					player.world.spawnEntity(new ItemEntity(player.world,
-							this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
+							this.getPos().x, this.getPos().y, this.getPos().z,
 							ItemPCCase.createPCStackByEntity(this)));
 				}
 				this.kill();
@@ -220,9 +221,9 @@ public class EntityPC extends Entity{
 					ClientMod.currentPC = this;
 					MainMod.pcOpenGui.run();
 				}else
-					player.sendMessage(new TranslatableText("mcvmcomputers.not_your_computer").formatted(Formatting.RED));
+					player.sendMessage(new TranslatableText("mcvmcomputers.not_your_computer").formatted(Formatting.RED),false);
 		}
-		return true;
+		return ActionResult.SUCCESS;
 	}
 	
 	@Override

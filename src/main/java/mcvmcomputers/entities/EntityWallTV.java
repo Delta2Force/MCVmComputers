@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -75,12 +76,12 @@ public class EntityWallTV extends Entity{
 	}
 	
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
+	public ActionResult interact(PlayerEntity player, Hand hand) {
 		if(!player.world.isClient) {
 			if(player.isSneaking()) {
 				this.kill();
 				player.world.spawnEntity(new ItemEntity(player.world,
-						this.getPosVector().x, this.getPosVector().y, this.getPosVector().z,
+						this.getPos().x, this.getPos().y, this.getPos().z,
 						new ItemStack(ItemList.ITEM_WALLTV)));
 			}
 		}else {
@@ -90,7 +91,7 @@ public class EntityWallTV extends Entity{
 				}
 			}
 		}
-		return true;
+		return ActionResult.SUCCESS;
 	}
 	
 	@Override

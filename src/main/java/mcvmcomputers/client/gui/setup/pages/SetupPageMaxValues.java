@@ -18,6 +18,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 
 public class SetupPageMaxValues extends SetupPage{
 	private String statusMaxRam;
@@ -189,20 +191,20 @@ public class SetupPageMaxValues extends SetupPage{
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack ms, int mouseX, int mouseY, float delta) {
 		if(!onlyStatusMessage) {
-			this.textRender.draw(setupGui.translation("mcvmcomputers.setup.max_ram_input"), setupGui.width/2 - 160, setupGui.height/2-30, -1);
-			this.textRender.draw(setupGui.translation("mcvmcomputers.setup.vram_input"), setupGui.width/2 + 10, setupGui.height/2-30, -1);
+			this.textRender.draw(ms, setupGui.translation("mcvmcomputers.setup.max_ram_input"), setupGui.width/2 - 160, setupGui.height/2-30, -1);
+			this.textRender.draw(ms, setupGui.translation("mcvmcomputers.setup.vram_input"), setupGui.width/2 + 10, setupGui.height/2-30, -1);
 			String s = setupGui.translation("mcvmcomputers.setup.ram_input_help");
-			this.textRender.draw(s, setupGui.width/2 - textRender.getStringWidth(s)/2, setupGui.height/2+30, -1);
-			this.textRender.draw(statusMaxRam, setupGui.width / 2 - 160, setupGui.height/2 + 3, -1);
-			this.textRender.draw(statusVideoMemory, setupGui.width / 2 + 10, setupGui.height/2 + 3, -1);
-			this.maxRam.render(mouseX, mouseY, delta);
-			this.videoMemory.render(mouseX, mouseY, delta);
+			this.textRender.draw(ms, s, setupGui.width/2 - textRender.getWidth(s)/2, setupGui.height/2+30, -1);
+			this.textRender.draw(ms, statusMaxRam, setupGui.width / 2 - 160, setupGui.height/2 + 3, -1);
+			this.textRender.draw(ms, statusVideoMemory, setupGui.width / 2 + 10, setupGui.height/2 + 3, -1);
+			this.maxRam.render(ms, mouseX, mouseY, delta);
+			this.videoMemory.render(ms, mouseX, mouseY, delta);
 		}else {
 			int yOff = -((this.textRender.fontHeight * status.split("\n").length)/2);
 			for(String s : status.split("\n")) {
-				this.textRender.draw(s, setupGui.width/2 - this.textRender.getStringWidth(s)/2, (setupGui.height/2-this.textRender.fontHeight/2)+yOff, -1);
+				this.textRender.draw(ms, s, setupGui.width/2 - this.textRender.getWidth(s)/2, (setupGui.height/2-this.textRender.fontHeight/2)+yOff, -1);
 				yOff+=this.textRender.fontHeight+1;
 			}
 		}
@@ -219,18 +221,18 @@ public class SetupPageMaxValues extends SetupPage{
 			videoMemoryText = videoMemory.getText();
 		}
 		if(!onlyStatusMessage) {
-			maxRam = new TextFieldWidget(this.textRender, setupGui.width/2-160, setupGui.height/2-20, 150, 20, "");
+			maxRam = new TextFieldWidget(this.textRender, setupGui.width/2-160, setupGui.height/2-20, 150, 20, new LiteralText(""));
 			maxRam.setText(maxRamText);
 			maxRam.setChangedListener((str) -> checkMaxRam(str));
-			videoMemory = new TextFieldWidget(this.textRender, setupGui.width/2+10, setupGui.height/2-20, 150, 20, "");
+			videoMemory = new TextFieldWidget(this.textRender, setupGui.width/2+10, setupGui.height/2-20, 150, 20, new LiteralText(""));
 			videoMemory.setText(videoMemoryText);
 			videoMemory.setChangedListener((str) -> videoMemory(str));
 			checkMaxRam(maxRam.getText());
 			videoMemory(videoMemory.getText());
 			setupGui.addElement(maxRam);
 			setupGui.addElement(videoMemory);
-			int confirmW = textRender.getStringWidth(setupGui.translation("mcvmcomputers.setup.confirmButton"))+40;
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (confirmW/2), setupGui.height - 40, confirmW, 20, setupGui.translation("mcvmcomputers.setup.confirmButton"), (btn) -> confirmButton(btn)));
+			int confirmW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.confirmButton"))+40;
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (confirmW/2), setupGui.height - 40, confirmW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.confirmButton")), (btn) -> confirmButton(btn)));
 			
 			if(setupGui.startVb) {
 				confirmButton(null);

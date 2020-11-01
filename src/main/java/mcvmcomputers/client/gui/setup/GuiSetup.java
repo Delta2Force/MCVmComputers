@@ -18,9 +18,11 @@ import mcvmcomputers.client.gui.setup.pages.SetupPageVMComputersDirectory;
 import mcvmcomputers.client.gui.setup.pages.SetupPageVboxDirectory;
 import mcvmcomputers.client.utils.VMSettings;
 import mcvmcomputers.utils.MVCUtils;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Language;
 
@@ -32,7 +34,8 @@ public class GuiSetup extends Screen{
 	public boolean loadedConfiguration = false;
 	public boolean startVb = false;
 	public String virtualBoxDirectory = "";
-	private final Language LANGUAGE = Language.getInstance();
+	private Language language = Language.getInstance();
+	private MinecraftClient minecraft = MinecraftClient.getInstance();
 	
 	public GuiSetup() {
 		super(new LiteralText("Setup"));
@@ -68,7 +71,7 @@ public class GuiSetup extends Screen{
 	}
 	
 	public String translation(String in) {
-		return LANGUAGE.translate(in).replace("%c", ""+MVCUtils.COLOR_CHAR);
+		return language.get(in).replace("%c", ""+MVCUtils.COLOR_CHAR);
 	}
 	
 	public void lastPage() {
@@ -88,6 +91,7 @@ public class GuiSetup extends Screen{
 	
 	@Override
 	public void init() {
+		language = Language.getInstance();
 		if(new File(minecraft.runDirectory, "vm_computers/setup.json").exists()) {
 			FileReader fr;
 			VMSettings set = null;
@@ -117,13 +121,13 @@ public class GuiSetup extends Screen{
 		}
 		if(!initialized) {
 			setupPages = new ArrayList<>();
-			setupPages.add(new SetupPageIntroMessage(this, this.font));
+			setupPages.add(new SetupPageIntroMessage(this, this.textRenderer));
 			if(SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_MAC) {
-				setupPages.add(new SetupPageVboxDirectory(this, this.font));
+				setupPages.add(new SetupPageVboxDirectory(this, this.textRenderer));
 			}
-			setupPages.add(new SetupPageVMComputersDirectory(this, this.font));
-			setupPages.add(new SetupPageUnfocusBinding(this, this.font));
-			setupPages.add(new SetupPageMaxValues(this, this.font));
+			setupPages.add(new SetupPageVMComputersDirectory(this, this.textRenderer));
+			setupPages.add(new SetupPageUnfocusBinding(this, this.textRenderer));
+			setupPages.add(new SetupPageMaxValues(this, this.textRenderer));
 			currentSetupPage = setupPages.get(0);
 			initialized = true;
 		}
@@ -133,13 +137,13 @@ public class GuiSetup extends Screen{
 	}
 	
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderDirtBackground(0);
+	public void render(MatrixStack ms, int mouseX, int mouseY, float delta) {
+		this.renderBackground(ms);
 		String title = translation("mcvmcomputers.setup.title");
-		this.font.draw(title, this.width/2 - this.font.getStringWidth(title)/2, 20, -1);
+		this.textRenderer.draw(ms, title, this.width/2 - this.textRenderer.getWidth(title)/2, 20, -1);
 		String s = translation("mcvmcomputers.setup.page").replaceFirst("%s", ""+(setupIndex+1)).replaceFirst("%s", ""+setupPages.size());
-		this.font.draw(s, this.width/2 - this.font.getStringWidth(s)/2, 30, -1);
-		currentSetupPage.render(mouseX, mouseY, delta);
-		super.render(mouseX, mouseY, delta);
+		this.textRenderer.draw(ms, s, this.width/2 - this.textRenderer.getWidth(s)/2, 30, -1);
+		currentSetupPage.render(ms, mouseX, mouseY, delta);
+		super.render(ms, mouseX, mouseY, delta);
 	}
 }

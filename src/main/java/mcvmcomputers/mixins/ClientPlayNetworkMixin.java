@@ -17,7 +17,6 @@ import mcvmcomputers.entities.EntityMouse;
 import mcvmcomputers.entities.EntityPC;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.sound.RidingMinecartSoundInstance;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -68,9 +67,6 @@ public class ClientPlayNetworkMixin {
 	         ((Entity)entity15).setEntityId(i);
 	         ((Entity)entity15).setUuid(packet.getUuid());
 	         this.world.addEntity(i, (Entity)entity15);
-	         if (entity15 instanceof AbstractMinecartEntity) {
-	            this.client.getSoundManager().play(new RidingMinecartSoundInstance((AbstractMinecartEntity)entity15));
-	         }
 	      }
 	}
 	
@@ -94,7 +90,7 @@ public class ClientPlayNetworkMixin {
 	               entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
 	            }
 
-	            entity.onGround = packet.isOnGround();
+	            entity.setOnGround(packet.isOnGround());
 	         }
 
 	      }

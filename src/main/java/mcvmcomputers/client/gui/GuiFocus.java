@@ -9,7 +9,9 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
 import mcvmcomputers.client.ClientMod;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Language;
 
@@ -17,6 +19,7 @@ public class GuiFocus extends Screen{
 	private String keyString;
 	private ArrayList<Integer> keys;
 	private final Language lang = Language.getInstance();
+	private MinecraftClient minecraft = MinecraftClient.getInstance();
 	
 	public GuiFocus() {
 		super(new TranslatableText("Focus"));
@@ -65,7 +68,7 @@ public class GuiFocus extends Screen{
 	}
 	
 	@Override
-	public void render(int wmouseX, int wmouseY, float delta) {
+	public void render(MatrixStack ms, int wmouseX, int wmouseY, float delta) {
 		long window = minecraft.getWindow().getHandle();
 		DoubleBuffer mX = BufferUtils.createDoubleBuffer(1);
 		DoubleBuffer mY = BufferUtils.createDoubleBuffer(1);
@@ -80,7 +83,7 @@ public class GuiFocus extends Screen{
 		ClientMod.middleMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS;
 		ClientMod.rightMouseButton = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
 		
-		this.font.draw(lang.translate("mcvmcomputers.focus.lose").replace("%s", keyString), 4, 4, -1);
+		this.textRenderer.draw(ms, lang.get("mcvmcomputers.focus.lose").replace("%s", keyString), 4, 4, -1);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
 		
 		boolean pressed = true;
@@ -95,7 +98,7 @@ public class GuiFocus extends Screen{
 			minecraft.openScreen(null);
 		}
 		
-		super.render(wmouseX, wmouseY, delta);
+		super.render(ms, wmouseX, wmouseY, delta);
 	}
 	
 	@Override

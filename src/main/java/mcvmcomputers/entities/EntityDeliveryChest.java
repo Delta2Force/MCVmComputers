@@ -21,6 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -129,12 +130,12 @@ public class EntityDeliveryChest extends Entity{
 	}
 	
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
+	public ActionResult interact(PlayerEntity player, Hand hand) {
 		if(player.world.isClient) {
-			return false;
+			return ActionResult.FAIL;
 		}
 		if(hand == Hand.OFF_HAND) {
-			return false;
+			return ActionResult.FAIL;
 		}
 		if(player.getUuid().toString().equals(getDeliveryUUID())) {
 			TabletOrder to = MainMod.orders.get(UUID.fromString(getDeliveryUUID()));
@@ -152,7 +153,7 @@ public class EntityDeliveryChest extends Entity{
 				}
 				
 				if(!flag) {
-					player.sendMessage(new TranslatableText("mcvmcomputers.click_with_ingots").formatted(Formatting.RED));
+					player.sendMessage(new TranslatableText("mcvmcomputers.click_with_ingots").formatted(Formatting.RED), false);
 				}else {
 					if(to.price < 0) {
 						is.increment(to.price * -1);
@@ -162,7 +163,7 @@ public class EntityDeliveryChest extends Entity{
 					}
 				}
 				
-				return flag;
+				return flag ? ActionResult.SUCCESS : ActionResult.FAIL;
 			}else if(to.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED) {
 				player.world.spawnEntity(new ItemEntity(player.world, this.getX(), this.getY()+1.5, this.getZ(), ItemPackage.createPackage(Registry.ITEM.getId(to.items.get(0)))));
 				to.items.remove(0);

@@ -34,16 +34,16 @@ public class PlacableItem extends Item{
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if(!world.isClient && hand == Hand.MAIN_HAND) {
 			user.getStackInHand(hand).decrement(1);
-			HitResult hr = user.rayTrace(10, 0f, false);
+			HitResult hr = user.raycast(10, 0f, false);
 			Entity ek;
 			try {
 				ek = constructor.newInstance(world, 
 											hr.getPos().getX(),
 											hr.getPos().getY(),
 											hr.getPos().getZ(),
-											new Vec3d(user.getPosVector().x,
+											new Vec3d(user.getPos().x,
 														hr.getPos().getY(),
-														user.getPosVector().z), user.getUuid().toString());
+														user.getPos().z), user.getUuid().toString());
 				world.spawnEntity(ek);
 			} catch (Exception e) {
 				e.printStackTrace();

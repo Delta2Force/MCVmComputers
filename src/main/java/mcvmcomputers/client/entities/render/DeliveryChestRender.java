@@ -251,13 +251,13 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 								matrices.translate(0, -5, 0);
 								this.getFontRenderer().draw("Please insert", 6, 25, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
 								String s = ""+ClientMod.myOrder.price;
-								this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 33, new Color(0.4f,0.4f,1f,1f).getRGB(), false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
+								this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getWidth(s)/2, 33, new Color(0.4f,0.4f,1f,1f).getRGB(), false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
 								this.getFontRenderer().draw("Iron Ingots", 10, 41, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
 								this.getFontRenderer().draw("by clicking", 13, 50, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
 								this.getFontRenderer().draw("this chest", 14, 59, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
 							}else if(ClientMod.myOrder.currentStatus == OrderStatus.ORDER_CHEST_ARRIVED || ClientMod.myOrder.currentStatus == OrderStatus.ORDER_CHEST_RECEIVED) {
 								String s = ClientMod.myOrder.items.size() + " items";
-								this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getStringWidth(s)/2, 20, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,1f,0.2f).getRGB(), light);
+								this.getFontRenderer().draw(s, (39) - this.getFontRenderer().getWidth(s)/2, 20, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,1f,0.2f).getRGB(), light);
 								matrices.push();
 									matrices.translate(0.5, 0, 0);
 									this.getFontRenderer().draw("in chest", 19, 30, -1, false, matrices.peek().getModel(), vertexConsumers, false, new Color(0f,0f,0f,0f).getRGB(), light);
