@@ -27,3 +27,4 @@ bin/
 # fabric
 
 run/
+logs/latest.log
