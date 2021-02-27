@@ -267,7 +267,7 @@ public class TabletOS {
 				for(OrderableItem oi : PC_PARTS) {
 					int offX = 0;
 					g2d.setFont(font.deriveFont(23f)); offY += 20;
-					g2d.drawString(oi.getName().asString(), (270+offX)-shopPx, offY-shopPy);
+					g2d.drawString(oi.getName().getString(), (270+offX)-shopPx, offY-shopPy);
 					g2d.setFont(font.deriveFont(16f)); offY += 10; offX = 10;
 					int inCart = 0;
 					for(OrderableItem io : shoppingCart) {
@@ -312,7 +312,7 @@ public class TabletOS {
 				for(OrderableItem oi : shoppingCart) {
 					int offX = 0;
 					g2d.setFont(font.deriveFont(23f)); offY += 20;
-					g2d.drawString(oi.getName().asString(), (270+offX)-shopPx, offY-shopPy);
+					g2d.drawString(oi.getName().getString(), (270+offX)-shopPx, offY-shopPy);
 					g2d.setFont(font.deriveFont(16f)); offY += 10; offX = 10;
 					g2d.drawString(oi.getPrice() + " Iron Ingots | enter to remove", (270+offX)-shopPx, offY-shopPy);
 					sum += oi.getPrice();
@@ -365,7 +365,7 @@ public class TabletOS {
 				for(OrderableItem oi : PERIPHERALS) {
 					int offX = 0;
 					g2d.setFont(font.deriveFont(23f)); offY += 20;
-					g2d.drawString(oi.getName().asString(), (270+offX)-shopPx, offY-shopPy);
+					g2d.drawString(oi.getName().getString(), (270+offX)-shopPx, offY-shopPy);
 					g2d.setFont(font.deriveFont(16f)); offY += 10; offX = 10;
 					int inCart = 0;
 					for(OrderableItem io : shoppingCart) {
