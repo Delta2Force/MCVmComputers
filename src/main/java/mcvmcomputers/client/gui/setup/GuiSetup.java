@@ -118,6 +118,8 @@ public class GuiSetup extends Screen{
 			ClientMod.maxRam = set.maxRam;
 			ClientMod.videoMem = set.videoMem;
 			loadedConfiguration = !set.vmComputersDirectory.contains(" ");
+		}else{
+			virtualBoxDirectory = new VMSettings().vboxDirectory;
 		}
 		if(!initialized) {
 			setupPages = new ArrayList<>();
