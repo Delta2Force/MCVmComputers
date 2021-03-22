@@ -57,11 +57,6 @@ public class SetupPageVMComputersDirectory extends SetupPage{
 			next.active = false;
 			return false;
 		}
-		if(s.contains(" ")) {
-			vboxStatus = setupGui.translation("mcvmcomputers.input_space");
-			next.active = false;
-			return false;
-		}
 		File vboxDir = new File(s);
 		if(!vboxDir.exists()) {
 			vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notfound");
