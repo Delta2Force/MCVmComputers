@@ -2,7 +2,7 @@
 ###### I spent my whole quarantine working on this.
 #### Made with the SDK of and tested with VirtualBox 6.1.8, you need a VirtualBox version that starts with "6.1" for the mod to work.
 #### Install [Fabric](https://fabricmc.net/use/) for Minecraft 1.16.5 and [the Fabric API mod](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to load the mod .jar (.jar goes in .minecraft/mods)
-#### You can donate in BTC to the address 3GubEkHV69gCkjWhRgRWYqWqyjcWW3gxFF or in BCH to qq6jttzlvgj68lvecnh75pt3znezj4vx6sysfvj3j5
+#### You can donate in BTC to the address 3GubEkHV69gCkjWhRgRWYqWqyjcWW3gxFF or in BCH to bitcoincash:qq6jttzlvgj68lvecnh75pt3znezj4vx6sysfvj3j5
 ## How to use
 ### Ordering
 #### 1) Craft yourself an ordering tablet.
