@@ -27,3 +27,6 @@ ISOs are located at `[minecraft folder]/vm_computers/isos`. Place your ISOs in t
 #### 5) I hope that the rest is self-explanatory.
 ### Using the computer
 Right click the screen while the computer is turned on (which you do in the pc case menu) and your input is focused to the VM. Key combinations do still work on your host computer, e.g. if you press Alt+F4 the game will close. To unfocus, do the key combination mentioned at the top left corner.
+
+# Bugs
+None.
