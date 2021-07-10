@@ -30,9 +30,10 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.10.0",
+    "fabricloader": ">=0.11.3",
     "fabric": "*",
-    "minecraft": "1.16.5"
+    "minecraft": "1.17.1",
+    "java": ">=16"
   },
   "suggests": {
     "flamingo": "*"
