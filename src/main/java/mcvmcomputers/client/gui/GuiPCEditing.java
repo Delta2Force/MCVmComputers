@@ -616,7 +616,7 @@ public class GuiPCEditing extends Screen{
 							}
 							edit.setOSTypeId(OSType);
 							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
-							edit.setCPUCount(Math.min(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()));
+							edit.setCPUCount(Math.max(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()));
 							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
 							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
 							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
