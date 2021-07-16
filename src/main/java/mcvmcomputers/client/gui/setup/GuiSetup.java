@@ -40,10 +40,11 @@ public class GuiSetup extends Screen{
 	public GuiSetup() {
 		super(new LiteralText("Setup"));
 	}
-	
-	public <T extends net.minecraft.client.gui.Element & net.minecraft.client.gui.Selectable> void addChild(T e) {this.addSelectableChild(e);}
 
-	public void clearChildren() {this.clearChildren();}
+	// :(
+	public <T extends net.minecraft.client.gui.Element & net.minecraft.client.gui.Drawable & net.minecraft.client.gui.Selectable> void addChild(T e) {this.addDrawableChild(e);}
+
+	public void clearChildren() {super.clearChildren();}
 	
 	public void nextPage() {
 		if(setupIndex < setupPages.size()) {

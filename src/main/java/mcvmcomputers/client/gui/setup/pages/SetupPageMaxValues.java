@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import net.minecraft.client.MinecraftClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.virtualbox_6_1.IVirtualBox;
@@ -81,8 +82,13 @@ public class SetupPageMaxValues extends SetupPage{
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			
-			ProcessBuilder vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\vboxwebsrv.exe", "--timeout", "0");
+
+			ProcessBuilder vboxWebSrv;
+			if(new File(this.setupGui.virtualBoxDirectory + "\\vboxwebsrv.exe").exists()) {
+				vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\vboxwebsrv.exe", "--timeout", "0");
+			}else {
+				vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\VBoxWebSrv.exe", "--timeout", "0");
+			}
 			try {
 				ClientMod.vboxWebSrv = vboxWebSrv.start();
 			} catch (IOException e1) {
@@ -170,7 +176,9 @@ public class SetupPageMaxValues extends SetupPage{
 					}
 					ClientMod.vbManager = vm;
 					ClientMod.vb = vb;
-					minecraft.openScreen(new TitleScreen());
+					var titleScreen = new TitleScreen(false);
+					titleScreen.init(MinecraftClient.getInstance(), setupGui.width, setupGui.height);
+					minecraft.setScreen(titleScreen);
 					return;
 				}catch(Exception ex) {
 					ex.printStackTrace();
