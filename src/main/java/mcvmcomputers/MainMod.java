@@ -114,7 +114,7 @@ public class MainMod implements ModInitializer{
 				for(ItemStack is : packetContext.getPlayer().getItemsHand()) {
 					if(is != null) {
 						if(is.getItem() instanceof ItemHarddrive) {
-							NbtCompound ct = is.getOrCreateTag();
+							NbtCompound ct = is.getOrCreateNbt();
 							ct.putString("vhdfile", newHddName);
 							break;
 						}
