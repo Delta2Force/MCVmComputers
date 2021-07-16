@@ -16,16 +16,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
-/*
-	model
-	-> opening
-	-> upleg0 -> uleg0
-	-> upleg1 -> uleg1
-	-> upleg2 -> uleg2
-	-> upleg3 -> uleg3
-	-> engine -> fire
- */
-
 public class DeliveryChestModel extends EntityModel<Entity> {
 	public final ModelPart model;
 	public final ModelPart opening;
