@@ -6,21 +6,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import mcvmcomputers.client.entities.model.DeliveryChestModel;
+import mcvmcomputers.client.entities.model.OrderingTabletModel;
+import mcvmcomputers.sound.SoundList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.entity.Entity;
+import net.minecraft.sound.SoundCategory;
 import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.glfw.GLFW;
 import org.virtualbox_6_1.ISession;
@@ -64,6 +65,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class ClientMod implements ClientModInitializer{
 	public static final EntityModelLayer MODEL_DELIVERY_CHEST_MODEL = new EntityModelLayer(new Identifier("mcvmcomputers", "delivery_chest"), "main");
+	public static final EntityModelLayer MODEL_TABLET_MODEL = new EntityModelLayer(new Identifier("mcvmcomputers", "tablet"), "main");
 
 	public static final OutputStream discardAllBytes = new OutputStream() { @Override public void write(int b) throws IOException {} };
 	public static Map<UUID, Identifier> vmScreenTextures;
@@ -328,13 +330,11 @@ public class ClientMod implements ClientModInitializer{
 	
 	@Override
 	public void onInitializeClient() {
-		MainMod.pcOpenGui = () -> MinecraftClient.getInstance().openScreen(new GuiPCEditing(currentPC));
-		MainMod.hardDriveClick = () -> MinecraftClient.getInstance().openScreen(new GuiCreateHarddrive());
-		MainMod.focus = () -> MinecraftClient.getInstance().openScreen(new GuiFocus());
+		MainMod.pcOpenGui = () -> MinecraftClient.getInstance().setScreen(new GuiPCEditing(currentPC));
+		MainMod.hardDriveClick = () -> MinecraftClient.getInstance().setScreen(new GuiCreateHarddrive());
+		MainMod.focus = () -> MinecraftClient.getInstance().setScreen(new GuiFocus());
 		MainMod.deliveryChestSound = () -> {
-			if(MinecraftClient.getInstance().getSoundManager().isPlaying(currentDeliveryChest.rocketSound)) {
-				MinecraftClient.getInstance().getSoundManager().stop(currentDeliveryChest.rocketSound);
-			}
+			MinecraftClient.getInstance().getSoundManager().stopSounds(SoundList.ROCKET_SOUND.getId(), SoundCategory.MASTER);
 		};
 		
 		registerClientPackets();
@@ -359,6 +359,21 @@ public class ClientMod implements ClientModInitializer{
 				(context) -> new PCRender(context));
 		EntityRendererRegistry.INSTANCE.register(EntityList.DELIVERY_CHEST,
 				(context) -> new DeliveryChestRender(context));
+
+		EntityModelLayerRegistry.registerModelLayer(MODEL_DELIVERY_CHEST_MODEL, () -> DeliveryChestModel.getTexturedModelData());
+		EntityModelLayerRegistry.registerModelLayer(MODEL_TABLET_MODEL, () -> OrderingTabletModel.getTexturedModelData());
+
+		try {
+			tabletOS = new TabletOS();
+			tabletThread = new Thread(() -> {
+				while(true) {
+					try {tabletOS.render();}catch(ConcurrentModificationException ignored) {}
+				}
+			}, "Tablet Renderer");
+			tabletThread.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

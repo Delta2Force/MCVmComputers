@@ -64,7 +64,7 @@ public class GameloopMixin {
 	@Inject(at = @At("HEAD"), method = "run")
 	private void run(CallbackInfo info) {
 		MinecraftClient mcc = MinecraftClient.getInstance();
-		mcc.openScreen(new GuiSetup());
+		mcc.setScreen(new GuiSetup());
 		vhdDirectory = new File(mcc.runDirectory, "vm_computers/vhds");
 		vhdDirectory.mkdirs();
 		isoDirectory = new File(mcc.runDirectory, "vm_computers/isos");
@@ -95,18 +95,6 @@ public class GameloopMixin {
 		
 		if(tabletOS != null) {
 			tabletOS.generateTexture();
-		}else {
-			try {
-				tabletOS = new TabletOS();
-				tabletThread = new Thread(() -> {
-					while(true) {
-						try {tabletOS.render();}catch(ConcurrentModificationException ignored) {}
-					}
-				}, "Tablet Renderer");
-				tabletThread.start();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 		if(vboxWebSrv != null) {
 			try {
