@@ -20,7 +20,6 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -62,9 +61,9 @@ public class ClientPlayNetworkMixin {
 	    if (entity15 != null) {
 	         int i = packet.getId();
 	         ((Entity)entity15).updateTrackedPosition(d, e, f);
-	         ((Entity)entity15).pitch = (float)(packet.getPitch() * 360) / 256.0F;
-	         ((Entity)entity15).yaw = (float)(packet.getYaw() * 360) / 256.0F;
-	         ((Entity)entity15).setEntityId(i);
+	         ((Entity)entity15).setPitch((packet.getPitch() * 360) / 256.0F);
+	         ((Entity)entity15).setYaw((packet.getYaw() * 360) / 256.0F);
+	         ((Entity)entity15).setId(i);
 	         ((Entity)entity15).setUuid(packet.getUuid());
 	         this.world.addEntity(i, (Entity)entity15);
 	      }

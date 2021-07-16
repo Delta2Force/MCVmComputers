@@ -98,12 +98,9 @@ public class GameloopMixin {
 		}else {
 			try {
 				tabletOS = new TabletOS();
-				tabletThread = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						while(true) {
-							try {tabletOS.render();}catch(ConcurrentModificationException e) {}
-						}
+				tabletThread = new Thread(() -> {
+					while(true) {
+						try {tabletOS.render();}catch(ConcurrentModificationException ignored) {}
 					}
 				}, "Tablet Renderer");
 				tabletThread.start();
@@ -212,7 +209,7 @@ public class GameloopMixin {
 			try {
 				mach = vb.findMachine("VmComputersVm");
 				vmExists = true;
-			}catch(VBoxException e) {}
+			}catch(VBoxException ignored) {}
 
 			if(vmExists) {
 				if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
@@ -265,7 +262,7 @@ public class GameloopMixin {
 			try {
 				mach = vb.findMachine("VmComputersVm");
 				vmExists = true;
-			}catch(VBoxException e) {}
+			}catch(VBoxException ignored) {}
 			
 			if(vmExists) {
 				if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
