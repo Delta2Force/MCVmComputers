@@ -2,8 +2,8 @@ package mcvmcomputers.item;
 
 import mcvmcomputers.MainMod;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -41,7 +41,7 @@ public class ItemHarddrive extends OrderableItem{
 	
 	public static ItemStack createHardDrive(String fileName) {
 		ItemStack is = new ItemStack(ItemList.ITEM_HARDDRIVE);
-		CompoundTag ct = is.getOrCreateTag();
+		NbtCompound ct = is.getOrCreateTag();
 		ct.putString("vhdfile", fileName);
 		is.setTag(ct);
 		return is;

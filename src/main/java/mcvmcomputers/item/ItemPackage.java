@@ -6,7 +6,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -53,7 +53,7 @@ public class ItemPackage extends Item{
 	
 	public static ItemStack createPackage(Identifier id) {
 		ItemStack is = new ItemStack(ItemList.ITEM_PACKAGE);
-		CompoundTag ct = is.getOrCreateTag();
+		NbtCompound ct = is.getOrCreateTag();
 		ct.putString("packaged_item", id.toString());
 		is.setTag(ct);
 		return is;

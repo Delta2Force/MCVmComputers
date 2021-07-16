@@ -8,7 +8,7 @@ import mcvmcomputers.entities.EntityPC;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -99,7 +99,7 @@ public class ItemPCCase extends OrderableItem{
 	public static ItemStack createPCStackByEntity(EntityPC pc) {
 		ItemStack is = new ItemStack(ItemList.PC_CASE);
 		if(pc.getMotherboardInstalled()) {
-			CompoundTag ct = is.getOrCreateTag();
+			NbtCompound ct = is.getOrCreateTag();
 			ct.putBoolean("x64", pc.get64Bit());
 			ct.putBoolean("MoboInstalled", pc.getMotherboardInstalled());
 			ct.putBoolean("GPUInstalled", pc.getGpuInstalled());
