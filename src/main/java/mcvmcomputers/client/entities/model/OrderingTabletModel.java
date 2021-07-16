@@ -1,7 +1,7 @@
 package mcvmcomputers.client.entities.model;
 
 import mcvmcomputers.utils.MVCUtils;
-import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,81 +16,16 @@ public class OrderingTabletModel extends EntityModel<Entity> {
 	private final ModelPart right;
 	private final ModelPart enter;
 
-	public OrderingTabletModel() {
-		textureWidth = 64;
-		textureHeight = 64;
+	public OrderingTabletModel(ModelPart modelPart) {
+		tablet = modelPart.getChild("tablet");
+		buttons = tablet.getChild("buttons");
+		up = buttons.getChild("up");
+		down = buttons.getChild("down");
+		left = buttons.getChild("left");
+		right = buttons.getChild("right");
+		enter = buttons.getChild("enter");
 
-		tablet = new ModelPart(this);
-		tablet.setPivot(0.0F, 24.0F, 0.0F);
-		tablet.setTextureOffset(24, 19).addCuboid(-6.0F, -2.0F, -6.0F, 12.0F, 1.0F, 1.0F, 0.0F, false);
-		tablet.setTextureOffset(24, 24).addCuboid(-6.0F, -2.0F, 5.0F, 12.0F, 1.0F, 1.0F, 0.0F, false);
-		tablet.setTextureOffset(12, 20).addCuboid(5.0F, -2.0F, -5.0F, 1.0F, 1.0F, 10.0F, 0.0F, false);
-		tablet.setTextureOffset(0, 19).addCuboid(-6.0F, -2.0F, -5.0F, 1.0F, 1.0F, 10.0F, 0.0F, false);
-		tablet.setTextureOffset(0, 0).addCuboid(-6.0F, -1.0F, -6.0F, 12.0F, 1.0F, 12.0F, 0.0F, false);
-		
-		/*
-		buttons = new ModelPart(this);
-		buttons.setPivot(0.0F, -3.4F, -7.1F);
-		tablet.addChild(buttons);
 		setRotationAngle(buttons, -0.7854F, 0.0F, 0.0F);
-		buttons.setTextureOffset(0, 13).addCuboid(-6.0F, -0.5F, -2.5F, 12.0F, 1.0F, 5.0F, 0.0F, false);
-
-		up = new ModelPart(this);
-		up.setPivot(-2.0F, -0.5F, 1.0657F);
-		buttons.addChild(up);
-		up.setTextureOffset(4, 6).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-		down = new ModelPart(this);
-		down.setPivot(-2.0F, -0.5F, -1.1971F);
-		buttons.addChild(down);
-		down.setTextureOffset(0, 6).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-		left = new ModelPart(this);
-		left.setPivot(-3.1F, -0.5F, -0.0657F);
-		buttons.addChild(left);
-		left.setTextureOffset(4, 4).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-		right = new ModelPart(this);
-		right.setPivot(-0.9F, -0.5F, -0.0657F);
-		buttons.addChild(right);
-		right.setTextureOffset(0, 4).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-		enter = new ModelPart(this);
-		enter.setPivot(2.4F, -0.5F, -0.0657F);
-		buttons.addChild(enter);
-		enter.setTextureOffset(0, 0).addCuboid(-1.0F, -0.5F, -1.5F, 2.0F, 1.0F, 3.0F, 0.0F, false);
-		*/
-		
-		buttons = new ModelPart(this);
-		buttons.setPivot(0.0F, -2.0F, -6.0F);
-		tablet.addChild(buttons);
-		setRotationAngle(buttons, -0.7854F, 0.0F, 0.0F);
-		buttons.setTextureOffset(0, 13).addCuboid(-6.0F, -0.6979F, -4.3F, 12.0F, 1.0F, 5.0F, 0.0F, false);
-
-		up = new ModelPart(this);
-		up.setPivot(-2.5F, -0.9F, -0.8243F);
-		buttons.addChild(up);
-		up.setTextureOffset(4, 6).addCuboid(-0.5F, -0.4F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-		down = new ModelPart(this);
-		down.setPivot(-2.5F, -0.8393F, -2.792F);
-		buttons.addChild(down);
-		down.setTextureOffset(0, 6).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-		left = new ModelPart(this);
-		left.setPivot(-3.5F, -0.8393F, -1.8021F);
-		buttons.addChild(left);
-		left.setTextureOffset(4, 4).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-		right = new ModelPart(this);
-		right.setPivot(-1.5F, -0.8393F, -1.8021F);
-		buttons.addChild(right);
-		right.setTextureOffset(0, 4).addCuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-		enter = new ModelPart(this);
-		enter.setPivot(3.0F, -1.1222F, -1.8021F);
-		buttons.addChild(enter);
-		enter.setTextureOffset(0, 0).addCuboid(-1.0F, -0.5F, -1.5F, 2.0F, 1.0F, 3.0F, 0.0F, false);
 	}
 
 	@Override
@@ -144,5 +79,20 @@ public class OrderingTabletModel extends EntityModel<Entity> {
 	public void setAngles(Entity entity, float limbAngle, float limbDistance, float customAngle, float headYaw,
 			float headPitch) {
 		// TODO Auto-generated method stub
+	}
+
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+
+		ModelPartData t = modelPartData.addChild("tablet", ModelPartBuilder.create().uv(24, 19).cuboid(-6.0F, -2.0F, -6.0F, 12.0F, 1.0F, 1.0F).uv(24, 24).cuboid(-6.0F, -2.0F, 5.0F, 12.0F, 1.0F, 1.0F).uv(12, 20).cuboid(5.0F, -2.0F, -5.0F, 1.0F, 1.0F, 10.0F).uv(0, 19).cuboid(-6.0F, -2.0F, -5.0F, 1.0F, 1.0F, 10.0F).uv(0, 0).cuboid(-6.0F, -1.0F, -6.0F, 12.0F, 1.0F, 12.0F), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+		ModelPartData b = t.addChild("buttons", ModelPartBuilder.create().uv(0, 13).cuboid(-6.0F, -0.6979F, -4.3F, 12.0F, 1.0F, 5.0F), ModelTransform.pivot(0.0F, -2.0F, -6.0F));
+		b.addChild("up", ModelPartBuilder.create().uv(4, 6).cuboid(-0.5F, -0.4F, -0.5F, 1.0F, 1.0F, 1.0F), ModelTransform.pivot(-2.5F, -0.9F, -0.8243F));
+		b.addChild("down", ModelPartBuilder.create().uv(0, 6).cuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F), ModelTransform.pivot(-2.5F, -0.8393F, -2.792F));
+		b.addChild("left", ModelPartBuilder.create().uv(4, 4).cuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F), ModelTransform.pivot(-3.5F, -0.8393F, -1.8021F));
+		b.addChild("right", ModelPartBuilder.create().uv(0, 4).cuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F), ModelTransform.pivot(-1.5F, -0.8393F, -1.8021F));
+		b.addChild("enter", ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, -0.5F, -1.5F, 2.0F, 1.0F, 3.0F), ModelTransform.pivot(3.0F, -1.1222F, -1.8021F));
+
+		return TexturedModelData.of(modelData, 64, 64);
 	}
 }

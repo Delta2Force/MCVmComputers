@@ -6,16 +6,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import mcvmcomputers.client.entities.model.DeliveryChestModel;
+import mcvmcomputers.client.entities.model.OrderingTabletModel;
+import mcvmcomputers.sound.SoundList;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityModelLayerRegistry;
+import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.sound.SoundCategory;
 import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.glfw.GLFW;
 import org.virtualbox_6_1.ISession;
@@ -46,8 +52,9 @@ import mcvmcomputers.utils.TabletOrder;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.network.PacketByteBuf;
@@ -55,7 +62,11 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
+@Environment(EnvType.CLIENT)
 public class ClientMod implements ClientModInitializer{
+	public static final EntityModelLayer MODEL_DELIVERY_CHEST_MODEL = new EntityModelLayer(new Identifier("mcvmcomputers", "delivery_chest"), "main");
+	public static final EntityModelLayer MODEL_TABLET_MODEL = new EntityModelLayer(new Identifier("mcvmcomputers", "tablet"), "main");
+
 	public static final OutputStream discardAllBytes = new OutputStream() { @Override public void write(int b) throws IOException {} };
 	public static Map<UUID, Identifier> vmScreenTextures;
 	public static Map<UUID, NativeImage> vmScreenTextureNI;
@@ -197,12 +208,12 @@ public class ClientMod implements ClientModInitializer{
 			
 			if(sz > 32766) {
 				if(!failedSend){
-					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_too_big_mp").formatted(Formatting.RED), false);
+					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_too_big_mp").formatted(Formatting.RED), true);
 					failedSend = true;
 				}
 			}else {
 				if(failedSend) {
-					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_ok_mp").formatted(Formatting.GREEN), false);
+					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_ok_mp").formatted(Formatting.GREEN), true);
 					failedSend = false;
 				}
 				
@@ -210,7 +221,7 @@ public class ClientMod implements ClientModInitializer{
 				p.writeByteArray(Arrays.copyOfRange(deflated, 0, sz));
 				p.writeInt(sz);
 				p.writeInt(vmTextureBytesSize);
-				ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
+				ClientSidePacketRegistryImpl.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
 			}
 			
 			NativeImage ni = null;
@@ -235,9 +246,9 @@ public class ClientMod implements ClientModInitializer{
 			vmTextureBytes = null;
 		}
 	}
-	
+
 	public static void registerClientPackets() {
-		ClientSidePacketRegistry.INSTANCE.register(PacketList.S2C_SCREEN, (packetContext, attachedData) -> {
+		ClientSidePacketRegistryImpl.INSTANCE.register(PacketList.S2C_SCREEN, (packetContext, attachedData) -> {
 			byte[] screen = attachedData.readByteArray();
 			int compressedDataSize = attachedData.readInt();
 			int dataSize = attachedData.readInt();
@@ -275,8 +286,8 @@ public class ClientMod implements ClientModInitializer{
 				}
 			});
 		});
-		
-		ClientSidePacketRegistry.INSTANCE.register(PacketList.S2C_STOP_SCREEN, (packetContext, attachedData) -> {
+
+		ClientSidePacketRegistryImpl.INSTANCE.register(PacketList.S2C_STOP_SCREEN, (packetContext, attachedData) -> {
 			UUID pcOwner = attachedData.readUuid();
 			
 			packetContext.getTaskQueue().execute(() -> {
@@ -295,8 +306,8 @@ public class ClientMod implements ClientModInitializer{
 				}
 			});
 		});
-		
-		ClientSidePacketRegistry.INSTANCE.register(PacketList.S2C_SYNC_ORDER, (packetContext, attachedData) -> {
+
+		ClientSidePacketRegistryImpl.INSTANCE.register(PacketList.S2C_SYNC_ORDER, (packetContext, attachedData) -> {
 			int arraySize = attachedData.readInt();
 			OrderableItem[] arr = new OrderableItem[arraySize];
 			for(int i = 0;i<arraySize;i++) {
@@ -319,55 +330,50 @@ public class ClientMod implements ClientModInitializer{
 	
 	@Override
 	public void onInitializeClient() {
-		MainMod.pcOpenGui = new Runnable() {
-			@Override
-			public void run() {
-				MinecraftClient.getInstance().openScreen(new GuiPCEditing(currentPC));
-			}
-		};
-		MainMod.hardDriveClick = new Runnable() {
-			@Override
-			public void run() {
-				MinecraftClient.getInstance().openScreen(new GuiCreateHarddrive());
-			}
-		};
-		MainMod.focus = new Runnable() {
-			@Override
-			public void run() {
-				MinecraftClient.getInstance().openScreen(new GuiFocus());
-			}
-		};
-		MainMod.deliveryChestSound = new Runnable() {
-			@Override
-			public void run() {
-				if(MinecraftClient.getInstance().getSoundManager().isPlaying(currentDeliveryChest.rocketSound)) {
-					MinecraftClient.getInstance().getSoundManager().stop(currentDeliveryChest.rocketSound);
-				}
-			}
+		MainMod.pcOpenGui = () -> MinecraftClient.getInstance().setScreen(new GuiPCEditing(currentPC));
+		MainMod.hardDriveClick = () -> MinecraftClient.getInstance().setScreen(new GuiCreateHarddrive());
+		MainMod.focus = () -> MinecraftClient.getInstance().setScreen(new GuiFocus());
+		MainMod.deliveryChestSound = () -> {
+			MinecraftClient.getInstance().getSoundManager().stopSounds(SoundList.ROCKET_SOUND.getId(), SoundCategory.MASTER);
 		};
 		
 		registerClientPackets();
 		
-		vmScreenTextures = new HashMap<UUID, Identifier>();
-		vmScreenTextureNI = new HashMap<UUID, NativeImage>();
-		vmScreenTextureNIBT = new HashMap<UUID, NativeImageBackedTexture>();
+		vmScreenTextures = new HashMap<>();
+		vmScreenTextureNI = new HashMap<>();
+		vmScreenTextureNIBT = new HashMap<>();
 		
 		EntityRendererRegistry.INSTANCE.register(EntityList.ITEM_PREVIEW,
-				(entityRenderDispatcher, context) -> new ItemPreviewRender(entityRenderDispatcher));
+				(context) -> new ItemPreviewRender(context));
 		EntityRendererRegistry.INSTANCE.register(EntityList.KEYBOARD,
-				(entityRenderDispatcher, context) -> new KeyboardRender(entityRenderDispatcher));
+				(context) -> new KeyboardRender(context));
 		EntityRendererRegistry.INSTANCE.register(EntityList.MOUSE,
-				(entityRenderDispatcher, context) -> new MouseRender(entityRenderDispatcher));
+				(context) -> new MouseRender(context));
 		EntityRendererRegistry.INSTANCE.register(EntityList.CRT_SCREEN,
-				(entityRenderDispatcher, context) -> new CRTScreenRender(entityRenderDispatcher));
+				(context) -> new CRTScreenRender(context));
 		EntityRendererRegistry.INSTANCE.register(EntityList.FLATSCREEN,
-				(entityRenderDispatcher, context) -> new FlatScreenRender(entityRenderDispatcher));
+				(context) -> new FlatScreenRender(context));
 		EntityRendererRegistry.INSTANCE.register(EntityList.WALLTV,
-				(entityRenderDispatcher, context) -> new WallTVRender(entityRenderDispatcher));
+				(context) -> new WallTVRender(context));
 		EntityRendererRegistry.INSTANCE.register(EntityList.PC,
-				(entityRenderDispatcher, context) -> new PCRender(entityRenderDispatcher));
+				(context) -> new PCRender(context));
 		EntityRendererRegistry.INSTANCE.register(EntityList.DELIVERY_CHEST,
-				(entityRenderDispatcher, context) -> new DeliveryChestRender(entityRenderDispatcher));
+				(context) -> new DeliveryChestRender(context));
+
+		EntityModelLayerRegistry.registerModelLayer(MODEL_DELIVERY_CHEST_MODEL, () -> DeliveryChestModel.getTexturedModelData());
+		EntityModelLayerRegistry.registerModelLayer(MODEL_TABLET_MODEL, () -> OrderingTabletModel.getTexturedModelData());
+
+		try {
+			tabletOS = new TabletOS();
+			tabletThread = new Thread(() -> {
+				while(true) {
+					try {tabletOS.render();}catch(ConcurrentModificationException ignored) {}
+				}
+			}, "Tablet Renderer");
+			tabletThread.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

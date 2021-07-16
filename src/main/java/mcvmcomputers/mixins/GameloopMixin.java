@@ -64,7 +64,7 @@ public class GameloopMixin {
 	@Inject(at = @At("HEAD"), method = "run")
 	private void run(CallbackInfo info) {
 		MinecraftClient mcc = MinecraftClient.getInstance();
-		mcc.openScreen(new GuiSetup());
+		mcc.setScreen(new GuiSetup());
 		vhdDirectory = new File(mcc.runDirectory, "vm_computers/vhds");
 		vhdDirectory.mkdirs();
 		isoDirectory = new File(mcc.runDirectory, "vm_computers/isos");
@@ -95,21 +95,6 @@ public class GameloopMixin {
 		
 		if(tabletOS != null) {
 			tabletOS.generateTexture();
-		}else {
-			try {
-				tabletOS = new TabletOS();
-				tabletThread = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						while(true) {
-							try {tabletOS.render();}catch(ConcurrentModificationException e) {}
-						}
-					}
-				}, "Tablet Renderer");
-				tabletThread.start();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 		if(vboxWebSrv != null) {
 			try {
@@ -212,7 +197,7 @@ public class GameloopMixin {
 			try {
 				mach = vb.findMachine("VmComputersVm");
 				vmExists = true;
-			}catch(VBoxException e) {}
+			}catch(VBoxException ignored) {}
 
 			if(vmExists) {
 				if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
@@ -265,7 +250,7 @@ public class GameloopMixin {
 			try {
 				mach = vb.findMachine("VmComputersVm");
 				vmExists = true;
-			}catch(VBoxException e) {}
+			}catch(VBoxException ignored) {}
 			
 			if(vmExists) {
 				if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {

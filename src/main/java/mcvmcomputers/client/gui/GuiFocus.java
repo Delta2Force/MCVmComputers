@@ -95,7 +95,7 @@ public class GuiFocus extends Screen{
 		}
 		
 		if(pressed) {
-			minecraft.openScreen(null);
+			minecraft.setScreen(null);
 		}
 		
 		super.render(ms, wmouseX, wmouseY, delta);

@@ -20,7 +20,6 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -33,42 +32,6 @@ public class ClientPlayNetworkMixin {
 	
 	@Shadow
 	private MinecraftClient client;
-	
-	@Inject(at = @At("TAIL"), method = "onEntitySpawn")
-	public void onEntitySpawn(EntitySpawnS2CPacket packet, CallbackInfo ci) {
-		EntityType<?> entityType = packet.getEntityTypeId();
-		double d = packet.getX();
-		double e = packet.getY();
-		double f = packet.getZ();
-	    Object entity15 = null;
-	    if (entityType == EntityList.ITEM_PREVIEW) {
-	    	entity15 = new EntityItemPreview(this.world, d, e, f);
-	    }else if (entityType == EntityList.KEYBOARD) {
-	    	entity15 = new EntityKeyboard(this.world, d, e, f);
-	    }else if (entityType == EntityList.MOUSE) {
-	    	entity15 = new EntityMouse(this.world, d, e, f);
-	    }else if (entityType == EntityList.CRT_SCREEN) {
-	    	entity15 = new EntityCRTScreen(this.world, d, e, f);
-	    }else if (entityType == EntityList.FLATSCREEN) {
-	    	entity15 = new EntityFlatScreen(this.world, d, e, f);
-	    }else if (entityType == EntityList.PC) {
-	    	entity15 = new EntityPC(this.world, d, e, f);
-	    }else if (entityType == EntityList.DELIVERY_CHEST) {
-	    	entity15 = new EntityDeliveryChest(this.world, d, e, f);
-	    }else if (entityType == EntityList.WALLTV) {
-	    	entity15 = new EntityWallTV(this.world, d, e, f);
-	    }
-	    
-	    if (entity15 != null) {
-	         int i = packet.getId();
-	         ((Entity)entity15).updateTrackedPosition(d, e, f);
-	         ((Entity)entity15).pitch = (float)(packet.getPitch() * 360) / 256.0F;
-	         ((Entity)entity15).yaw = (float)(packet.getYaw() * 360) / 256.0F;
-	         ((Entity)entity15).setEntityId(i);
-	         ((Entity)entity15).setUuid(packet.getUuid());
-	         this.world.addEntity(i, (Entity)entity15);
-	      }
-	}
 	
 	public void onEntityPosition(EntityPositionS2CPacket packet) {
 	      NetworkThreadUtils.forceMainThread(packet, this.client.getNetworkHandler(), (ThreadExecutor<?>)this.client);

@@ -7,7 +7,7 @@ import mcvmcomputers.entities.EntityPC;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -36,7 +36,7 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 									hr.getPos().getZ(),
 									new Vec3d(user.getPos().x,
 												hr.getPos().getY(),
-												user.getPos().z), user.getUuid(), true, user.getStackInHand(hand).getTag());
+												user.getPos().z), user.getUuid(), true, user.getStackInHand(hand).getNbt());
 			world.spawnEntity(ek);
 		}
 		
@@ -53,30 +53,30 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 	
 	@Override
 	public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
-		if(stack.getTag() != null) {
-			if (stack.getTag().contains("MoboInstalled")) {
-				if(stack.getTag().getBoolean("MoboInstalled")) {
-					tooltip.add(new TranslatableText(stack.getTag().getBoolean("x64") ? "item.mcvmcomputers.motherboard64" : "item.mcvmcomputers.motherboard").formatted(Formatting.GRAY));
-					if(stack.getTag().getBoolean("GPUInstalled"))
+		if(stack.getNbt() != null) {
+			if (stack.getNbt().contains("MoboInstalled")) {
+				if(stack.getNbt().getBoolean("MoboInstalled")) {
+					tooltip.add(new TranslatableText(stack.getNbt().getBoolean("x64") ? "item.mcvmcomputers.motherboard64" : "item.mcvmcomputers.motherboard").formatted(Formatting.GRAY));
+					if(stack.getNbt().getBoolean("GPUInstalled"))
 						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_gpu").formatted(Formatting.GRAY));
-					if(stack.getTag().getInt("CPUDividedBy") > 0)
-						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_cpu", stack.getTag().getInt("CPUDividedBy")).formatted(Formatting.GRAY));
-					if(stack.getTag().getInt("RAMSlot0") > 0) {
-						if((stack.getTag().getInt("RAMSlot0") / 1024) < 1) {
-							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot0Mb", stack.getTag().getInt("RAMSlot0")).formatted(Formatting.GRAY));
-						} else if((stack.getTag().getInt("RAMSlot0") / 1024) >= 1) {
-							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot0", (stack.getTag().getInt("RAMSlot0") / 1024)).formatted(Formatting.GRAY));
+					if(stack.getNbt().getInt("CPUDividedBy") > 0)
+						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_cpu", stack.getNbt().getInt("CPUDividedBy")).formatted(Formatting.GRAY));
+					if(stack.getNbt().getInt("RAMSlot0") > 0) {
+						if((stack.getNbt().getInt("RAMSlot0") / 1024) < 1) {
+							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot0Mb", stack.getNbt().getInt("RAMSlot0")).formatted(Formatting.GRAY));
+						} else if((stack.getNbt().getInt("RAMSlot0") / 1024) >= 1) {
+							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot0", (stack.getNbt().getInt("RAMSlot0") / 1024)).formatted(Formatting.GRAY));
 					}}
-					if(stack.getTag().getInt("RAMSlot1") > 0) {
-						if((stack.getTag().getInt("RAMSlot1") / 1024) < 1) {
-							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot1Mb", stack.getTag().getInt("RAMSlot1")).formatted(Formatting.GRAY));
-						} else if((stack.getTag().getInt("RAMSlot1") / 1024) >= 1) {
-							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot1", (stack.getTag().getInt("RAMSlot1") / 1024)).formatted(Formatting.GRAY));
+					if(stack.getNbt().getInt("RAMSlot1") > 0) {
+						if((stack.getNbt().getInt("RAMSlot1") / 1024) < 1) {
+							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot1Mb", stack.getNbt().getInt("RAMSlot1")).formatted(Formatting.GRAY));
+						} else if((stack.getNbt().getInt("RAMSlot1") / 1024) >= 1) {
+							tooltip.add(new TranslatableText("mcvmcomputers.pc_item_ramSlot1", (stack.getNbt().getInt("RAMSlot1") / 1024)).formatted(Formatting.GRAY));
 					}}
-					if(!stack.getTag().getString("VHDName").isEmpty())
-						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_hdd", stack.getTag().getString("VHDName")).formatted(Formatting.GRAY));
-					if(!stack.getTag().getString("ISOName").isEmpty())
-						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_iso", stack.getTag().getString("ISOName")).formatted(Formatting.GRAY));
+					if(!stack.getNbt().getString("VHDName").isEmpty())
+						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_hdd", stack.getNbt().getString("VHDName")).formatted(Formatting.GRAY));
+					if(!stack.getNbt().getString("ISOName").isEmpty())
+						tooltip.add(new TranslatableText("mcvmcomputers.pc_item_iso", stack.getNbt().getString("ISOName")).formatted(Formatting.GRAY));
 				}
 			}
 		}
@@ -84,9 +84,9 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 	
 	@Override
 	public Text getName(ItemStack stack) {
-		if(stack.getTag() != null) {
-			if (stack.getTag().contains("MoboInstalled")) {
-				if(stack.getTag().getBoolean("MoboInstalled")) {
+		if(stack.getNbt() != null) {
+			if (stack.getNbt().contains("MoboInstalled")) {
+				if(stack.getNbt().getBoolean("MoboInstalled")) {
 					return new TranslatableText("mcvmcomputers.pc_item_built");
 				}
 			}
@@ -97,7 +97,7 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 	public static ItemStack createPCStackByEntity(EntityPC pc) {
 		ItemStack is = new ItemStack(ItemList.PC_CASE_SIDEPANEL);
 		if(pc.getMotherboardInstalled()) {
-			CompoundTag ct = is.getOrCreateTag();
+			NbtCompound ct = is.getOrCreateNbt();
 			ct.putBoolean("x64", pc.get64Bit());
 			ct.putBoolean("MoboInstalled", pc.getMotherboardInstalled());
 			ct.putBoolean("GPUInstalled", pc.getGpuInstalled());
