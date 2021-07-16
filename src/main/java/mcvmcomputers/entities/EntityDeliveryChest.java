@@ -209,11 +209,11 @@ public class EntityDeliveryChest extends Entity{
 
 	@Override
 	public void remove(RemovalReason reason) {
-		super.remove(reason);
 		if(world.isClient) {
 			ClientMod.currentDeliveryChest = this;
 			MainMod.deliveryChestSound.run();
 		}
+		super.remove(reason);
 	}
 
 }

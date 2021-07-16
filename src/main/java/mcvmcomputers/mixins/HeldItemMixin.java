@@ -1,5 +1,7 @@
 package mcvmcomputers.mixins;
 
+import mcvmcomputers.client.entities.model.OrderingTabletModel;
+import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,6 +25,8 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
+import java.awt.*;
+
 @Mixin(HeldItemRenderer.class)
 public class HeldItemMixin {
 	@Shadow
@@ -32,6 +36,15 @@ public class HeldItemMixin {
 	private void renderItemHead(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
 		if(!item.isEmpty()) {
 			if(item.getItem() instanceof ItemOrderingTablet) {
+				if(ClientMod.tabletOS.orderingTabletModel == null) {
+					ClientMod.tabletOS.orderingTabletModel = new OrderingTabletModel(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(ClientMod.MODEL_TABLET_MODEL));
+				}
+				if(ClientMod.tabletOS.font == null) {
+					try {
+						ClientMod.tabletOS.font = Font.createFont(Font.PLAIN, MinecraftClient.getInstance().getResourceManager().getResource(new Identifier("mcvmcomputers", "font/tabletfont.ttf")).getInputStream());
+					} catch (Exception ignored) {
+					}
+				}
 				matrices.push();
 				matrices.translate(0, -equipProgress*2, 0);
 					matrices.push();
