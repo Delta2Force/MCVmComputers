@@ -56,11 +56,11 @@ public class CRTScreenRender extends EntityRenderer<EntityCRTScreen>{
 			matrices.scale(0.736f, 0.597f, 1f);
 			matrices.translate(22, 1.6f, 7.6f);
 			Matrix4f matrix4f = matrices.peek().getModel();
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getTextSeeThrough(ClientMod.vmScreenTextures.get(UUID.fromString(entity.getOwnerUUID()))));
-			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).next();
-	        vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).next();
-	        vertexConsumer.vertex(matrix4f, 128.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).next();
-	        vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 0.0F).next();
+			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getText(ClientMod.vmScreenTextures.get(UUID.fromString(entity.getOwnerUUID()))));
+			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(15728640).next();
+	        vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(15728640).next();
+	        vertexConsumer.vertex(matrix4f, 128.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(15728640).next();
+	        vertexConsumer.vertex(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(15728640).next();
 			matrices.pop();
 		}
 		matrices.pop();
