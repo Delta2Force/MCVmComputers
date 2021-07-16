@@ -130,8 +130,7 @@ public class SetupPageMaxValues extends SetupPage{
 				return;
 			}
 		}
-		this.setupGui.clearElements();
-		this.setupGui.clearButtons();
+		this.setupGui.clearChildren();
 		onlyStatusMessage = true;
 		ClientMod.maxRam = Integer.parseInt(maxRam.getText());
 		ClientMod.videoMem = Integer.parseInt(videoMemory.getText());
@@ -229,10 +228,10 @@ public class SetupPageMaxValues extends SetupPage{
 			videoMemory.setChangedListener((str) -> videoMemory(str));
 			checkMaxRam(maxRam.getText());
 			videoMemory(videoMemory.getText());
-			setupGui.addElement(maxRam);
-			setupGui.addElement(videoMemory);
+			setupGui.addChild(maxRam);
+			setupGui.addChild(videoMemory);
 			int confirmW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.confirmButton"))+40;
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (confirmW/2), setupGui.height - 40, confirmW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.confirmButton")), (btn) -> confirmButton(btn)));
+			setupGui.addChild(new ButtonWidget(setupGui.width/2 - (confirmW/2), setupGui.height - 40, confirmW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.confirmButton")), (btn) -> confirmButton(btn)));
 			
 			if(setupGui.startVb) {
 				confirmButton(null);

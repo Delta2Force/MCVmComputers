@@ -56,24 +56,24 @@ public class SetupPageUnfocusBinding extends SetupPage{
 	@Override
 	public void init() {
 		if(changeBinding) {
-			setupGui.addButton(new ButtonWidget(setupGui.width/2-130, setupGui.height/2-10, 60, 20, new LiteralText((bindingToBeChangedNum == 1 ? "> " : "") + getKeyName(glfwUnfocusKey1) + (bindingToBeChangedNum == 1 ? " <" : "")), (bw) -> changeBinding(1)));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2-64, setupGui.height/2-10, 60, 20, new LiteralText((bindingToBeChangedNum == 2 ? "> " : "") + getKeyName(glfwUnfocusKey2) + (bindingToBeChangedNum == 2 ? " <" : "")), (bw) -> changeBinding(2)));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2+3, setupGui.height/2-10, 60, 20, new LiteralText((bindingToBeChangedNum == 3 ? "> " : "") + getKeyName(glfwUnfocusKey3) + (bindingToBeChangedNum == 3 ? " <" : "")), (bw) -> changeBinding(3)));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2+70, setupGui.height/2-10, 60, 20, new LiteralText((bindingToBeChangedNum == 4 ? "> " : "") + getKeyName(glfwUnfocusKey4) + (bindingToBeChangedNum == 4 ? " <" : "")), (bw) -> changeBinding(4)));
+			setupGui.addChild(new ButtonWidget(setupGui.width/2-130, setupGui.height/2-10, 60, 20, new LiteralText((bindingToBeChangedNum == 1 ? "> " : "") + getKeyName(glfwUnfocusKey1) + (bindingToBeChangedNum == 1 ? " <" : "")), (bw) -> changeBinding(1)));
+			setupGui.addChild(new ButtonWidget(setupGui.width/2-64, setupGui.height/2-10, 60, 20, new LiteralText((bindingToBeChangedNum == 2 ? "> " : "") + getKeyName(glfwUnfocusKey2) + (bindingToBeChangedNum == 2 ? " <" : "")), (bw) -> changeBinding(2)));
+			setupGui.addChild(new ButtonWidget(setupGui.width/2+3, setupGui.height/2-10, 60, 20, new LiteralText((bindingToBeChangedNum == 3 ? "> " : "") + getKeyName(glfwUnfocusKey3) + (bindingToBeChangedNum == 3 ? " <" : "")), (bw) -> changeBinding(3)));
+			setupGui.addChild(new ButtonWidget(setupGui.width/2+70, setupGui.height/2-10, 60, 20, new LiteralText((bindingToBeChangedNum == 4 ? "> " : "") + getKeyName(glfwUnfocusKey4) + (bindingToBeChangedNum == 4 ? " <" : "")), (bw) -> changeBinding(4)));
 		}else {
-			setupGui.addButton(new ButtonWidget(setupGui.width/2-130, setupGui.height/2-10, 60, 20, new LiteralText(getKeyName(glfwUnfocusKey1)), (bw) -> changeBinding(1)));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2-64, setupGui.height/2-10, 60, 20, new LiteralText(getKeyName(glfwUnfocusKey2)), (bw) -> changeBinding(2)));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2+3, setupGui.height/2-10, 60, 20, new LiteralText(getKeyName(glfwUnfocusKey3)), (bw) -> changeBinding(3)));
-			setupGui.addButton(new ButtonWidget(setupGui.width/2+70, setupGui.height/2-10, 60, 20, new LiteralText(getKeyName(glfwUnfocusKey4)), (bw) -> changeBinding(4)));
+			setupGui.addChild(new ButtonWidget(setupGui.width/2-130, setupGui.height/2-10, 60, 20, new LiteralText(getKeyName(glfwUnfocusKey1)), (bw) -> changeBinding(1)));
+			setupGui.addChild(new ButtonWidget(setupGui.width/2-64, setupGui.height/2-10, 60, 20, new LiteralText(getKeyName(glfwUnfocusKey2)), (bw) -> changeBinding(2)));
+			setupGui.addChild(new ButtonWidget(setupGui.width/2+3, setupGui.height/2-10, 60, 20, new LiteralText(getKeyName(glfwUnfocusKey3)), (bw) -> changeBinding(3)));
+			setupGui.addChild(new ButtonWidget(setupGui.width/2+70, setupGui.height/2-10, 60, 20, new LiteralText(getKeyName(glfwUnfocusKey4)), (bw) -> changeBinding(4)));
 		}
 		
-		setupGui.addButton(new ButtonWidget(setupGui.width/2-130, setupGui.height/2+12, 60, 12, new LiteralText(setupGui.translation("mcvmcomputers.setup.clearButton")), (bw) -> clearBinding(1)));
-		setupGui.addButton(new ButtonWidget(setupGui.width/2-64, setupGui.height/2+12, 60, 12, new LiteralText(setupGui.translation("mcvmcomputers.setup.clearButton")), (bw) -> clearBinding(2)));
-		setupGui.addButton(new ButtonWidget(setupGui.width/2+3, setupGui.height/2+12, 60, 12, new LiteralText(setupGui.translation("mcvmcomputers.setup.clearButton")), (bw) -> clearBinding(3)));
-		setupGui.addButton(new ButtonWidget(setupGui.width/2+70, setupGui.height/2+12, 60, 12, new LiteralText(setupGui.translation("mcvmcomputers.setup.clearButton")), (bw) -> clearBinding(4)));
+		setupGui.addChild(new ButtonWidget(setupGui.width/2-130, setupGui.height/2+12, 60, 12, new LiteralText(setupGui.translation("mcvmcomputers.setup.clearButton")), (bw) -> clearBinding(1)));
+		setupGui.addChild(new ButtonWidget(setupGui.width/2-64, setupGui.height/2+12, 60, 12, new LiteralText(setupGui.translation("mcvmcomputers.setup.clearButton")), (bw) -> clearBinding(2)));
+		setupGui.addChild(new ButtonWidget(setupGui.width/2+3, setupGui.height/2+12, 60, 12, new LiteralText(setupGui.translation("mcvmcomputers.setup.clearButton")), (bw) -> clearBinding(3)));
+		setupGui.addChild(new ButtonWidget(setupGui.width/2+70, setupGui.height/2+12, 60, 12, new LiteralText(setupGui.translation("mcvmcomputers.setup.clearButton")), (bw) -> clearBinding(4)));
 		
 		int nextButtonW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.nextButton"))+40;
-		setupGui.addButton(new ButtonWidget(setupGui.width/2 - (nextButtonW/2), setupGui.height - 40, nextButtonW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.nextButton")), (bw) -> this.setupGui.nextPage()));
+		setupGui.addChild(new ButtonWidget(setupGui.width/2 - (nextButtonW/2), setupGui.height - 40, nextButtonW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.nextButton")), (bw) -> this.setupGui.nextPage()));
 	}
 
 }
