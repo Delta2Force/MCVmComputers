@@ -9,7 +9,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.ActionResult;
@@ -25,7 +25,7 @@ public class EntityMouse extends Entity{
 	private static final TrackedData<Float> LOOK_AT_POS_Z =
 			DataTracker.registerData(EntityMouse.class, TrackedDataHandlerRegistry.FLOAT);
 	
-	public EntityMouse(EntityType<?> type, World world) {
+	public EntityMouse(EntityType<? extends Entity> type, World world) {
 		super(type, world);
 	}
 	
@@ -53,13 +53,13 @@ public class EntityMouse extends Entity{
 		this.getDataTracker().startTracking(LOOK_AT_POS_Z, 0f);
 	}
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
+	protected void readCustomDataFromNbt(NbtCompound tag) {
 		this.getDataTracker().set(LOOK_AT_POS_X, tag.getFloat("LookAtX"));
 		this.getDataTracker().set(LOOK_AT_POS_Y, tag.getFloat("LookAtY"));
 		this.getDataTracker().set(LOOK_AT_POS_Z, tag.getFloat("LookAtZ"));
 	}
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToNbt(NbtCompound tag) {
 		tag.putFloat("LookAtX", this.getDataTracker().get(LOOK_AT_POS_X));
 		tag.putFloat("LookAtY", this.getDataTracker().get(LOOK_AT_POS_Y));
 		tag.putFloat("LookAtZ", this.getDataTracker().get(LOOK_AT_POS_Z));
