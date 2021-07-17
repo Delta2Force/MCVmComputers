@@ -1,0 +1,7 @@
+[
+	{
+		"directory": "/mnt/e/coding/MCVmComputers/jni",
+		"command": "g++ -c -fPIC -I/usr/lib/jvm/java-8-openjdk-amd64/include -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux src/cpp/vbhook_VBHook.cpp -o bin/vbhook.o",
+		"file": "/mnt/e/coding/MCVmComputers/jni/src/cpp/vbhook_VBHook.cpp"
+	}
+]
