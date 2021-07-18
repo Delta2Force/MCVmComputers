@@ -1,2 +1,2 @@
 #!/bin/sh
-javac -h src/cpp -verbose src/java/vbhook/VBHook.java
+javac -h src/c -verbose src/java/vbhook/VBHook.java

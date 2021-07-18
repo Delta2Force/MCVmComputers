@@ -1,2 +1,4 @@
 .clangd/
 bin/
+sdk/
+compile_commands.json
