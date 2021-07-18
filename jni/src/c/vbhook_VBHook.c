@@ -2,6 +2,7 @@
 #include "VBoxCAPIGlue.h"
 #include "VBoxCAPI_v6_1.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 JNIEXPORT jlong JNICALL Java_vbhook_VBHook_create_1vb_1client (JNIEnv* env, jobject obj) {
 	IVirtualBoxClient* vboxClient = NULL;
@@ -39,7 +40,11 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb_1client(JNIEnv* env, jobject 
 	if(lng) IVirtualBoxClient_Release((IVirtualBoxClient*)lng);
 }
 
-JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_init_1glue(JNIEnv* env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_init_1glue(JNIEnv* env, jobject obj, jstring vbox_home) {
+	setenv("VBOX_APP_HOME", (*env)->GetStringUTFChars(env, vbox_home, NULL), 1);
+	const char* name;
+	name = getenv("VBOX_APP_HOME");
+	printf("Trying VirtualBox with %s\n", name);
 	return !VBoxCGlueInit();
 }
 
@@ -111,5 +116,14 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values(JNIEnv* env, jobject obj, j
 	IMachine_SaveSettings(edit);
 	ISession_UnlockMachine(sessionvb);
 	IMachine_Release(edit);
-	//done!!!
+}
+
+JNIEXPORT void JNICALL Java_vbhook_VBHook_start_1vm(JNIEnv* env, jobject obj, jlong session, jlong vm) {
+	ISession* sessionvb = (ISession*)session;
+	IMachine* vmvb = (IMachine*)vm;
+	
+	IProgress* progress = NULL;
+	vmvb->lpVtbl->LaunchVMProcess(vmvb, sessionvb, (PRUnichar*)"headless", 0, NULL, &progress);
+	IProgress_WaitForCompletion(progress, -1);
+	IProgress_Release(progress);
 }

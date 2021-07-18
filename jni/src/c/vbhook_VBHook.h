@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     vbhook_VBHook
  * Method:    init_glue
- * Signature: ()Z
+ * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_init_1glue
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     vbhook_VBHook
@@ -70,6 +70,14 @@ JNIEXPORT jlong JNICALL Java_vbhook_VBHook_find_1or_1create_1vm
  */
 JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values
   (JNIEnv *, jobject, jlong, jlong, jlong, jlong, jlong, jlong, jstring, jstring);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    start_vm
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_vbhook_VBHook_start_1vm
+  (JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     vbhook_VBHook
