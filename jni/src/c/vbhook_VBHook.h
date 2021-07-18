@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     vbhook_VBHook
+ * Method:    init_glue
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_init_1glue
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     vbhook_VBHook
  * Method:    create_vb_client
  * Signature: ()J
  */
@@ -25,10 +33,66 @@ JNIEXPORT jlong JNICALL Java_vbhook_VBHook_create_1vb
 
 /*
  * Class:     vbhook_VBHook
+ * Method:    create_session
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_vbhook_VBHook_create_1session
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    terminate_glue
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_vbhook_VBHook_terminate_1glue
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    get_vb_version
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_vbhook_VBHook_get_1vb_1version
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    find_or_create_vm
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_vbhook_VBHook_find_1or_1create_1vm
+  (JNIEnv *, jobject, jlong, jstring, jstring);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    vm_values
+ * Signature: (JJJJJJLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values
+  (JNIEnv *, jobject, jlong, jlong, jlong, jlong, jlong, jlong, jstring, jstring);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    free_vm
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vm
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     vbhook_VBHook
  * Method:    free_vb
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    free_session
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1session
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -38,22 +102,6 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb
  */
 JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb_1client
   (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     vbhook_VBHook
- * Method:    init_glue
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_vbhook_VBHook_init_1glue
-  (JNIEnv *, jobject);
-
-/*
- * Class:     vbhook_VBHook
- * Method:    terminate_glue
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_vbhook_VBHook_terminate_1glue
-  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }
