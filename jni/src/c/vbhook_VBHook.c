@@ -63,7 +63,11 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb_1client(JNIEnv* env, jobject 
 
 JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_init_1glue(JNIEnv* env, jobject obj, jstring vbox_home) {
 	setenv("VBOX_APP_HOME", (*env)->GetStringUTFChars(env, vbox_home, NULL), 1);
-	return !VBoxCGlueInit();
+	if(VBoxCGlueInit()) {
+		printf("glue error %s\n", g_szVBoxErrMsg);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 JNIEXPORT void JNICALL Java_vbhook_VBHook_terminate_1glue(JNIEnv* env, jobject obj) {
@@ -330,8 +334,8 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	SAFEARRAY* array = NULL;
 	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_RGBA, &array);
 	
-	jbyteArray retval = (*env)->NewByteArray(env, array_size);
-	(*env)->SetByteArrayRegion(env, retval, 0, array_size, (const jbyte*)array);
+	jbyteArray retval = (*env)->NewByteArray(env, array->cbElements);
+	(*env)->SetByteArrayRegion(env, retval, 0, array->cbElements, (const jbyte*)array->pvData);
 #else
 	PRUint8* array = NULL;
 	PRUint32 array_size = 0;

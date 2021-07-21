@@ -34,7 +34,7 @@ public class VBHook {
 	public static void main(String[] args) throws Exception {
 		System.loadLibrary("vbhook");
 		VBHook vbhook = new VBHook();
-		if(!vbhook.init_glue("/usr/lib/virtualbox")) {
+		if(!vbhook.init_glue("C:\\Program Files\\Oracle\\VirtualBox")) {
 			System.out.println("Glue could not be initialized.");
 			return;
 		}
