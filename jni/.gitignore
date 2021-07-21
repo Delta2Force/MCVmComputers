@@ -3,3 +3,4 @@ bin/
 sdk/
 compile_commands.json
 screenshot.png
+test.vdi
