@@ -1,6 +1,6 @@
 #include "vbhook_VBHook.h"
 #include "VBoxCAPIGlue.h"
-#include "VBoxCAPI_v6_1.h"
+#include "jni.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_vbhook_VBHook_create_1vb(JNIEnv* env, jobject obj, 
 JNIEXPORT jlong JNICALL Java_vbhook_VBHook_create_1session(JNIEnv* env, jobject obj, jlong lng) {
 	ISession* session = NULL;
 	IVirtualBoxClient* vboxClient = (IVirtualBoxClient*) lng;
-	IVirtualBoxClient_GetSession(vboxClient, &session);
+	IVirtualBoxClient_get_Session(vboxClient, &session);
 	return (jlong) session;
 }
 
@@ -127,11 +127,88 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_start_1vm(JNIEnv* env, jobject obj, jl
 	IMachine* vmvb = (IMachine*)vm;
 	
 	BSTR headless; g_pVBoxFuncs->pfnUtf8ToUtf16("headless", &headless);
-
 	IProgress* progress = NULL;
 	vmvb->lpVtbl->LaunchVMProcess(vmvb, sessionvb, headless, 0, NULL, &progress);
 	IProgress_WaitForCompletion(progress, -1);
 	IProgress_Release(progress);
 
 	g_pVBoxFuncs->pfnUtf16Free(headless);
+}
+
+JNIEXPORT void JNICALL Java_vbhook_VBHook_stop_1vm(JNIEnv* env, jobject obj, jlong session) {
+	IConsole* console = NULL;
+	IProgress* progress = NULL;
+
+	ISession* sessionvb = (ISession*)session;
+	ISession_GetConsole(sessionvb, &console);
+	if(console == NULL) return;
+	IConsole_PowerDown(console, &progress);
+	IProgress_WaitForCompletion(progress, -1);
+	IProgress_Release(progress);
+
+	IConsole_Release(console);
+	sessionvb->lpVtbl->UnlockMachine(sessionvb);
+}
+
+JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1powered_1on(JNIEnv* env, jobject obj, jlong machine) {
+	IMachine* machinevb = (IMachine*)machine;
+	PRUint32 state;
+	machinevb->lpVtbl->GetState(machinevb, &state);
+
+	return state != MachineState_PoweredOff;
+}
+
+JNIEXPORT void JNICALL Java_vbhook_VBHook_create_1hdd(JNIEnv* env, jobject obj, jlong vb, jlong size, jstring format, jstring path) {
+	IMedium* medium = NULL;
+	IVirtualBox_CreateMedium((IVirtualBox*)vb, (PRUnichar*)(*env)->GetStringChars(env, format, NULL), (PRUnichar*)(*env)->GetStringChars(env, path, NULL), AccessMode_ReadWrite, DeviceType_HardDisk, &medium);
+	
+	IProgress* progress = NULL;
+	PRUint32 variant = MediumVariant_Standard;
+	medium->lpVtbl->CreateBaseStorage(medium, size, 1, &variant, &progress);
+	IProgress_WaitForCompletion(progress, -1);
+
+	IMedium_Release(medium);
+	IProgress_Release(progress);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject obj, jlong vbclient, jlong machine, jint mousedeltax, jint mousedeltay, jint mousedeltascroll, jint mouseclick, jintArray scancodes) {
+	IVirtualBoxClient* vbclientvb = (IVirtualBoxClient*)vbclient;
+	IMachine* machinevb = (IMachine*)machine;
+
+	ISession* session = NULL;
+	IVirtualBoxClient_GetSession(vbclientvb, &session);
+	IMachine_LockMachine(machinevb, session, LockType_Shared);
+	IConsole* console = NULL;
+	ISession_GetConsole(session, &console);
+	if(console == NULL) {
+		return (*env)->NewByteArray(env, 0);
+	}
+
+	IMouse* mouse = NULL;
+	IConsole_GetMouse(console, &mouse);
+	IMouse_PutMouseEvent(mouse, mousedeltax, mousedeltay, mousedeltascroll, 0, mouseclick);
+	IMouse_Release(mouse);
+
+	IKeyboard* keyboard = NULL;
+	IConsole_GetKeyboard(console, &keyboard);
+	PRUint32 sent_stuff;
+	keyboard->lpVtbl->PutScancodes(keyboard, (*env)->GetArrayLength(env, scancodes), (*env)->GetIntArrayElements(env, scancodes, NULL), &sent_stuff);
+	IKeyboard_Release(keyboard);
+
+	IDisplay* display = NULL;
+	IConsole_GetDisplay(console, &display);
+	PRUint32 width, height, bitspp, status; PRInt32 xorigin, yorigin;
+	IDisplay_GetScreenResolution(display, 0, &width, &height, &bitspp, &xorigin, &yorigin, &status);
+	PRUint8* array = NULL;
+	PRUint32 array_size = 0;
+	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_PNG, &array_size, &array);
+	IDisplay_Release(display);
+
+	IConsole_Release(console);
+	ISession_UnlockMachine(session);
+	ISession_Release(session);
+
+	jbyteArray retval = (*env)->NewByteArray(env, array_size);
+	(*env)->SetByteArrayRegion(env, retval, 0, array_size, (const jbyte*)array);
+	return retval;
 }

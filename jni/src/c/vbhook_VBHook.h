@@ -81,6 +81,38 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_start_1vm
 
 /*
  * Class:     vbhook_VBHook
+ * Method:    stop_vm
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_vbhook_VBHook_stop_1vm
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    create_hdd
+ * Signature: (JJLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_vbhook_VBHook_create_1hdd
+  (JNIEnv *, jobject, jlong, jlong, jstring, jstring);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    vm_powered_on
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1powered_1on
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    tick_vm
+ * Signature: (JJIIII[I)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm
+  (JNIEnv *, jobject, jlong, jlong, jint, jint, jint, jint, jintArray);
+
+/*
+ * Class:     vbhook_VBHook
  * Method:    free_vm
  * Signature: (J)V
  */
