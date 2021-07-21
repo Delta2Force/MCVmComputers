@@ -1,6 +1,7 @@
 package vbhook;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.File;
 
 public class VBHook {
 	//@return If the library has been successfully initialized.
@@ -42,24 +43,22 @@ public class VBHook {
 		long a = vbhook.create_vb_client();
 		long b = vbhook.create_vb(a);
 		long sess = vbhook.create_session(a);
-		
-		vbhook.create_hdd(b, 1024*1024*1024, "vdi", "/mnt/e/coding/MCVmComputers/jni/test.vdi");
+		String path = new File("test.vdi").getAbsolutePath();
+
+		vbhook.create_hdd(b, 1024*1024*1024, "vdi", path);
 		long machine = vbhook.find_or_create_vm(b, "VmComputersVm", "Other");
-		vbhook.vm_values(sess, b, machine, 16, 1024, 2, "/mnt/e/coding/MCVmComputers/jni/test.vdi", "");
+		vbhook.vm_values(sess, b, machine, 16, 1024, 2, path, "");
 		vbhook.start_vm(sess, machine);
 		Thread.sleep(5000);
+		long time = System.nanoTime();
 		byte[] retval = vbhook.tick_vm(a, machine, 0, 0, 0, 0, new int[0]);
+		System.out.println("Screenshot took " + (System.nanoTime() - time) + "ns");
 		vbhook.stop_vm(sess);
-
-		char[] write = new char[retval.length];
-		for(int i = 0;i<retval.length;i++) {
-			write[i] = (char)retval[i];
+		
+		try (FileOutputStream fos = new FileOutputStream("screenshot.png")) {
+		   fos.write(retval);
 		}
 		
-		FileWriter fw = new FileWriter("screenshot.png");
-		fw.write(write, 0, retval.length);
-		fw.flush(); fw.close();
-
 		vbhook.free_session(sess);
 		vbhook.free_vm(machine);
 		vbhook.free_vb(b);

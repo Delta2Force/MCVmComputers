@@ -158,8 +158,12 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values(JNIEnv* env, jobject obj, j
 #else
 		vbvb->lpVtbl->OpenMedium(vbvb, (PRUnichar*)(*env)->GetStringChars(env, hdd, NULL), DeviceType_HardDisk, AccessMode_ReadWrite, TRUE, &hdd_medium);
 #endif
-		edit->lpVtbl->AttachDevice(edit, storage_controller_name, 0, 0, DeviceType_HardDisk, hdd_medium);
-		hdd_medium->lpVtbl->Release(hdd_medium);
+		if(hdd_medium) {
+			edit->lpVtbl->AttachDevice(edit, storage_controller_name, 0, 0, DeviceType_HardDisk, hdd_medium);
+			hdd_medium->lpVtbl->Release(hdd_medium);
+		}else{
+			edit->lpVtbl->AttachDevice(edit, storage_controller_name, 0, 0, DeviceType_HardDisk, NULL);
+		}
 	}
 	
 	if((*env)->GetStringLength(env, iso) > 0) {
@@ -281,6 +285,8 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	session->lpVtbl->GetConsole(session, &console);
 #endif
 	if(console == NULL) {
+		ISession_UnlockMachine(session);
+		ISession_Release(session);
 		return (*env)->NewByteArray(env, 0);
 	}
 
@@ -322,14 +328,14 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	
 #ifdef __MINGW32__
 	SAFEARRAY* array = NULL;
-	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_PNG, &array);
+	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_RGBA, &array);
 	
 	jbyteArray retval = (*env)->NewByteArray(env, array_size);
 	(*env)->SetByteArrayRegion(env, retval, 0, array_size, (const jbyte*)array);
 #else
 	PRUint8* array = NULL;
 	PRUint32 array_size = 0;
-	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_PNG, &array_size, &array);
+	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_RGBA, &array_size, &array);
 	
 	jbyteArray retval = (*env)->NewByteArray(env, array_size);
 	(*env)->SetByteArrayRegion(env, retval, 0, array_size, (const jbyte*)array);
