@@ -84,7 +84,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values(JNIEnv* env, jobject obj, j
 	ISession_GetMachine(sessionvb, &edit);
 	IMachine_SetMemorySize(edit, mem);
 	IMachine_SetCPUCount(edit, cpu);
-	
+
 	IGraphicsAdapter* adapter = NULL;
 	IMachine_GetGraphicsAdapter(edit, &adapter);
 	IGraphicsAdapter_SetAccelerate2DVideoEnabled(adapter, PR_TRUE);
@@ -103,8 +103,12 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values(JNIEnv* env, jobject obj, j
 	if((*env)->GetStringLength(env, hdd) > 0) {
 		IMedium* hdd_medium = NULL;
 		IVirtualBox_OpenMedium(vbvb, (PRUnichar*)(*env)->GetStringChars(env, hdd, NULL), DeviceType_HardDisk, AccessMode_ReadWrite, PR_TRUE, &hdd_medium);
-		IMachine_AttachDevice(edit, storage_controller_name, 0, 0, DeviceType_HardDisk, hdd_medium);
-		IMedium_Release(hdd_medium);
+		if(hdd_medium) {
+			IMachine_AttachDevice(edit, storage_controller_name, 0, 0, DeviceType_HardDisk, hdd_medium);
+			IMedium_Release(hdd_medium);
+		}else{
+			IMachine_AttachDevice(edit, storage_controller_name, 0, 0, DeviceType_HardDisk, NULL);
+		}
 	}
 	
 	if((*env)->GetStringLength(env, iso) > 0) {
@@ -181,6 +185,8 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	IConsole* console = NULL;
 	ISession_GetConsole(session, &console);
 	if(console == NULL) {
+		ISession_UnlockMachine(session);
+		ISession_Release(session);
 		return (*env)->NewByteArray(env, 0);
 	}
 
@@ -201,7 +207,7 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	IDisplay_GetScreenResolution(display, 0, &width, &height, &bitspp, &xorigin, &yorigin, &status);
 	PRUint8* array = NULL;
 	PRUint32 array_size = 0;
-	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_PNG, &array_size, &array);
+	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_RGBA, &array_size, &array);
 	IDisplay_Release(display);
 
 	IConsole_Release(console);
