@@ -8,7 +8,7 @@ fi
 
 JAVA_DIR=""
 if [ -z ${JAVA_HOME+x} ]; then
-	JAVA_DIR=$(cd $(realpath /usr/bin/java)/../.. && pwd)
+	JAVA_DIR=$(cd $(dirname $(realpath /usr/bin/java)) && cd ../.. && pwd)
 else
 	JAVA_DIR=${JAVA_HOME}
 fi
