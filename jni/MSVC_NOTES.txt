@@ -1,0 +1,1 @@
+If you want to compile the library using MSVC, make sure you are running the build scripts from the *x64* Native Tools Command Prompt for VS [Your VS version]. If not, you will compile libraries for 32-bit Systems which don't play nice with Java.

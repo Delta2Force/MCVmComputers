@@ -4,7 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_MSC_VER)
+#define VBHOOK_WIN
+#endif
+
+#ifdef VBHOOK_WIN
 int setenv(const char *name, const char *value, int overwrite)
 {
     int errcode = 0;
@@ -26,7 +30,7 @@ JNIEXPORT jlong JNICALL Java_vbhook_VBHook_create_1vb_1client (JNIEnv* env, jobj
 JNIEXPORT jlong JNICALL Java_vbhook_VBHook_create_1vb(JNIEnv* env, jobject obj, jlong lng) {
 	IVirtualBoxClient* vboxClient = (IVirtualBoxClient*) lng;
 	IVirtualBox* vbox = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	vboxClient->lpVtbl->get_VirtualBox(vboxClient, &vbox);
 #else
 	vboxClient->lpVtbl->GetVirtualBox(vboxClient, &vbox);
@@ -37,7 +41,7 @@ JNIEXPORT jlong JNICALL Java_vbhook_VBHook_create_1vb(JNIEnv* env, jobject obj, 
 JNIEXPORT jlong JNICALL Java_vbhook_VBHook_create_1session(JNIEnv* env, jobject obj, jlong lng) {
 	ISession* session = NULL;
 	IVirtualBoxClient* vboxClient = (IVirtualBoxClient*) lng;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	vboxClient->lpVtbl->get_Session(vboxClient, &session);
 #else
 	vboxClient->lpVtbl->GetSession(vboxClient, &session);
@@ -84,7 +88,7 @@ JNIEXPORT jstring JNICALL Java_vbhook_VBHook_get_1vb_1version(JNIEnv* env, jobje
 JNIEXPORT jlong JNICALL Java_vbhook_VBHook_find_1or_1create_1vm(JNIEnv* env, jobject obj, jlong vb, jstring name, jstring os_type){
 	IMachine* vm = NULL;
 	IVirtualBox* virtualbox = (IVirtualBox*)vb;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	BSTR vbname; g_pVBoxFuncs->pfnUtf8ToUtf16((*env)->GetStringUTFChars(env, name, NULL), &vbname);
 	BSTR vbos_type; g_pVBoxFuncs->pfnUtf8ToUtf16((*env)->GetStringUTFChars(env, os_type, NULL), &vbos_type);
 #else
@@ -97,7 +101,7 @@ JNIEXPORT jlong JNICALL Java_vbhook_VBHook_find_1or_1create_1vm(JNIEnv* env, job
 		//create if not found
 		BSTR empty; g_pVBoxFuncs->pfnUtf8ToUtf16("", &empty);
 		BSTR options; g_pVBoxFuncs->pfnUtf8ToUtf16("forceOverwrite=1", &options);
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 		virtualbox->lpVtbl->CreateMachine(virtualbox, empty, vbname, NULL, vbos_type, options, &vm);
 #else
 		virtualbox->lpVtbl->CreateMachine(virtualbox, empty, vbname, 0, NULL, vbos_type, options, &vm);
@@ -106,7 +110,7 @@ JNIEXPORT jlong JNICALL Java_vbhook_VBHook_find_1or_1create_1vm(JNIEnv* env, job
 		IVirtualBox_RegisterMachine(virtualbox, vm);
 	}
 
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	g_pVBoxFuncs->pfnUtf16Free(vbname);
 	g_pVBoxFuncs->pfnUtf16Free(vbos_type);
 #endif
@@ -120,7 +124,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values(JNIEnv* env, jobject obj, j
 	
 	vmvb->lpVtbl->LockMachine(vmvb, sessionvb, LockType_Write);
 	IMachine* edit = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	sessionvb->lpVtbl->get_Machine(sessionvb, &edit);
 	edit->lpVtbl->put_MemorySize(edit, mem);
 	edit->lpVtbl->put_CPUCount(edit, cpu);
@@ -131,7 +135,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values(JNIEnv* env, jobject obj, j
 #endif
 	
 	IGraphicsAdapter* adapter = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	edit->lpVtbl->get_GraphicsAdapter(edit, &adapter);
 	adapter->lpVtbl->put_Accelerate2DVideoEnabled(adapter, TRUE);
 	adapter->lpVtbl->put_Accelerate3DEnabled(adapter, FALSE);
@@ -155,7 +159,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values(JNIEnv* env, jobject obj, j
 	
 	if((*env)->GetStringLength(env, hdd) > 0) {
 		IMedium* hdd_medium = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 		BSTR path; g_pVBoxFuncs->pfnUtf8ToUtf16((*env)->GetStringUTFChars(env, hdd, NULL), &path);
 		vbvb->lpVtbl->OpenMedium(vbvb, path, DeviceType_HardDisk, AccessMode_ReadWrite, TRUE, &hdd_medium);
 		g_pVBoxFuncs->pfnUtf16Free(path);
@@ -172,7 +176,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_vm_1values(JNIEnv* env, jobject obj, j
 	
 	if((*env)->GetStringLength(env, iso) > 0) {
 		IMedium* iso_medium = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 		BSTR path; g_pVBoxFuncs->pfnUtf8ToUtf16((*env)->GetStringUTFChars(env, iso, NULL), &path);
 		vbvb->lpVtbl->OpenMedium(vbvb, path, DeviceType_DVD, AccessMode_ReadOnly, TRUE, &iso_medium);
 		g_pVBoxFuncs->pfnUtf16Free(path);
@@ -197,7 +201,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_start_1vm(JNIEnv* env, jobject obj, jl
 	
 	BSTR headless; g_pVBoxFuncs->pfnUtf8ToUtf16("headless", &headless);
 	IProgress* progress = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	vmvb->lpVtbl->LaunchVMProcess(vmvb, sessionvb, headless, NULL, &progress);
 #else
 	vmvb->lpVtbl->LaunchVMProcess(vmvb, sessionvb, headless, 0, NULL, &progress);
@@ -213,7 +217,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_stop_1vm(JNIEnv* env, jobject obj, jlo
 	IProgress* progress = NULL;
 
 	ISession* sessionvb = (ISession*)session;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	sessionvb->lpVtbl->get_Console(sessionvb, &console);
 #else
 	sessionvb->lpVtbl->GetConsole(sessionvb, &console);
@@ -229,7 +233,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_stop_1vm(JNIEnv* env, jobject obj, jlo
 
 JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1powered_1on(JNIEnv* env, jobject obj, jlong machine) {
 	IMachine* machinevb = (IMachine*)machine;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	MachineState state;
 	machinevb->lpVtbl->get_State(machinevb, &state);
 #else
@@ -243,7 +247,7 @@ JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1powered_1on(JNIEnv* env, jobje
 JNIEXPORT void JNICALL Java_vbhook_VBHook_create_1hdd(JNIEnv* env, jobject obj, jlong vb, jlong size, jstring format, jstring path) {
 	IMedium* medium = NULL;
 	IVirtualBox* vbvb = (IVirtualBox*)vb;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	BSTR vbformat; g_pVBoxFuncs->pfnUtf8ToUtf16((*env)->GetStringUTFChars(env, format, NULL), &vbformat);
 	BSTR vbpath; g_pVBoxFuncs->pfnUtf8ToUtf16((*env)->GetStringUTFChars(env, path, NULL), &vbpath);
 	vbvb->lpVtbl->CreateMedium(vbvb, vbformat, vbpath, AccessMode_ReadWrite, DeviceType_HardDisk, &medium);
@@ -254,7 +258,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_create_1hdd(JNIEnv* env, jobject obj, 
 #endif
 
 	IProgress* progress = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	ULONG variant = MediumVariant_Standard;
 	
 	SAFEARRAY* savariants = g_pVBoxFuncs->pfnSafeArrayCreateVector(VT_I4, 0, 1);
@@ -276,14 +280,14 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	IMachine* machinevb = (IMachine*)machine;
 
 	ISession* session = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	vbclientvb->lpVtbl->get_Session(vbclientvb, &session);
 #else
 	vbclientvb->lpVtbl->GetSession(vbclientvb, &session);
 #endif
 	machinevb->lpVtbl->LockMachine(machinevb, session, LockType_Shared);
 	IConsole* console = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	session->lpVtbl->get_Console(session, &console);
 #else
 	session->lpVtbl->GetConsole(session, &console);
@@ -295,7 +299,7 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	}
 
 	IMouse* mouse = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	console->lpVtbl->get_Mouse(console, &mouse);
 #else
 	console->lpVtbl->GetMouse(console, &mouse);
@@ -304,7 +308,7 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	mouse->lpVtbl->Release(mouse);
 
 	IKeyboard* keyboard = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	ULONG sent_stuff;
 	console->lpVtbl->get_Keyboard(console, &keyboard);
 	size_t len = (*env)->GetArrayLength(env, scancodes);
@@ -321,7 +325,7 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	keyboard->lpVtbl->Release(keyboard);
 
 	IDisplay* display = NULL;
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	console->lpVtbl->get_Display(console, &display);
 	ULONG width, height, bitspp; LONG xorigin, yorigin; GuestMonitorStatus status;
 #else
@@ -330,7 +334,7 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 #endif
 	display->lpVtbl->GetScreenResolution(display, 0, &width, &height, &bitspp, &xorigin, &yorigin, &status);
 	
-#ifdef __MINGW32__
+#ifdef VBHOOK_WIN
 	SAFEARRAY* array = NULL;
 	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_RGBA, &array);
 	
