@@ -5,16 +5,7 @@ import static mcvmcomputers.client.ClientMod.*;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.virtualbox_6_1.BitmapFormat;
-import org.virtualbox_6_1.GuestMonitorStatus;
-import org.virtualbox_6_1.Holder;
-import org.virtualbox_6_1.IConsole;
-import org.virtualbox_6_1.IMachine;
-import org.virtualbox_6_1.IProgress;
-import org.virtualbox_6_1.ISession;
-import org.virtualbox_6_1.LockType;
-import org.virtualbox_6_1.MachineState;
-
+import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.GuiFocus;
 import net.minecraft.client.MinecraftClient;
 
@@ -31,60 +22,32 @@ public class VMRunnable implements Runnable{
 				deltaY = mouseCurY - mouseLastY;
 				mouseLastX = mouseCurX;
 				mouseLastY = mouseCurY;
-				
-				IMachine m = vb.findMachine("VmComputersVm");
-				if(m.getState() == MachineState.PoweredOff) {
+
+				if(vbMachine == 0L) continue;
+				if(VB_HOOK.vm_powered_on(vbMachine)) {
 					if(!vmTurningOff && vmTurnedOn) {
-						IProgress pr = m.launchVMProcess(vbManager.getSessionObject(), "headless", Collections.emptyList());
-						pr.waitForCompletion(-1);
+						VB_HOOK.start_vm(vmSession, vbMachine);
 					}else {
 						vmUpdateThread = null;
 						return;
 					}
 				}
-					ISession ns = vbManager.getSessionObject();
-					m.lockMachine(ns, LockType.Shared);
-					IConsole console = ns.getConsole();
-					if(mcc.currentScreen instanceof GuiFocus) {
-						int val = 0x00;
-						if(leftMouseButton) {
-							val += 0x01;
-						}
-						if(middleMouseButton) {
-							val += 0x04;
-						}
-						if(rightMouseButton) {
-							val += 0x02;
-						}
-						console.getMouse().putMouseEvent((int)deltaX, (int)deltaY, mouseDeltaScroll, 0, val);
+				int mouseVal = 0;
+				if(mcc.currentScreen instanceof GuiFocus) {
+					mouseVal += (leftMouseButton ? 0x01 : 0) + (middleMouseButton ? 0x04 : 0) + (rightMouseButton ? 0x02 : 0);
+				}
+				int[] array;
+				if(releaseKeys) {
+					array = new int[]{0x1d + 0x80, 0xe0, 0x1d+0x80, 0x03+0x80};
+				}else{
+					array = new int[vmKeyboardScancodes.size()];
+					for(int i = 0;i<array.length;i++){
+						array[i] = vmKeyboardScancodes.get(i);
 					}
-					if(releaseKeys) {
-						console.getKeyboard().putScancodes(Arrays.asList(0x1d + 0x80, 0xe0, 0x1d + 0x80, 0x0e + 0x80));
-						vmKeyboardScancodes.clear();
-						releaseKeys = false;
-					}else {
-						console.getKeyboard().putScancodes(vmKeyboardScancodes);
-						vmKeyboardScancodes.clear();
-					}
-					Holder<Long> width = new Holder<>();
-					Holder<Long> height = new Holder<>();
-					Holder<Long> bitsPP = new Holder<>();
-					Holder<Integer> xOrigin = new Holder<>();
-					Holder<Integer> yOrigin = new Holder<>();
-					Holder<GuestMonitorStatus> status = new Holder<>();
-					console.getDisplay().getScreenResolution(0L, width, height, bitsPP, xOrigin, yOrigin, status);
-					Long w = width.value;
-					Long h = height.value;
-					byte[] image;
-					try {
-						image = console.getDisplay().takeScreenShotToArray(0L, w, h, BitmapFormat.PNG);
-					}catch(Exception ex) {
-						ns.unlockMachine();
-						continue;
-					}
-					ns.unlockMachine();
-					vmTextureBytesSize = image.length;
-					vmTextureBytes = image;
+				}
+				byte[] image = VB_HOOK.tick_vm(vbClient, vbMachine, (int)deltaX, (int)deltaY, mouseDeltaScroll, mouseVal, array);
+				vmTextureBytesSize = image.length;
+				vmTextureBytes = image;
 			}catch(Exception ignored) {} //TERRIBLE PRACTICE BTW
 		}
 	}

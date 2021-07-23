@@ -9,11 +9,6 @@ import java.util.Comparator;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.virtualbox_6_1.AccessMode;
-import org.virtualbox_6_1.DeviceType;
-import org.virtualbox_6_1.IMedium;
-import org.virtualbox_6_1.IProgress;
-import org.virtualbox_6_1.MediumVariant;
 
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.client.ClientMod;
@@ -48,8 +43,14 @@ public class GuiCreateHarddrive extends Screen{
 	}
 
 	public enum Ext{
-		vdi,
-		vmdk
+		vdi("vdi"),
+		vmdk("vmdk");
+
+		String s;
+
+		Ext(String s){
+			this.s = s;
+		}
 	}
 	
 	public GuiCreateHarddrive() {
@@ -140,14 +141,7 @@ public class GuiCreateHarddrive extends Screen{
 			Long size = Long.parseLong(hddSize.getText())*1024L*1024L;
 			int i = ClientMod.latestVHDNum;
 			File vhd = new File(ClientMod.vhdDirectory, "vhd" + i + "."+extension);
-			IMedium hdd = null;
-			if(extension == Ext.vdi){
-				hdd = ClientMod.vb.createMedium("vdi", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
-			}else if(extension == Ext.vmdk){
-				hdd = ClientMod.vb.createMedium("vmdk", vhd.getPath(), AccessMode.ReadWrite, DeviceType.HardDisk);
-			}
-			IProgress pr = hdd.createBaseStorage(size, Arrays.asList(MediumVariant.Standard));
-			pr.waitForCompletion(-1);
+			ClientMod.VB_HOOK.create_hdd(ClientMod.vb, size, extension.s, vhd.getAbsolutePath());
 			
 			try {
 				ClientMod.increaseVHDNum();

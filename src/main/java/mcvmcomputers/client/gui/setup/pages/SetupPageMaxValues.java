@@ -1,26 +1,20 @@
 package mcvmcomputers.client.gui.setup.pages;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import net.minecraft.client.MinecraftClient;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.virtualbox_6_1.IVirtualBox;
-import org.virtualbox_6_1.VirtualBoxManager;
-
 import com.google.gson.Gson;
-
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.utils.VMSettings;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.FileWriter;
 
 public class SetupPageMaxValues extends SetupPage{
 	private String statusMaxRam;
@@ -71,65 +65,6 @@ public class SetupPageMaxValues extends SetupPage{
 	}
 	
 	private void confirmButton(ButtonWidget in) {
-		if(ClientMod.vboxWebSrv != null) {
-			ClientMod.vboxWebSrv.destroy();
-		}
-		
-		if(SystemUtils.IS_OS_WINDOWS) {
-			ProcessBuilder vboxConfig = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\vboxmanage.exe", "setproperty", "websrvauthlibrary", "null");
-			try {
-				vboxConfig.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-
-			ProcessBuilder vboxWebSrv;
-			if(new File(this.setupGui.virtualBoxDirectory + "\\vboxwebsrv.exe").exists()) {
-				vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\vboxwebsrv.exe", "--timeout", "0");
-			}else {
-				vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "\\VBoxWebSrv.exe", "--timeout", "0");
-			}
-			try {
-				ClientMod.vboxWebSrv = vboxWebSrv.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}else if(SystemUtils.IS_OS_MAC){
-			ProcessBuilder vboxConfig = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "/VBoxManage", "setproperty", "websrvauthlibrary", "null");
-			try {
-				vboxConfig.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			
-			ProcessBuilder vboxWebSrv = new ProcessBuilder(this.setupGui.virtualBoxDirectory + "/vboxwebsrv", "--timeout", "0");
-			try {
-				ClientMod.vboxWebSrv = vboxWebSrv.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}else {
-			ProcessBuilder vboxConfig = new ProcessBuilder("vboxmanage", "setproperty", "websrvauthlibrary", "null");
-			try {
-				vboxConfig.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			
-			ProcessBuilder vboxWebSrv = new ProcessBuilder("vboxwebsrv", "--timeout", "0");
-			try {
-				ClientMod.vboxWebSrv = vboxWebSrv.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
-		
-		Runnable runnable = new Runnable() {
-		    public void run() {
-		    	ClientMod.vboxWebSrv.destroy();
-		    }
-		};
-		Runtime.getRuntime().addShutdownHook(new Thread(runnable));
 		boolean[] bools = new boolean[] {checkMaxRam(maxRam.getText()), videoMemory(videoMemory.getText())};
 		for(boolean b : bools) {
 			if(!b) {
@@ -145,9 +80,10 @@ public class SetupPageMaxValues extends SetupPage{
 			@Override
 			public void run() {
 				try {
-					VirtualBoxManager vm = VirtualBoxManager.createInstance(null);
-					vm.connect("http://localhost:18083", "should", "work");
-					IVirtualBox vb = vm.getVBox();
+					ClientMod.VB_HOOK.loadLibraries(new File(ClientMod.vhdDirectory.getParentFile().getAbsolutePath()));
+					ClientMod.VB_HOOK.init_glue(setupGui.virtualBoxDirectory);
+					long vbclient = ClientMod.VB_HOOK.create_vb_client();
+					long vb = ClientMod.VB_HOOK.create_vb(vbclient);
 					VMSettings set = new VMSettings();
 					set.vboxDirectory = setupGui.virtualBoxDirectory;
 					set.vmComputersDirectory = ClientMod.vhdDirectory.getParentFile().getAbsolutePath();
@@ -172,9 +108,9 @@ public class SetupPageMaxValues extends SetupPage{
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						status = setupGui.translation("mcvmcomputers.setup.successStatus").replaceFirst("%s", vb.getVersion()).replaceFirst("%s", ""+i);
+						status = setupGui.translation("mcvmcomputers.setup.successStatus").replaceFirst("%s", ClientMod.VB_HOOK.get_vb_version()).replaceFirst("%s", ""+i);
 					}
-					ClientMod.vbManager = vm;
+					ClientMod.vbClient = vbclient;
 					ClientMod.vb = vb;
 					var titleScreen = new TitleScreen(false);
 					titleScreen.init(MinecraftClient.getInstance(), setupGui.width, setupGui.height);

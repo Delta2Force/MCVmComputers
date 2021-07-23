@@ -13,12 +13,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.virtualbox_6_1.IMachine;
-import org.virtualbox_6_1.IProgress;
-import org.virtualbox_6_1.ISession;
-import org.virtualbox_6_1.LockType;
-import org.virtualbox_6_1.MachineState;
-import org.virtualbox_6_1.VBoxException;
 
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.tablet.TabletOS;
@@ -37,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
+import vbhook.VBHook;
 
 @Mixin(MinecraftClient.class)
 public class GameloopMixin {
@@ -96,26 +91,13 @@ public class GameloopMixin {
 		if(tabletOS != null) {
 			tabletOS.generateTexture();
 		}
-		if(vboxWebSrv != null) {
-			try {
-				while(vboxWebSrv.getInputStream().available() > 0) {
-					discardAllBytes.write(vboxWebSrv.getInputStream().read()); //Not doing this made the web service time out.
-				}
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
 		
 		if(vmTurnedOn) {
 			if(player == null) {
 				vmUpdateThread.interrupt();
 				
-				IMachine m = vb.findMachine("VmComputersVm");
-				ISession sess = vbManager.getSessionObject();
-				m.lockMachine(sess, LockType.Shared);
-				IProgress pg = sess.getConsole().powerDown();
-				pg.waitForCompletion(-1);
-				sess.unlockMachine();
+				VB_HOOK.stop_vm(vmSession);
+				vmSession = 0L;
 				vmTurnedOn = false;
 				vmTurningOff = false;
 				vmTurningOn = false;
@@ -191,33 +173,18 @@ public class GameloopMixin {
 		vmTurnedOn = false;
 		vmTurningOff = false;
 
-		if(vbManager != null) {
-			boolean vmExists = false;
-			IMachine mach = null;
-			try {
-				mach = vb.findMachine("VmComputersVm");
-				vmExists = true;
-			}catch(VBoxException ignored) {}
-
-			if(vmExists) {
-				if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
-					if(vmSession != null) {
-						IProgress ip = vmSession.getConsole().powerDown();
-						ip.waitForCompletion(-1);
-						vmSession.unlockMachine();
-					}else {
-						ISession sess = vbManager.getSessionObject();
-						mach.lockMachine(sess, LockType.Shared);
-						IProgress ip = sess.getConsole().powerDown();
-						ip.waitForCompletion(-1);
-						sess.unlockMachine();
-					}
+		if(vbClient != 0L) {
+			if(vbMachine != 0L) {
+				if(VB_HOOK.vm_powered_on(vbMachine)){
+					VB_HOOK.stop_vm(vmSession);
 				}
+				VB_HOOK.free_session(vmSession);
 			}
-			vbManager.cleanup();
-		}
-		if(vboxWebSrv != null) {
-			vboxWebSrv.destroy();
+
+			VB_HOOK.free_vm(vbMachine);
+			VB_HOOK.free_session(vmSession);
+			VB_HOOK.free_vb(vb);
+			VB_HOOK.free_vb_client(vbClient);
 		}
 	}
 
@@ -243,34 +210,19 @@ public class GameloopMixin {
 		vmTurningOn = false;
 		vmTurnedOn = false;
 		vmTurningOff = false;
-		
-		if(vbManager != null) {
-			boolean vmExists = false;
-			IMachine mach = null;
-			try {
-				mach = vb.findMachine("VmComputersVm");
-				vmExists = true;
-			}catch(VBoxException ignored) {}
-			
-			if(vmExists) {
-				if(mach.getState() == MachineState.Running || mach.getState() == MachineState.Starting) {
-					if(vmSession != null) {
-						IProgress ip = vmSession.getConsole().powerDown();
-						ip.waitForCompletion(-1);
-						vmSession.unlockMachine();
-					}else {
-						ISession sess = vbManager.getSessionObject();
-						mach.lockMachine(sess, LockType.Shared);
-						IProgress ip = sess.getConsole().powerDown();
-						ip.waitForCompletion(-1);
-						sess.unlockMachine();
-					}
+
+		if(vbClient != 0L) {
+			if(vbMachine != 0L) {
+				if(VB_HOOK.vm_powered_on(vbMachine)){
+					VB_HOOK.stop_vm(vmSession);
 				}
+				VB_HOOK.free_session(vmSession);
 			}
-			vbManager.cleanup();
-		}
-		if(vboxWebSrv != null) {
-			vboxWebSrv.destroy();
+
+			VB_HOOK.free_vm(vbMachine);
+			VB_HOOK.free_session(vmSession);
+			VB_HOOK.free_vb(vb);
+			VB_HOOK.free_vb_client(vbClient);
 		}
 		System.out.println("Stopped VM Computers Mod.");
 	}

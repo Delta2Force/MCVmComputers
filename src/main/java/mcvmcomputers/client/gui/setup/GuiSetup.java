@@ -112,9 +112,7 @@ public class GuiSetup extends Screen{
 		if(!initialized) {
 			setupPages = new ArrayList<>();
 			setupPages.add(new SetupPageIntroMessage(this, this.textRenderer));
-			if(SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_MAC) {
-				setupPages.add(new SetupPageVboxDirectory(this, this.textRenderer));
-			}
+			setupPages.add(new SetupPageVboxDirectory(this, this.textRenderer));
 			setupPages.add(new SetupPageVMComputersDirectory(this, this.textRenderer));
 			setupPages.add(new SetupPageUnfocusBinding(this, this.textRenderer));
 			setupPages.add(new SetupPageMaxValues(this, this.textRenderer));

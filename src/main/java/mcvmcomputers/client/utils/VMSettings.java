@@ -26,6 +26,8 @@ public class VMSettings {
 			vboxDirectory = "/Applications/VirtualBox.app/Contents/MacOS";
 			unfocusKey1 = GLFW.GLFW_KEY_LEFT_ALT;
 			unfocusKey2 = GLFW.GLFW_KEY_RIGHT_ALT;
+		}else {
+			vboxDirectory = "/usr/lib/virtualbox";
 		}
 		if(ClientMod.vhdDirectory != null) {
 			vmComputersDirectory = ClientMod.vhdDirectory.getParentFile().getAbsolutePath();

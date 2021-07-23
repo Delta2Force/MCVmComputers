@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.zip.DataFormatException;
@@ -24,9 +25,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.glfw.GLFW;
-import org.virtualbox_6_1.ISession;
-import org.virtualbox_6_1.IVirtualBox;
-import org.virtualbox_6_1.VirtualBoxManager;
 
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.MainMod;
@@ -61,6 +59,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import vbhook.VBHook;
 
 @Environment(EnvType.CLIENT)
 public class ClientMod implements ClientModInitializer{
@@ -75,15 +74,16 @@ public class ClientMod implements ClientModInitializer{
 	public static boolean vmTurnedOn;
 	public static boolean vmTurningOff;
 	public static boolean vmTurningOn;
-	public static ISession vmSession;
 	
 	public static int maxRam = 8192;
 	public static int videoMem = 256;
-	
-	public static VirtualBoxManager vbManager;
-	public static IVirtualBox vb;
-	
-	public static Process vboxWebSrv;
+
+	public static long vb;
+	public static long vbClient;
+	public static long vbMachine;
+	public static long vmSession;
+	public static final VBHook VB_HOOK = new VBHook();
+
 	public static Thread vmUpdateThread;
 	public static byte[] vmTextureBytes;
 	public static int vmTextureBytesSize;
@@ -223,10 +223,14 @@ public class ClientMod implements ClientModInitializer{
 				p.writeInt(vmTextureBytesSize);
 				ClientSidePacketRegistryImpl.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
 			}
-			
+
+			ByteBuffer bb = ByteBuffer.allocate(vmTextureBytesSize);
+			bb.put(vmTextureBytes);
+			bb.flip();
+
 			NativeImage ni = null;
 			try {
-				ni = NativeImage.read(new ByteArrayInputStream(vmTextureBytes));
+				ni = NativeImage.read(NativeImage.Format.BGR, bb);
 			} catch (IOException e) {
 			}
 			if(ni != null) {

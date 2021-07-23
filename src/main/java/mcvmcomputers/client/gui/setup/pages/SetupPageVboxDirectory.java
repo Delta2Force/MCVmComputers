@@ -53,13 +53,13 @@ public class SetupPageVboxDirectory extends SetupPage{
 			return false;
 		}else {
 			if(SystemUtils.IS_OS_WINDOWS) {
-				if(!new File(vboxDir, "vboxmanage.exe").exists() || !new File(vboxDir, "vboxwebsrv.exe").exists()) {
+				if(!new File(vboxDir, "vboxmanage.exe").exists()) {
 					vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notvbox");
 					next.active = false;
 					return false;
 				}
 			}else if(SystemUtils.IS_OS_MAC) {
-				if(!new File(vboxDir, "VBoxManage").exists() || !new File(vboxDir, "vboxwebsrv").exists()) {
+				if(!new File(vboxDir, "VBoxManage").exists()) {
 					vboxStatus = setupGui.translation("mcvmcomputers.input_dir_notvbox");
 					next.active = false;
 					return false;
