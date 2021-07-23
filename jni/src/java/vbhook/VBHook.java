@@ -40,11 +40,20 @@ public class VBHook {
 		is.close();
 	}
 
-	public void loadLibraries(File vm_computers_dir) throws IOException {
+	public void loadLibraries(File vm_computers_dir) throws Exception {
 		File vm_computers_libs = new File(vm_computers_dir, "libs");
 		vm_computers_libs.mkdirs();
 		saveFile(getClass().getResourceAsStream("/vbhook-libs/libvbhook.so"), new File(vm_computers_libs, "libvbhook.so"));
 		saveFile(getClass().getResourceAsStream("/vbhook-libs/vbhook.dll"), new File(vm_computers_libs, "vbhook.dll"));
+		
+		String os = System.getProperty("os.name").toLowerCase();
+		if(os.contains("win")) {
+			System.loadLibrary(new File(vm_computers_libs, "vbhook.dll").getAbsolutePath());
+		}else if(os.contains("nux")) {
+			System.loadLibrary(new File(vm_computers_libs, "libvbhook.so").getAbsolutePath());
+		}else{
+			throw new Exception("OS not supported");
+		}
 	}
 
 	/*
