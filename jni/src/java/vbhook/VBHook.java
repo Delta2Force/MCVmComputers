@@ -1,7 +1,11 @@
 package vbhook;
 
+import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.Files;
 
 public class VBHook {
 	//@return If the library has been successfully initialized.
@@ -30,7 +34,20 @@ public class VBHook {
 	public native void free_vb(long vb);
 	public native void free_session(long session);
 	public native void free_vb_client(long vb_client);
+	
+	private void saveFile(InputStream is, File file) throws IOException {
+		Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		is.close();
+	}
 
+	public void loadLibraries(File vm_computers_dir) throws IOException {
+		File vm_computers_libs = new File(vm_computers_dir, "libs");
+		vm_computers_libs.mkdirs();
+		saveFile(getClass().getResourceAsStream("/vbhook-libs/libvbhook.so"), new File(vm_computers_libs, "libvbhook.so"));
+		saveFile(getClass().getResourceAsStream("/vbhook-libs/vbhook.dll"), new File(vm_computers_libs, "vbhook.dll"));
+	}
+
+	/*
 	public static void main(String[] args) throws Exception {
 		System.loadLibrary("vbhook");
 		VBHook vbhook = new VBHook();
@@ -65,4 +82,5 @@ public class VBHook {
 		vbhook.free_vb_client(a);
 		vbhook.terminate_glue();
 	}
+	*/
 }
