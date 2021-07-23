@@ -65,8 +65,20 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb_1client(JNIEnv* env, jobject 
 	if(lng) IVirtualBoxClient_Release((IVirtualBoxClient*)lng);
 }
 
+wchar_t* charToWChar(const char* text)
+{
+    const size_t size = strlen(text) + 1;
+    wchar_t* wText = (wchar_t*)malloc(size*sizeof(wchar_t));
+    mbstowcs(wText, text, size);
+    return wText;
+}
+
 JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_init_1glue(JNIEnv* env, jobject obj, jstring vbox_home) {
 	setenv("VBOX_APP_HOME", (*env)->GetStringUTFChars(env, vbox_home, NULL), 1);
+#ifdef VBHOOK_WIN
+	SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_USER_DIRS | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+	AddDllDirectory(charToWChar((*env)->GetStringUTFChars(env, vbox_home, NULL)));
+#endif
 	if(VBoxCGlueInit()) {
 		printf("glue error %s\n", g_szVBoxErrMsg);
 		return FALSE;
