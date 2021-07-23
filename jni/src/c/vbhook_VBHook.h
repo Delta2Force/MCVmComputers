@@ -105,6 +105,14 @@ JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1powered_1on
 
 /*
  * Class:     vbhook_VBHook
+ * Method:    vm_iso_ejected
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1iso_1ejected
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     vbhook_VBHook
  * Method:    tick_vm
  * Signature: (JJIIII[I)[B
  */

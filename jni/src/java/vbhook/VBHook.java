@@ -27,6 +27,7 @@ public class VBHook {
 	public native void stop_vm(long session);
 	public native void create_hdd(long vb, long size, String file_format, String path);
 	public native boolean vm_powered_on(long machine);
+	public native boolean vm_iso_ejected(long session);
 	//@return Screenshot
 	public native byte[] tick_vm(long vb_client, long machine, int mouseDeltaX, int mouseDeltaY, int mouseDeltaScroll, int mouseClick, int[] scancodes);
 
@@ -48,9 +49,9 @@ public class VBHook {
 		
 		String os = System.getProperty("os.name").toLowerCase();
 		if(os.contains("win")) {
-			System.loadLibrary(new File(vm_computers_libs, "vbhook.dll").getAbsolutePath());
+			System.load(new File(vm_computers_libs, "vbhook.dll").getAbsolutePath());
 		}else if(os.contains("nux")) {
-			System.loadLibrary(new File(vm_computers_libs, "libvbhook.so").getAbsolutePath());
+			System.load(new File(vm_computers_libs, "libvbhook.so").getAbsolutePath());
 		}else{
 			throw new Exception("OS not supported");
 		}

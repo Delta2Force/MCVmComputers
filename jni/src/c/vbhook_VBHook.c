@@ -289,6 +289,29 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_create_1hdd(JNIEnv* env, jobject obj, 
 	progress->lpVtbl->Release(progress);
 }
 
+JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1iso_1ejected(JNIEnv* env, jobject obj, jlong vbsession){
+	ISession* session = (ISession*)vbsession;
+	IMachine* edit = NULL;
+#ifdef VBHOOK_WIN
+	session->lpVtbl->get_Machine(session, &edit);
+#else	
+	session->lpVtbl->GetMachine(session, &edit);
+#endif
+	IMediumAttachment* attachment = NULL;
+	BSTR path; g_pVBoxFuncs->pfnUtf8ToUtf16("IDE Controller", &path);
+	edit->lpVtbl->GetMediumAttachment(edit, path, 1, 0, &attachment);
+	g_pVBoxFuncs->pfnUtf16Free(path);
+
+	BOOL ejected;
+#ifdef VBHOOK_WIN
+	attachment->lpVtbl->get_IsEjected(attachment, &ejected);
+#else
+	attachment->lpVtbl->GetIsEjected(attachment, &ejected);
+#endif
+	attachment->lpVtbl->Release(attachment);
+	return (jboolean)ejected;
+}
+
 JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject obj, jlong vbclient, jlong machine, jint mousedeltax, jint mousedeltay, jint mousedeltascroll, jint mouseclick, jintArray scancodes) {
 	IVirtualBoxClient* vbclientvb = (IVirtualBoxClient*)vbclient;
 	IMachine* machinevb = (IMachine*)machine;
@@ -350,15 +373,15 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 
 #ifdef VBHOOK_WIN
 	SAFEARRAY* array;
-	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_RGBA, &array);
+	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_BGR, &array);
 
-	jbyteArray retval = (*env)->NewByteArray(env, width*height*4);
-	(*env)->SetByteArrayRegion(env, retval, 0, width*height*4, (const jbyte*)array->pvData);
+	jbyteArray retval = (*env)->NewByteArray(env, width*height*3);
+	(*env)->SetByteArrayRegion(env, retval, 0, width*height*3, (const jbyte*)array->pvData);
 	g_pVBoxFuncs->pfnSafeArrayDestroy(array);
 #else
 	PRUint8* array = NULL;
 	PRUint32 array_size = 0;
-	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_RGBA, &array_size, &array);
+	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_BGR, &array_size, &array);
 	
 	jbyteArray retval = (*env)->NewByteArray(env, array_size);
 	(*env)->SetByteArrayRegion(env, retval, 0, array_size, (const jbyte*)array);
