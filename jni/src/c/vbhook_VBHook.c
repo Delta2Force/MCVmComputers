@@ -65,6 +65,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb_1client(JNIEnv* env, jobject 
 	if(lng) IVirtualBoxClient_Release((IVirtualBoxClient*)lng);
 }
 
+#ifdef VBHOOK_WIN
 wchar_t* charToWChar(const char* text)
 {
     const size_t size = strlen(text) + 1;
@@ -72,6 +73,7 @@ wchar_t* charToWChar(const char* text)
     mbstowcs(wText, text, size);
     return wText;
 }
+#endif
 
 JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_init_1glue(JNIEnv* env, jobject obj, jstring vbox_home) {
 	setenv("VBOX_APP_HOME", (*env)->GetStringUTFChars(env, vbox_home, NULL), 1);
@@ -325,7 +327,7 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	console->lpVtbl->get_Keyboard(console, &keyboard);
 	size_t len = (*env)->GetArrayLength(env, scancodes);
 	jint* arr = (*env)->GetIntArrayElements(env, scancodes, NULL);
-	SAFEARRAY* sascancodes = g_pVBoxFuncs->pfnSafeArrayCreateVector(VT_I4, 0, len);
+	SAFEARRAY* sascancodes = g_pVBoxFuncs->pfnSafeArrayCreateVector(VT_I8, 0, len);
 	g_pVBoxFuncs->pfnSafeArrayCopyInParamHelper(sascancodes, &arr, sizeof(jint));
 	keyboard->lpVtbl->PutScancodes(keyboard, ComSafeArrayAsInParam(sascancodes), &sent_stuff);
 	g_pVBoxFuncs->pfnSafeArrayDestroy(sascancodes);
@@ -345,13 +347,14 @@ JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	PRUint32 width, height, bitspp, status; PRInt32 xorigin, yorigin;
 #endif
 	display->lpVtbl->GetScreenResolution(display, 0, &width, &height, &bitspp, &xorigin, &yorigin, &status);
-	
+
 #ifdef VBHOOK_WIN
-	SAFEARRAY* array = NULL;
+	SAFEARRAY* array;
 	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_RGBA, &array);
-	
-	jbyteArray retval = (*env)->NewByteArray(env, array->cbElements);
-	(*env)->SetByteArrayRegion(env, retval, 0, array->cbElements, (const jbyte*)array->pvData);
+
+	jbyteArray retval = (*env)->NewByteArray(env, width*height*4);
+	(*env)->SetByteArrayRegion(env, retval, 0, width*height*4, (const jbyte*)array->pvData);
+	g_pVBoxFuncs->pfnSafeArrayDestroy(array);
 #else
 	PRUint8* array = NULL;
 	PRUint32 array_size = 0;
