@@ -113,11 +113,27 @@ JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1iso_1ejected
 
 /*
  * Class:     vbhook_VBHook
- * Method:    tick_vm
- * Signature: (JJIIII[I)[B
+ * Method:    stop_vm_if_exists
+ * Signature: (JJLjava/lang/String;)V
  */
-JNIEXPORT jbyteArray JNICALL Java_vbhook_VBHook_tick_1vm
+JNIEXPORT void JNICALL Java_vbhook_VBHook_stop_1vm_1if_1exists
+  (JNIEnv *, jobject, jlong, jlong, jstring);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    tick_vm
+ * Signature: (JJIIII[I)[J
+ */
+JNIEXPORT jlongArray JNICALL Java_vbhook_VBHook_tick_1vm
   (JNIEnv *, jobject, jlong, jlong, jint, jint, jint, jint, jintArray);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    screenshot_vm
+ * Signature: (JJJJJLjava/nio/ByteBuffer;)V
+ */
+JNIEXPORT void JNICALL Java_vbhook_VBHook_screenshot_1vm
+  (JNIEnv *, jobject, jlong, jlong, jlong, jlong, jlong, jobject);
 
 /*
  * Class:     vbhook_VBHook

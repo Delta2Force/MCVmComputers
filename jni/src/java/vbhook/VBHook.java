@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.Files;
+import java.nio.ByteBuffer;
 
 public class VBHook {
 	//@return If the library has been successfully initialized.
@@ -27,9 +28,12 @@ public class VBHook {
 	public native void stop_vm(long session);
 	public native void create_hdd(long vb, long size, String file_format, String path);
 	public native boolean vm_powered_on(long machine);
-	public native boolean vm_iso_ejected(long session);
-	//@return Screenshot
-	public native byte[] tick_vm(long vb_client, long machine, int mouseDeltaX, int mouseDeltaY, int mouseDeltaScroll, int mouseClick, int[] scancodes);
+	public native boolean vm_iso_ejected(long machine);
+	public native void stop_vm_if_exists(long vb, long vbclient, String name);
+
+	//@return {width, height, display, console, session}
+	public native long[] tick_vm(long vb_client, long machine, int mouseDeltaX, int mouseDeltaY, int mouseDeltaScroll, int mouseClick, int[] scancodes);
+	public native void screenshot_vm(long display, long console, long session, long width, long height, ByteBuffer buffer);
 
 	public native void free_vm(long vm);
 	public native void free_vb(long vb);
