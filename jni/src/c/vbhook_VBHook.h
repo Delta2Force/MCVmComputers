@@ -130,10 +130,10 @@ JNIEXPORT jlongArray JNICALL Java_vbhook_VBHook_tick_1vm
 /*
  * Class:     vbhook_VBHook
  * Method:    screenshot_vm
- * Signature: (JJJJJLjava/nio/ByteBuffer;)V
+ * Signature: (JJJJJJ)V
  */
 JNIEXPORT void JNICALL Java_vbhook_VBHook_screenshot_1vm
-  (JNIEnv *, jobject, jlong, jlong, jlong, jlong, jlong, jobject);
+  (JNIEnv *, jobject, jlong, jlong, jlong, jlong, jlong, jlong);
 
 /*
  * Class:     vbhook_VBHook
@@ -157,6 +157,14 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1session
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     vbhook_VBHook
+ * Method:    free_and_unlock_session
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1and_1unlock_1session
   (JNIEnv *, jobject, jlong);
 
 /*

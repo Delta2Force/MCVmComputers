@@ -33,11 +33,12 @@ public class VBHook {
 
 	//@return {width, height, display, console, session}
 	public native long[] tick_vm(long vb_client, long machine, int mouseDeltaX, int mouseDeltaY, int mouseDeltaScroll, int mouseClick, int[] scancodes);
-	public native void screenshot_vm(long display, long console, long session, long width, long height, ByteBuffer buffer);
+	public native void screenshot_vm(long display, long console, long session, long width, long height, long buffer);
 
 	public native void free_vm(long vm);
 	public native void free_vb(long vb);
 	public native void free_session(long session);
+	public native void free_and_unlock_session(long session);
 	public native void free_vb_client(long vb_client);
 	
 	private void saveFile(InputStream is, File file) throws IOException {

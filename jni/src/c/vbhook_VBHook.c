@@ -1,15 +1,14 @@
 #include "vbhook_VBHook.h"
 #include "VBoxCAPIGlue.h"
-#include "VBoxCAPI_v6_1.h"
 #include "jni.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory.h>
+#include <stdint.h>
 
 #if defined(__MINGW32__) || defined(_MSC_VER)
 #define VBHOOK_WIN
-#endif
-
-#ifdef VBHOOK_WIN
+#include <Windows.h>
 int setenv(const char *name, const char *value, int overwrite)
 {
     int errcode = 0;
@@ -60,6 +59,14 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb(JNIEnv* env, jobject obj, jlo
 
 JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1session(JNIEnv* env, jobject obj, jlong lng) {
 	if(lng) ISession_Release((ISession*)lng);
+}
+
+JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1and_1unlock_1session(JNIEnv* env, jobject obj, jlong lng) {
+	ISession* session = (ISession*)lng;
+	if(lng) {
+		ISession_UnlockMachine(session);
+		ISession_Release(session);
+	}
 }
 
 JNIEXPORT void JNICALL Java_vbhook_VBHook_free_1vb_1client(JNIEnv* env, jobject obj, jlong lng) {
@@ -230,27 +237,35 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_start_1vm(JNIEnv* env, jobject obj, jl
 #endif
 	progress->lpVtbl->WaitForCompletion(progress, -1);
 	progress->lpVtbl->Release(progress);
-
+	
+	console->lpVtbl->Release(console);
 	g_pVBoxFuncs->pfnUtf16Free(headless);
 }
 
-JNIEXPORT void JNICALL Java_vbhook_VBHook_stop_1vm(JNIEnv* env, jobject obj, jlong session) {
-	IConsole* console = NULL;
-	IProgress* progress = NULL;
+JNIEXPORT void JNICALL Java_vbhook_VBHook_stop_1vm(JNIEnv* env, jobject obj, jlong vbsession_ptr) {
+	ISession* sessionvb = (ISession*)vbsession_ptr;
+	if(!vbsession_ptr) return;
 
-	ISession* sessionvb = (ISession*)session;
+	IConsole* console = NULL;
 #ifdef VBHOOK_WIN
 	sessionvb->lpVtbl->get_Console(sessionvb, &console);
 #else
 	sessionvb->lpVtbl->GetConsole(sessionvb, &console);
 #endif
-	if(console == NULL) return;
-	console->lpVtbl->PowerDown(console, &progress);
-	progress->lpVtbl->WaitForCompletion(progress, -1);
-	progress->lpVtbl->Release(progress);
+	if(console == NULL) {
+		sessionvb->lpVtbl->UnlockMachine(sessionvb);
+		sessionvb->lpVtbl->Release(sessionvb);
+		return;
+	}
+	IProgress* pdprogress = NULL;
+	console->lpVtbl->PowerDown(console, &pdprogress);
+	pdprogress->lpVtbl->WaitForCompletion(pdprogress, -1);
 
-	console->lpVtbl->Release(console);
 	sessionvb->lpVtbl->UnlockMachine(sessionvb);
+	pdprogress->lpVtbl->Release(pdprogress);
+	console->lpVtbl->Release(console);
+	sessionvb->lpVtbl->Release(sessionvb);
+	g_pVBoxFuncs->pfnProcessEventQueue(250);
 }
 
 JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1powered_1on(JNIEnv* env, jobject obj, jlong machine) {
@@ -263,7 +278,8 @@ JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1powered_1on(JNIEnv* env, jobje
 	machinevb->lpVtbl->GetState(machinevb, &state);
 #endif
 
-	return state != MachineState_PoweredOff;
+	g_pVBoxFuncs->pfnProcessEventQueue(250);
+	return state == MachineState_Running || state == MachineState_Starting || state == MachineState_Saving || state == MachineState_Stopping;
 }
 
 JNIEXPORT void JNICALL Java_vbhook_VBHook_create_1hdd(JNIEnv* env, jobject obj, jlong vb, jlong size, jstring format, jstring path) {
@@ -295,6 +311,7 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_create_1hdd(JNIEnv* env, jobject obj, 
 
 	medium->lpVtbl->Release(medium);
 	progress->lpVtbl->Release(progress);
+	g_pVBoxFuncs->pfnProcessEventQueue(250);
 }
 
 JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1iso_1ejected(JNIEnv* env, jobject obj, jlong vbmachine){
@@ -314,6 +331,7 @@ JNIEXPORT jboolean JNICALL Java_vbhook_VBHook_vm_1iso_1ejected(JNIEnv* env, jobj
 	attachment->lpVtbl->GetIsEjected(attachment, &ejected);
 #endif
 	attachment->lpVtbl->Release(attachment);
+	g_pVBoxFuncs->pfnProcessEventQueue(250);
 	return (jboolean)ejected;
 }
 
@@ -337,6 +355,7 @@ JNIEXPORT jlongArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	if(console == NULL) {
 		ISession_UnlockMachine(session);
 		ISession_Release(session);
+		g_pVBoxFuncs->pfnProcessEventQueue(250);
 		return (*env)->NewLongArray(env, 0);
 	}
 
@@ -369,54 +388,55 @@ JNIEXPORT jlongArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	IDisplay* display = NULL;
 #ifdef VBHOOK_WIN
 	console->lpVtbl->get_Display(console, &display);
-	ULONG widthh, heightt, bitspp; LONG xorigin, yorigin; GuestMonitorStatus status;
+	ULONG width, height, bitspp; LONG xorigin, yorigin; GuestMonitorStatus status;
 #else
 	console->lpVtbl->GetDisplay(console, &display);
-	PRUint32 widthh, heightt, bitspp, status; PRInt32 xorigin, yorigin;
+	PRUint32 width, height, bitspp, status; PRInt32 xorigin, yorigin;
 #endif
+
 	if(display == NULL) {
 		console->lpVtbl->Release(console);
 		session->lpVtbl->UnlockMachine(session);
 		session->lpVtbl->Release(session);
+		g_pVBoxFuncs->pfnProcessEventQueue(250);
 		return (*env)->NewLongArray(env, 0);
 	}
-	display->lpVtbl->GetScreenResolution(display, 0, &widthh, &heightt, &bitspp, &xorigin, &yorigin, &status);
-	if(widthh == 0 || heightt == 0) {
+	display->lpVtbl->GetScreenResolution(display, 0, &width, &height, &bitspp, &xorigin, &yorigin, &status);
+	if(width == 0 || height == 0) {
 		display->lpVtbl->Release(display);
 		console->lpVtbl->Release(console);
 		session->lpVtbl->UnlockMachine(session);
 		session->lpVtbl->Release(session);
+		g_pVBoxFuncs->pfnProcessEventQueue(250);
 		return (*env)->NewLongArray(env, 0);
 	}
 
-	jlong width = (jlong)widthh; jlong height = (jlong)heightt;
+	jlong array[] = {(jlong)width, (jlong)height, (jlong)display, (jlong)console, (jlong)session};
 	jintArray retval = (*env)->NewLongArray(env, 5);
-	(*env)->SetLongArrayRegion(env, retval, 0, 1, &width);
-	(*env)->SetLongArrayRegion(env, retval, 1, 1, &height);
-	(*env)->SetLongArrayRegion(env, retval, 2, 1, (const jlong*)&display);
-	(*env)->SetLongArrayRegion(env, retval, 3, 1, (const jlong*)&console);
-	(*env)->SetLongArrayRegion(env, retval, 4, 1, (const jlong*)&session);
+	(*env)->SetLongArrayRegion(env, retval, 0, 5, array);
+	g_pVBoxFuncs->pfnProcessEventQueue(250);
 	return retval;
 }
 
-
-JNIEXPORT void JNICALL Java_vbhook_VBHook_screenshot_1vm(JNIEnv* env, jobject obj, jlong display_ptr, jlong console_ptr, jlong session_ptr, jlong width, jlong height, jobject buf) {
+JNIEXPORT void JNICALL Java_vbhook_VBHook_screenshot_1vm(JNIEnv* env, jobject obj, jlong display_ptr, jlong console_ptr, jlong session_ptr, jlong width, jlong height, jlong buf) {
 	ISession* session = (ISession*)session_ptr;
 	IDisplay* display = (IDisplay*)display_ptr;
 	IConsole* console = (IConsole*)console_ptr;
-
+	
+	//TODO: ADD SCREENSHOT FUNCTIONALITY THAT WORKS!
+	/*
 #ifdef VBHOOK_WIN
-	BYTE* array = (*env)->GetDirectBufferAddress(env, buf);
-	display->lpVtbl->TakeScreenShot(display, 0, array, width, height, BitmapFormat_PNG);
+	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_PNG, &array);
 #else
-	PRUint8* array = (*env)->GetDirectBufferAddress(env, buf);
-	display->lpVtbl->TakeScreenShot(display, 0, array, width, height, BitmapFormat_PNG);
+	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_PNG, &array_size, &array);
 #endif
+*/
 
 	display->lpVtbl->Release(display);
 	console->lpVtbl->Release(console);
 	session->lpVtbl->UnlockMachine(session);
 	session->lpVtbl->Release(session);
+	g_pVBoxFuncs->pfnProcessEventQueue(250);
 }
 
 JNIEXPORT void JNICALL Java_vbhook_VBHook_stop_1vm_1if_1exists(JNIEnv* env, jobject obj, jlong vb, jlong vbclient, jstring str){
@@ -462,4 +482,5 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_stop_1vm_1if_1exists(JNIEnv* env, jobj
 		vm->lpVtbl->Release(vm);
 		session->lpVtbl->Release(session);
 	}
+	g_pVBoxFuncs->pfnProcessEventQueue(250);
 }
