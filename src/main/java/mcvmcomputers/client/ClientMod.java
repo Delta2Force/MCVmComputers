@@ -2,8 +2,6 @@ package mcvmcomputers.client;
 
 import java.io.*;
 import java.lang.annotation.Native;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
