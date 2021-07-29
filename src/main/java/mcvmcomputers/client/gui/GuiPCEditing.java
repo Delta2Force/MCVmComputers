@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import ca.weblite.objc.Client;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
 import net.minecraft.util.math.Quaternion;
@@ -228,7 +229,7 @@ public class GuiPCEditing extends Screen{
 		this.clearChildren();
 		if(introScale > 0.99f) {
 			if(openCase) {
-				if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getId()) {
+				if((ClientMod.vmShouldBeOn || ClientMod.vmIsOn) && ClientMod.vmEntityID == pc_case.getId()) {
 					openCase = false;
 				}
 				if(SystemUtils.IS_OS_MAC) {
@@ -433,21 +434,27 @@ public class GuiPCEditing extends Screen{
 					this.addDrawableChild(sixtyfour);
 				}
 			}else {
-				boolean turnedOn = (ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getId()) || (ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getId());
+				boolean turnedOn = (ClientMod.vmShouldBeOn && ClientMod.vmEntityID == pc_case.getId()) || (ClientMod.vmIsOn && ClientMod.vmEntityID == pc_case.getId());
 				if(turnedOn) {
 					int buttonW = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.turn_off"))+4;
-					this.addDrawableChild(new ButtonWidget((this.width/2 + 103) - buttonW, this.height / 2 - 80, buttonW, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.turn_off")), (btn) -> this.turnOffPC(btn)));
+					var bw = new ButtonWidget((this.width/2 + 103) - buttonW, this.height / 2 - 80, buttonW, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.turn_off")), (btn) -> this.turnOffPC(btn));
+					if(!ClientMod.vmShouldBeOn && ClientMod.vmIsOn) bw.active = false;
+					this.addDrawableChild(bw);
 				}else {
 					int buttonW = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.turn_on"))+4;
 					this.addDrawableChild(new ButtonWidget((this.width/2 + 103) - buttonW, this.height / 2 - 80, buttonW, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.turn_on")), (btn) -> this.turnOnPC(btn)));
 				}
-				
-				if(ClientMod.vmSession != 0L) {
-					
-					if(ClientMod.VB_HOOK.vm_iso_ejected(ClientMod.vmSession) && !pc_case.getIsoFileName().isEmpty()) {
-						this.removeISO();
+
+				/*
+				synchronized (ClientMod.vbHookLock) {
+					System.out.println("GuiPCEditing:447");
+					if (ClientMod.vbMachine != 0L) {
+						if (ClientMod.VB_HOOK.vm_iso_ejected(ClientMod.vbMachine) && !pc_case.getIsoFileName().isEmpty()) {
+							this.removeISO();
+						}
 					}
 				}
+				*/
 				
 				if(pc_case.getIsoFileName().isEmpty()) {
 					RenderSystem.disableDepthTest();
@@ -531,20 +538,14 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	public void turnOffPC(ButtonWidget wdgt) {
-		ClientMod.vmTurningOff = true;
-		ClientMod.vmTurnedOn = false;
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		ClientSidePacketRegistryImpl.INSTANCE.sendToServer(PacketList.C2S_TURN_OFF_PC, b);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while(ClientMod.vmTurningOn) {}
-
-				ClientMod.VB_HOOK.stop_vm(ClientMod.vmSession);
-				ClientMod.vmSession = 0L;
-				ClientMod.vmTurnedOn = false;
-				ClientMod.vmTurningOff = false;
-				ClientMod.vmEntityID = -1;
+				synchronized (ClientMod.vbHookLock) {
+					ClientMod.vmShouldBeOn = false;
+				}
 			}
 		}, "Turn off PC").start();
 	}
@@ -564,10 +565,9 @@ public class GuiPCEditing extends Screen{
 				}
 			}
 			
-			if(ClientMod.vmTurningOn || ClientMod.vmTurnedOn) {
+			if(ClientMod.vmShouldBeOn) {
 				return;
 			}
-			ClientMod.vmTurningOn = true;
 			ClientMod.vmEntityID = pc_case.getId();
 			PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 			b.writeInt(pc_case.getId());
@@ -576,32 +576,33 @@ public class GuiPCEditing extends Screen{
 				@Override
 				public void run() {
 					try {
-						if(ClientMod.vbMachine == 0L)
-							ClientMod.vbMachine = ClientMod.VB_HOOK.find_or_create_vm(ClientMod.vb, "VmComputersVm", "Other" + (pc_case.get64Bit() ? "_64" : ""));
+						synchronized (ClientMod.vbHookLock) {
+							if (ClientMod.vbMachine == 0L)
+								ClientMod.vbMachine = ClientMod.VB_HOOK.find_or_create_vm(ClientMod.vb, "VmComputersVm", "Other" + (pc_case.get64Bit() ? "_64" : ""));
 
-						long session = ClientMod.VB_HOOK.create_session(ClientMod.vbClient);
-						File iso_file = new File(ClientMod.isoDirectory, pc_case.getIsoFileName());
-						File hdd_file = new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName());
-						ClientMod.VB_HOOK.vm_values(session, ClientMod.vb, ClientMod.vbMachine, ClientMod.videoMem,
-								(long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())),
-								Math.min(1, Runtime.getRuntime().availableProcessors() / pc_case.getCpuDividedBy()),
-								(hdd_file.exists() && !pc_case.getHardDriveFileName().isEmpty()) ? hdd_file.getAbsolutePath() : "",
-								(iso_file.exists() && !pc_case.getIsoFileName().isEmpty()) ? iso_file.getAbsolutePath() : "");
-						ClientMod.VB_HOOK.free_session(session);
-						System.out.println("Did it work?");
-						if(ClientMod.vmSession == 0L)
-							ClientMod.vmSession = ClientMod.VB_HOOK.create_session(ClientMod.vbClient);
-						ClientMod.VB_HOOK.start_vm(ClientMod.vmSession, ClientMod.vbMachine);
-						ClientMod.vmTurningOn = false;
-						ClientMod.vmTurnedOn = true;
-						synchronized (vmTurningON) {
-							vmTurningON.notify();
+							long session = ClientMod.VB_HOOK.create_session(ClientMod.vbClient);
+							File iso_file = new File(ClientMod.isoDirectory, pc_case.getIsoFileName());
+							File hdd_file = new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName());
+
+							ClientMod.VB_HOOK.vm_values(session, ClientMod.vb, ClientMod.vbMachine, ClientMod.videoMem,
+									(long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())),
+									Math.min(1, Runtime.getRuntime().availableProcessors() / pc_case.getCpuDividedBy()),
+									(hdd_file.exists() && !pc_case.getHardDriveFileName().isEmpty()) ? hdd_file.getAbsolutePath() : "",
+									(iso_file.exists() && !pc_case.getIsoFileName().isEmpty()) ? iso_file.getAbsolutePath() : "");
+
+							ClientMod.VB_HOOK.free_session(session);
+							if (ClientMod.vmSession == 0L)
+								ClientMod.vmSession = ClientMod.VB_HOOK.create_session(ClientMod.vbClient);
+							ClientMod.vmShouldBeOn = true;
+							synchronized (vmTurningON) {
+								vmTurningON.notify();
+							}
+							System.out.println("Finished start");
 						}
 					}catch(Exception ex) {
 						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.failed_to_start", ex.getMessage()).formatted(Formatting.RED), false);
 						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.contact_me").formatted(Formatting.RED), false);
-						ClientMod.vmTurningOn = false;
-						ClientMod.vmTurnedOn = false;
+						ClientMod.vmShouldBeOn = false;
 						
 						PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 						ClientSidePacketRegistryImpl.INSTANCE.sendToServer(PacketList.C2S_TURN_OFF_PC, b);

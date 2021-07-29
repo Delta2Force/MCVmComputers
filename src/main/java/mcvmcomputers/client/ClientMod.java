@@ -1,12 +1,13 @@
 package mcvmcomputers.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.lang.annotation.Native;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -59,6 +60,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.lwjgl.system.MemoryUtil;
 import vbhook.VBHook;
 
 @Environment(EnvType.CLIENT)
@@ -71,10 +73,9 @@ public class ClientMod implements ClientModInitializer{
 	public static Map<UUID, NativeImage> vmScreenTextureNI;
 	public static Map<UUID, NativeImageBackedTexture> vmScreenTextureNIBT;
 	public static EntityItemPreview thePreviewEntity;
-	public static boolean vmTurnedOn;
-	public static boolean vmTurningOff;
-	public static boolean vmTurningOn;
-	
+	public static boolean vmShouldBeOn;
+	public static boolean vmIsOn;
+
 	public static int maxRam = 8192;
 	public static int videoMem = 256;
 
@@ -82,13 +83,18 @@ public class ClientMod implements ClientModInitializer{
 	public static long vbClient;
 	public static long vbMachine;
 	public static long vmSession;
+	public static final Object vbHookLock = new Object();
 	public static final VBHook VB_HOOK = new VBHook();
 
 	public static Thread vmUpdateThread;
-	public static byte[] vmTextureBytes;
+	public static ByteBuffer vmTextureBytes;
 	public static int vmTextureBytesSize;
+	public static int vmTextureWidth;
+	public static int vmTextureHeight;
+	public static boolean vmTextureUpdate = false;
 	public static boolean failedSend;
-	
+	public static final Object vmTextureLock = new Object();
+
 	public static double mouseLastX = 0;
 	public static double mouseLastY = 0;
 	public static double mouseCurX = 0;
@@ -193,61 +199,63 @@ public class ClientMod implements ClientModInitializer{
 		if(mcc.player == null) {
 			return;
 		}
-		if(vmTextureBytes != null) {
-			if(vmScreenTextures.containsKey(mcc.player.getUuid())) {
-				MinecraftClient.getInstance().getTextureManager().destroyTexture(vmScreenTextures.get(mcc.player.getUuid()));
-				vmScreenTextures.remove(mcc.player.getUuid());
-			}
-			
-			Deflater def = new Deflater();
-			def.setInput(vmTextureBytes);
-			def.finish();
-			byte[] deflated = new byte[vmTextureBytesSize];
-			int sz = def.deflate(deflated);
-			def.end();
-			
-			if(sz > 32766) {
-				if(!failedSend){
-					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_too_big_mp").formatted(Formatting.RED), true);
-					failedSend = true;
+		if(vmTextureUpdate) {
+			synchronized (vmTextureLock) {
+				vmTextureUpdate = false;
+				if (vmScreenTextures.containsKey(mcc.player.getUuid())) {
+					MinecraftClient.getInstance().getTextureManager().destroyTexture(vmScreenTextures.get(mcc.player.getUuid()));
+					vmScreenTextures.remove(mcc.player.getUuid());
 				}
-			}else {
-				if(failedSend) {
-					mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_ok_mp").formatted(Formatting.GREEN), true);
-					failedSend = false;
-				}
-				
-				PacketByteBuf p = new PacketByteBuf(Unpooled.buffer());
-				p.writeByteArray(Arrays.copyOfRange(deflated, 0, sz));
-				p.writeInt(sz);
-				p.writeInt(vmTextureBytesSize);
-				ClientSidePacketRegistryImpl.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
-			}
 
-			ByteBuffer bb = ByteBuffer.allocate(vmTextureBytesSize);
-			bb.put(vmTextureBytes);
-			bb.flip();
+				if (mcc.world.getPlayers().size() > 1) {
+					Deflater def = new Deflater();
+					def.setInput(vmTextureBytes);
+					def.finish();
+					byte[] deflated = new byte[vmTextureBytesSize];
+					int sz = def.deflate(deflated);
+					def.end();
 
-			NativeImage ni = null;
-			try {
-				ni = NativeImage.read(NativeImage.Format.BGR, bb);
-			} catch (IOException e) {
-			}
-			if(ni != null) {
-				if(vmScreenTextureNI.containsKey(mcc.player.getUuid())) {
-					vmScreenTextureNI.get(mcc.player.getUuid()).close();
-					vmScreenTextureNI.remove(mcc.player.getUuid());
+					if (sz > 32766) {
+						if (!failedSend) {
+							mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_too_big_mp").formatted(Formatting.RED), true);
+							failedSend = true;
+						}
+					} else {
+						if (failedSend) {
+							mcc.player.sendMessage(new TranslatableText("mcvmcomputers.screen_ok_mp").formatted(Formatting.GREEN), true);
+							failedSend = false;
+						}
+
+						PacketByteBuf p = new PacketByteBuf(Unpooled.buffer());
+						p.writeByteArray(Arrays.copyOfRange(deflated, 0, sz));
+						p.writeInt(sz);
+						p.writeInt(vmTextureBytesSize);
+						ClientSidePacketRegistryImpl.INSTANCE.sendToServer(PacketList.C2S_SCREEN, p);
+					}
 				}
-				if(vmScreenTextureNIBT.containsKey(mcc.player.getUuid())) {
-					vmScreenTextureNIBT.get(mcc.player.getUuid()).close();
-					vmScreenTextureNIBT.remove(mcc.player.getUuid());
+
+				NativeImage ni = null;
+				try {
+					ni = NativeImage.read(vmTextureBytes);
+				} catch (Exception ignored) {
+					ignored.printStackTrace();
 				}
-				vmScreenTextureNI.put(mcc.player.getUuid(), ni);
-				NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
-				vmScreenTextureNIBT.put(mcc.player.getUuid(), nibt);
-				vmScreenTextures.put(mcc.player.getUuid(), MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("vm_texture", nibt));
+
+				if (ni != null) {
+					if (vmScreenTextureNI.containsKey(mcc.player.getUuid())) {
+						vmScreenTextureNI.get(mcc.player.getUuid()).close();
+						vmScreenTextureNI.remove(mcc.player.getUuid());
+					}
+					if (vmScreenTextureNIBT.containsKey(mcc.player.getUuid())) {
+						vmScreenTextureNIBT.get(mcc.player.getUuid()).close();
+						vmScreenTextureNIBT.remove(mcc.player.getUuid());
+					}
+					vmScreenTextureNI.put(mcc.player.getUuid(), ni);
+					NativeImageBackedTexture nibt = new NativeImageBackedTexture(ni);
+					vmScreenTextureNIBT.put(mcc.player.getUuid(), nibt);
+					vmScreenTextures.put(mcc.player.getUuid(), MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("vm_texture", nibt));
+				}
 			}
-			vmTextureBytes = null;
 		}
 	}
 

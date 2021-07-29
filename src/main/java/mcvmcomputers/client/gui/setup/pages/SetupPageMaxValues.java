@@ -81,7 +81,9 @@ public class SetupPageMaxValues extends SetupPage{
 			public void run() {
 				try {
 					ClientMod.VB_HOOK.loadLibraries(new File(ClientMod.vhdDirectory.getParentFile().getAbsolutePath()));
-					ClientMod.VB_HOOK.init_glue(setupGui.virtualBoxDirectory);
+					if(!ClientMod.VB_HOOK.init_glue(setupGui.virtualBoxDirectory)) {
+						throw new Exception("Failed to initialize Glue");
+					}
 					long vbclient = ClientMod.VB_HOOK.create_vb_client();
 					long vb = ClientMod.VB_HOOK.create_vb(vbclient);
 					VMSettings set = new VMSettings();
@@ -102,6 +104,9 @@ public class SetupPageMaxValues extends SetupPage{
 					fw.append(new Gson().toJson(set));
 					fw.flush();
 					fw.close();
+					ClientMod.vbClient = vbclient;
+					ClientMod.vb = vb;
+					ClientMod.VB_HOOK.stop_vm_if_exists(ClientMod.vb, ClientMod.vbClient, "VmComputersVm");
 					for(int i = 5;i>=0;i--) {
 						try {
 							Thread.sleep(1000);
@@ -110,8 +115,6 @@ public class SetupPageMaxValues extends SetupPage{
 						}
 						status = setupGui.translation("mcvmcomputers.setup.successStatus").replaceFirst("%s", ClientMod.VB_HOOK.get_vb_version()).replaceFirst("%s", ""+i);
 					}
-					ClientMod.vbClient = vbclient;
-					ClientMod.vb = vb;
 					var titleScreen = new TitleScreen(false);
 					titleScreen.init(MinecraftClient.getInstance(), setupGui.width, setupGui.height);
 					minecraft.setScreen(titleScreen);

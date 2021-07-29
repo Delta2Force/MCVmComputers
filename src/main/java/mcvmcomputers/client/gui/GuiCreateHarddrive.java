@@ -141,7 +141,9 @@ public class GuiCreateHarddrive extends Screen{
 			Long size = Long.parseLong(hddSize.getText())*1024L*1024L;
 			int i = ClientMod.latestVHDNum;
 			File vhd = new File(ClientMod.vhdDirectory, "vhd" + i + "."+extension);
-			ClientMod.VB_HOOK.create_hdd(ClientMod.vb, size, extension.s, vhd.getAbsolutePath());
+			synchronized (ClientMod.vbHookLock) {
+				ClientMod.VB_HOOK.create_hdd(ClientMod.vb, size, extension.s, vhd.getAbsolutePath());
+			}
 			
 			try {
 				ClientMod.increaseVHDNum();

@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+import mcvmcomputers.client.ClientMod;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -92,15 +93,13 @@ public class GameloopMixin {
 			tabletOS.generateTexture();
 		}
 		
-		if(vmTurnedOn) {
+		if(vmShouldBeOn) {
 			if(player == null) {
 				vmUpdateThread.interrupt();
-				
-				VB_HOOK.stop_vm(vmSession);
-				vmSession = 0L;
-				vmTurnedOn = false;
-				vmTurningOff = false;
-				vmTurningOn = false;
+
+				synchronized (ClientMod.vbHookLock) {
+					vmShouldBeOn = false;
+				}
 			}else {
 				if(vmUpdateThread == null) {
 					vmUpdateThread = new Thread(new VMRunnable(), "VM Update Thread");
@@ -169,28 +168,20 @@ public class GameloopMixin {
 
 	@Inject(at = @At("HEAD"), method = "cleanUpAfterCrash")
 	private void cleanUpAfterCrash(CallbackInfo info) {
-		vmTurningOn = false;
-		vmTurnedOn = false;
-		vmTurningOff = false;
-
-		if(vbClient != 0L) {
-			if(vbMachine != 0L) {
-				if(VB_HOOK.vm_powered_on(vbMachine)){
-					VB_HOOK.stop_vm(vmSession);
-				}
-				VB_HOOK.free_session(vmSession);
-			}
-
-			VB_HOOK.free_vm(vbMachine);
-			VB_HOOK.free_session(vmSession);
-			VB_HOOK.free_vb(vb);
-			VB_HOOK.free_vb_client(vbClient);
+		synchronized (ClientMod.vbHookLock) {
+			vmShouldBeOn = false;
 		}
+		while(vmIsOn);
 	}
 
 	@Inject(at = @At("HEAD"), method = "close")
 	private void close(CallbackInfo info) {
 		System.out.println("Stopping VM Computers Mod...");
+		synchronized (vbHookLock) {
+			vmShouldBeOn = false;
+		}
+		while(vmIsOn);
+
 		for(NativeImageBackedTexture nibt : vmScreenTextureNIBT.values()) {
 			nibt.close();
 		}
@@ -200,29 +191,21 @@ public class GameloopMixin {
 		for(Identifier i : vmScreenTextures.values()) {
 			MinecraftClient.getInstance().getTextureManager().destroyTexture(i);
 		}
-		if(vmUpdateThread != null) {
-			vmUpdateThread.interrupt();
-		}
 		if(tabletThread != null) {
 			tabletThread.interrupt();
 		}
-		
-		vmTurningOn = false;
-		vmTurnedOn = false;
-		vmTurningOff = false;
 
-		if(vbClient != 0L) {
-			if(vbMachine != 0L) {
-				if(VB_HOOK.vm_powered_on(vbMachine)){
-					VB_HOOK.stop_vm(vmSession);
+		synchronized (ClientMod.vbHookLock) {
+			if (vmSession != 0L && vbMachine != 0L) {
+				if (VB_HOOK.vm_powered_on(vbMachine)) {
+					VB_HOOK.stop_vm(ClientMod.vmSession);
 				}
-				VB_HOOK.free_session(vmSession);
 			}
-
 			VB_HOOK.free_vm(vbMachine);
-			VB_HOOK.free_session(vmSession);
 			VB_HOOK.free_vb(vb);
+			VB_HOOK.free_session(vmSession);
 			VB_HOOK.free_vb_client(vbClient);
+			VB_HOOK.terminate_glue();
 		}
 		System.out.println("Stopped VM Computers Mod.");
 	}
