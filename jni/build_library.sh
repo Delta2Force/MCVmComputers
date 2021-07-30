@@ -9,6 +9,9 @@ fi
 JAVA_DIR=""
 if [ -z ${JAVA_HOME+x} ]; then
 	JAVA_DIR=$(cd $(dirname $(realpath /usr/bin/java)) && cd .. && pwd)
+	if [ ! -d $JAVA_DIR/include ]; then
+		JAVA_DIR=$(cd $JAVA_DIR/.. && pwd)
+	fi
 else
 	JAVA_DIR=${JAVA_HOME}
 fi
