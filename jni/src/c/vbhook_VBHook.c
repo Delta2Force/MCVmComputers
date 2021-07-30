@@ -238,7 +238,6 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_start_1vm(JNIEnv* env, jobject obj, jl
 	progress->lpVtbl->WaitForCompletion(progress, -1);
 	progress->lpVtbl->Release(progress);
 	
-	console->lpVtbl->Release(console);
 	g_pVBoxFuncs->pfnUtf16Free(headless);
 }
 
