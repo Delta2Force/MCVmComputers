@@ -5,6 +5,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
 import net.minecraft.util.math.Quaternion;
@@ -40,6 +42,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Language;
 
+@Environment(EnvType.CLIENT)
 public class GuiPCEditing extends Screen{
 	private float introScale;
 	private float panelX;

@@ -1,5 +1,7 @@
 package mcvmcomputers.client.gui.setup.pages;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -9,6 +11,7 @@ import static mcvmcomputers.client.ClientMod.*;
 
 import mcvmcomputers.client.gui.setup.GuiSetup;
 
+@Environment(EnvType.CLIENT)
 public class SetupPageUnfocusBinding extends SetupPage{
 	public static boolean changeBinding;
 	public static int bindingToBeChangedNum;

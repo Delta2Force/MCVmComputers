@@ -5,12 +5,15 @@ import java.io.IOException;
 
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 
+@Environment(EnvType.CLIENT)
 public class SetupPageVMComputersDirectory extends SetupPage{
 	private TextFieldWidget vmComputersDirectory;
 	private ButtonWidget next;

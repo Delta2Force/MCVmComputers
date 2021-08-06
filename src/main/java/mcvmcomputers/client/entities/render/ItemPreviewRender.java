@@ -3,6 +3,8 @@ package mcvmcomputers.client.entities.render;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.item.PlacableOrderableItem;
 import mcvmcomputers.utils.MVCUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -14,6 +16,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 
+@Environment(EnvType.CLIENT)
 public class ItemPreviewRender extends EntityRenderer<EntityItemPreview>{
 	public ItemPreviewRender(EntityRendererFactory.Context dispatcher) {
 		super(dispatcher);

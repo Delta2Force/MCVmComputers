@@ -1,10 +1,13 @@
 package mcvmcomputers.client.gui.setup.pages;
 
 import mcvmcomputers.client.gui.setup.GuiSetup;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 
+@Environment(EnvType.CLIENT)
 public abstract class SetupPage {
 	protected final GuiSetup setupGui;
 	protected final TextRenderer textRender;

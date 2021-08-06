@@ -2,6 +2,8 @@ package mcvmcomputers.client.gui.setup.pages;
 
 import java.io.File;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import org.apache.commons.lang3.SystemUtils;
 
 import mcvmcomputers.client.gui.setup.GuiSetup;
@@ -11,6 +13,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 
+@Environment(EnvType.CLIENT)
 public class SetupPageVboxDirectory extends SetupPage{
 	private TextFieldWidget vboxDirectory;
 	private ButtonWidget next;

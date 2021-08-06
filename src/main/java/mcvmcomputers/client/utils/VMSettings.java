@@ -2,12 +2,15 @@ package mcvmcomputers.client.utils;
 
 import java.io.File;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.glfw.GLFW;
 
 import mcvmcomputers.client.ClientMod;
 import net.minecraft.client.MinecraftClient;
 
+@Environment(EnvType.CLIENT)
 public class VMSettings {
 	public String vboxDirectory;
 	public String vmComputersDirectory;

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.Random;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
@@ -16,6 +18,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
+@Environment(EnvType.CLIENT)
 public class DeliveryChestModel extends EntityModel<Entity> {
 	public final ModelPart model;
 	public final ModelPart opening;

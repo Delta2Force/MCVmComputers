@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.utils.VMSettings;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -16,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileWriter;
 
+@Environment(EnvType.CLIENT)
 public class SetupPageMaxValues extends SetupPage{
 	private String statusMaxRam;
 	private String statusVideoMemory;

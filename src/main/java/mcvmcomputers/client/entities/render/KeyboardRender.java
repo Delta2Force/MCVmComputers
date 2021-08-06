@@ -3,6 +3,8 @@ package mcvmcomputers.client.entities.render;
 import mcvmcomputers.entities.EntityKeyboard;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.utils.MVCUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -15,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
+@Environment(EnvType.CLIENT)
 public class KeyboardRender extends EntityRenderer<EntityKeyboard>{
 	public KeyboardRender(EntityRendererFactory.Context dispatcher) {
 		super(dispatcher);

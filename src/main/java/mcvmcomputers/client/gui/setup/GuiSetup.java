@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import org.apache.commons.lang3.SystemUtils;
 
 import com.google.gson.Gson;
@@ -26,6 +28,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Language;
 
+@Environment(EnvType.CLIENT)
 public class GuiSetup extends Screen{
 	private List<SetupPage> setupPages;
 	private int setupIndex;

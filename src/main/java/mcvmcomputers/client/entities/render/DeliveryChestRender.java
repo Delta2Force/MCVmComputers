@@ -8,6 +8,8 @@ import mcvmcomputers.client.entities.model.DeliveryChestModel;
 import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
@@ -28,6 +30,7 @@ import net.minecraft.world.World;
 import static mcvmcomputers.client.ClientMod.*;
 import static mcvmcomputers.utils.MVCUtils.*;
 
+@Environment(EnvType.CLIENT)
 public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	private DeliveryChestModel deliveryChestModel;
 	private MinecraftClient mcc;

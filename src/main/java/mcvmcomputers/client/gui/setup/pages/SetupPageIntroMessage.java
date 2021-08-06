@@ -3,11 +3,14 @@ package mcvmcomputers.client.gui.setup.pages;
 import java.io.File;
 
 import mcvmcomputers.client.gui.setup.GuiSetup;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 
+@Environment(EnvType.CLIENT)
 public class SetupPageIntroMessage extends SetupPage{
 	public SetupPageIntroMessage(GuiSetup setupGui, TextRenderer textRender) {
 		super(setupGui, textRender);

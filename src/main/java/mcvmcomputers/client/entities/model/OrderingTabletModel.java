@@ -1,12 +1,15 @@
 package mcvmcomputers.client.entities.model;
 
 import mcvmcomputers.utils.MVCUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 
+@Environment(EnvType.CLIENT)
 public class OrderingTabletModel extends EntityModel<Entity> {
 	private final ModelPart tablet;
 	private final ModelPart buttons;

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -25,6 +27,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Language;
 
+@Environment(EnvType.CLIENT)
 public class GuiCreateHarddrive extends Screen{
 	private TextFieldWidget hddSize;
 	private String status;

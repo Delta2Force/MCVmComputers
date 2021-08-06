@@ -8,6 +8,8 @@ import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityCRTScreen;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.utils.MVCUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -25,6 +27,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 
+@Environment(EnvType.CLIENT)
 public class CRTScreenRender extends EntityRenderer<EntityCRTScreen>{
 	public CRTScreenRender(EntityRendererFactory.Context dispatcher) {
 		super(dispatcher);

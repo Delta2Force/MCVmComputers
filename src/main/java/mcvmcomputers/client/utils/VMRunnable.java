@@ -6,9 +6,12 @@ import java.nio.ByteBuffer;
 
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.client.gui.GuiFocus;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import org.lwjgl.system.MemoryUtil;
 
+@Environment(EnvType.CLIENT)
 public class VMRunnable implements Runnable{
 	@Override
 	public void run() {
@@ -62,7 +65,7 @@ public class VMRunnable implements Runnable{
 				if (data.length > 0) {
 					synchronized (vmTextureLock) {
 						if (vmTextureBytes == null || (vmTextureWidth != data[0] || vmTextureHeight != data[1])) {
-							vmTextureBytes = ByteBuffer.allocateDirect((int) (data[0] * data[1] * 4));
+							vmTextureBytes = ByteBuffer.allocateDirect((int) (data[0] * data[1] * 3));
 						}
 						VB_HOOK.screenshot_vm(data, MemoryUtil.memAddress(vmTextureBytes));
 						vmTextureBytesSize = vmTextureBytes.capacity();

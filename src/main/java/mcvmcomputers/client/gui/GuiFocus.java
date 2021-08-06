@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -15,6 +17,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Language;
 
+@Environment(EnvType.CLIENT)
 public class GuiFocus extends Screen{
 	private String keyString;
 	private ArrayList<Integer> keys;

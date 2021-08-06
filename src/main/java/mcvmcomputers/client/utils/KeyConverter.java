@@ -1,10 +1,14 @@
 package mcvmcomputers.client.utils;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+@Environment(EnvType.CLIENT)
 public class KeyConverter {
 	public static List<Integer> toVBKey(int key, int action) {
 		List<Integer> ints = new ArrayList<>();
