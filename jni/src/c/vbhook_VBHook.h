@@ -130,10 +130,10 @@ JNIEXPORT jlongArray JNICALL Java_vbhook_VBHook_tick_1vm
 /*
  * Class:     vbhook_VBHook
  * Method:    screenshot_vm
- * Signature: (JJJJJJ)V
+ * Signature: ([JJ)V
  */
 JNIEXPORT void JNICALL Java_vbhook_VBHook_screenshot_1vm
-  (JNIEnv *, jobject, jlong, jlong, jlong, jlong, jlong, jlong);
+  (JNIEnv *, jobject, jlongArray, jlong);
 
 /*
  * Class:     vbhook_VBHook

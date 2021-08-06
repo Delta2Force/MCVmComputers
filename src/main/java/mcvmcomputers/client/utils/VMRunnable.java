@@ -64,8 +64,7 @@ public class VMRunnable implements Runnable{
 						if (vmTextureBytes == null || (vmTextureWidth != data[0] || vmTextureHeight != data[1])) {
 							vmTextureBytes = ByteBuffer.allocateDirect((int) (data[0] * data[1] * 4));
 						}
-						//Could be made a little smaller by passing the entire array at once instead of each individual value
-						VB_HOOK.screenshot_vm(data[2], data[3], data[4], data[0], data[1], MemoryUtil.memAddress(vmTextureBytes));
+						VB_HOOK.screenshot_vm(data, MemoryUtil.memAddress(vmTextureBytes));
 						vmTextureBytesSize = vmTextureBytes.capacity();
 						vmTextureWidth = (int) data[0];
 						vmTextureHeight = (int) data[1];

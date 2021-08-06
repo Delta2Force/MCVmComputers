@@ -417,20 +417,20 @@ JNIEXPORT jlongArray JNICALL Java_vbhook_VBHook_tick_1vm(JNIEnv* env, jobject ob
 	return retval;
 }
 
-JNIEXPORT void JNICALL Java_vbhook_VBHook_screenshot_1vm(JNIEnv* env, jobject obj, jlong display_ptr, jlong console_ptr, jlong session_ptr, jlong width, jlong height, jlong buf) {
-	ISession* session = (ISession*)session_ptr;
-	IDisplay* display = (IDisplay*)display_ptr;
-	IConsole* console = (IConsole*)console_ptr;
-	
-	//TODO: ADD SCREENSHOT FUNCTIONALITY THAT WORKS!
-	/*
-#ifdef VBHOOK_WIN
-	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_PNG, &array);
-#else
-	display->lpVtbl->TakeScreenShotToArray(display, 0, width, height, BitmapFormat_PNG, &array_size, &array);
-#endif
-*/
+JNIEXPORT void JNICALL Java_vbhook_VBHook_screenshot_1vm(JNIEnv* env, jobject obj, jlongArray array, jlong buf) {
+	jlong* long_values = (*env)->GetLongArrayElements(env, array, NULL);
 
+	IDisplay* display = (IDisplay*)long_values[2];
+	IConsole* console = (IConsole*)long_values[3];
+	ISession* session = (ISession*)long_values[4];
+
+#ifdef VBHOOK_WIN
+	display->lpVtbl->TakeScreenShot(display, 0, (BYTE*)buf, long_values[0], long_values[1], BitmapFormat_BGR);
+#else
+	display->lpVtbl->TakeScreenShot(display, 0, (PRUint8*)buf, long_values[0], long_values[1], BitmapFormat_BGR);
+#endif
+	
+	(*env)->ReleaseLongArrayElements(env, array, long_values, JNI_ABORT); //don't waste time copying values when we aren't modifying anything
 	display->lpVtbl->Release(display);
 	console->lpVtbl->Release(console);
 	session->lpVtbl->UnlockMachine(session);

@@ -33,7 +33,7 @@ public class VBHook {
 
 	//@return {width, height, display, console, session}
 	public native long[] tick_vm(long vb_client, long machine, int mouseDeltaX, int mouseDeltaY, int mouseDeltaScroll, int mouseClick, int[] scancodes);
-	public native void screenshot_vm(long display, long console, long session, long width, long height, long buffer);
+	public native void screenshot_vm(long[] tick_out_array, long buffer);
 
 	public native void free_vm(long vm);
 	public native void free_vb(long vb);
