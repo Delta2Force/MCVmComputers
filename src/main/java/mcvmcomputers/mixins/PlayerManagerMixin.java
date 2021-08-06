@@ -1,23 +1,21 @@
 package mcvmcomputers.mixins;
 
-import java.util.stream.Stream;
-
+import io.netty.buffer.Unpooled;
+import mcvmcomputers.MainMod;
+import mcvmcomputers.entities.EntityPC;
+import mcvmcomputers.networking.PacketList;
+import net.fabricmc.fabric.api.server.PlayerStream;
 import net.fabricmc.fabric.impl.networking.ServerSidePacketRegistryImpl;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import io.netty.buffer.Unpooled;
-import mcvmcomputers.MainMod;
-import mcvmcomputers.entities.EntityPC;
-import mcvmcomputers.networking.PacketList;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.fabricmc.fabric.api.server.PlayerStream;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ServerPlayerEntity;
+import java.util.stream.Stream;
 
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {

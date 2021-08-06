@@ -1,22 +1,7 @@
 package mcvmcomputers.mixins;
 
-import static mcvmcomputers.client.ClientMod.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ConcurrentModificationException;
-import java.util.List;
-
 import mcvmcomputers.client.ClientMod;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import mcvmcomputers.client.gui.setup.GuiSetup;
-import mcvmcomputers.client.tablet.TabletOS;
 import mcvmcomputers.client.utils.VMRunnable;
 import mcvmcomputers.entities.EntityItemPreview;
 import mcvmcomputers.item.ItemList;
@@ -32,7 +17,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
-import vbhook.VBHook;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+
+import static mcvmcomputers.client.ClientMod.*;
 
 @Mixin(MinecraftClient.class)
 public class GameloopMixin {

@@ -1,29 +1,15 @@
 package mcvmcomputers.mixins;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import mcvmcomputers.entities.EntityCRTScreen;
 import mcvmcomputers.entities.EntityDeliveryChest;
-import mcvmcomputers.entities.EntityFlatScreen;
-import mcvmcomputers.entities.EntityWallTV;
-import mcvmcomputers.entities.EntityItemPreview;
-import mcvmcomputers.entities.EntityKeyboard;
-import mcvmcomputers.entities.EntityList;
-import mcvmcomputers.entities.EntityMouse;
-import mcvmcomputers.entities.EntityPC;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.thread.ThreadExecutor;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkMixin {
