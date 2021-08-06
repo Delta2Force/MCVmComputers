@@ -1,40 +1,10 @@
 package mcvmcomputers.client;
 
-import java.io.*;
-import java.lang.annotation.Native;
-import java.nio.ByteBuffer;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
-
-import mcvmcomputers.client.entities.model.DeliveryChestModel;
-import mcvmcomputers.client.entities.model.OrderingTabletModel;
-import mcvmcomputers.sound.SoundList;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityModelLayerRegistry;
-import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.entity.Entity;
-import net.minecraft.sound.SoundCategory;
-import org.apache.commons.lang3.SystemUtils;
-import org.lwjgl.glfw.GLFW;
-
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.MainMod;
-import mcvmcomputers.client.entities.render.CRTScreenRender;
-import mcvmcomputers.client.entities.render.DeliveryChestRender;
-import mcvmcomputers.client.entities.render.FlatScreenRender;
-import mcvmcomputers.client.entities.render.WallTVRender;
-import mcvmcomputers.client.entities.render.ItemPreviewRender;
-import mcvmcomputers.client.entities.render.KeyboardRender;
-import mcvmcomputers.client.entities.render.MouseRender;
-import mcvmcomputers.client.entities.render.PCRender;
+import mcvmcomputers.client.entities.model.DeliveryChestModel;
+import mcvmcomputers.client.entities.model.OrderingTabletModel;
+import mcvmcomputers.client.entities.render.*;
 import mcvmcomputers.client.gui.GuiCreateHarddrive;
 import mcvmcomputers.client.gui.GuiFocus;
 import mcvmcomputers.client.gui.GuiPCEditing;
@@ -45,21 +15,35 @@ import mcvmcomputers.entities.EntityList;
 import mcvmcomputers.entities.EntityPC;
 import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.networking.PacketList;
+import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.utils.TabletOrder;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.lwjgl.system.MemoryUtil;
+import org.apache.commons.lang3.SystemUtils;
+import org.lwjgl.glfw.GLFW;
 import vbhook.VBHook;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 @Environment(EnvType.CLIENT)
 public class ClientMod implements ClientModInitializer{

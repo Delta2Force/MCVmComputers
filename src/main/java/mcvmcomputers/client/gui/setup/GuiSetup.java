@@ -1,32 +1,22 @@
 package mcvmcomputers.client.gui.setup;
 
+import com.google.gson.Gson;
+import mcvmcomputers.client.ClientMod;
+import mcvmcomputers.client.gui.setup.pages.*;
+import mcvmcomputers.client.utils.VMSettings;
+import mcvmcomputers.utils.MVCUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Language;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import org.apache.commons.lang3.SystemUtils;
-
-import com.google.gson.Gson;
-
-import mcvmcomputers.client.ClientMod;
-import mcvmcomputers.client.gui.setup.pages.SetupPage;
-import mcvmcomputers.client.gui.setup.pages.SetupPageIntroMessage;
-import mcvmcomputers.client.gui.setup.pages.SetupPageMaxValues;
-import mcvmcomputers.client.gui.setup.pages.SetupPageUnfocusBinding;
-import mcvmcomputers.client.gui.setup.pages.SetupPageVMComputersDirectory;
-import mcvmcomputers.client.gui.setup.pages.SetupPageVboxDirectory;
-import mcvmcomputers.client.utils.VMSettings;
-import mcvmcomputers.utils.MVCUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Language;
 
 @Environment(EnvType.CLIENT)
 public class GuiSetup extends Screen{

@@ -1,22 +1,7 @@
 package mcvmcomputers.client.gui;
 
-import java.awt.Color;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
-import org.apache.commons.lang3.SystemUtils;
-import org.lwjgl.glfw.GLFW;
-
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityPC;
@@ -24,7 +9,9 @@ import mcvmcomputers.item.ItemHarddrive;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.MVCUtils;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -41,6 +28,13 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Language;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
+import org.apache.commons.lang3.SystemUtils;
+import org.lwjgl.glfw.GLFW;
+
+import java.awt.*;
+import java.io.File;
 
 @Environment(EnvType.CLIENT)
 public class GuiPCEditing extends Screen{
