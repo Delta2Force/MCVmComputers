@@ -425,9 +425,9 @@ JNIEXPORT void JNICALL Java_vbhook_VBHook_screenshot_1vm(JNIEnv* env, jobject ob
 	ISession* session = (ISession*)long_values[4];
 
 #ifdef VBHOOK_WIN
-	display->lpVtbl->TakeScreenShot(display, 0, (BYTE*)buf, long_values[0], long_values[1], BitmapFormat_BGR);
+	display->lpVtbl->TakeScreenShot(display, 0, (BYTE*)buf, long_values[0], long_values[1], BitmapFormat_RGBA);
 #else
-	display->lpVtbl->TakeScreenShot(display, 0, (PRUint8*)buf, long_values[0], long_values[1], BitmapFormat_BGR);
+	display->lpVtbl->TakeScreenShot(display, 0, (PRUint8*)buf, long_values[0], long_values[1], BitmapFormat_RGBA);
 #endif
 	
 	(*env)->ReleaseLongArrayElements(env, array, long_values, JNI_ABORT); //don't waste time copying values when we aren't modifying anything
