@@ -2,7 +2,6 @@ package mcvmcomputers.mixins;
 
 import java.util.stream.Stream;
 
-import net.fabricmc.fabric.impl.networking.ServerSidePacketRegistryImpl;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,7 +29,7 @@ public class PlayerManagerMixin {
 			PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 			b.writeUuid(player.getUuid());
 			watchingPlayers.forEach((p) -> {
-				ServerSidePacketRegistryImpl.INSTANCE.sendToPlayer(p, PacketList.S2C_STOP_SCREEN, b);
+				ServerSidePacketRegistry.INSTANCE.sendToPlayer(p, PacketList.S2C_STOP_SCREEN, b);
 			});
 		}
 	}

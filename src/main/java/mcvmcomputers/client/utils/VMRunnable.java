@@ -3,7 +3,6 @@ package mcvmcomputers.client.utils;
 import static mcvmcomputers.client.ClientMod.*;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.virtualbox_6_1.BitmapFormat;
 import org.virtualbox_6_1.GuestMonitorStatus;
@@ -24,8 +23,8 @@ public class VMRunnable implements Runnable{
 		MinecraftClient mcc = MinecraftClient.getInstance();
 		while(true) {
 			try {
-				double deltaX;
-				double deltaY;
+				double deltaX = 0;
+				double deltaY = 0;
 				
 				deltaX = mouseCurX - mouseLastX;
 				deltaY = mouseCurY - mouseLastY;
@@ -35,7 +34,7 @@ public class VMRunnable implements Runnable{
 				IMachine m = vb.findMachine("VmComputersVm");
 				if(m.getState() == MachineState.PoweredOff) {
 					if(!vmTurningOff && vmTurnedOn) {
-						IProgress pr = m.launchVMProcess(vbManager.getSessionObject(), "headless", Collections.emptyList());
+						IProgress pr = m.launchVMProcess(vbManager.getSessionObject(), "headless", Arrays.asList());
 						pr.waitForCompletion(-1);
 					}else {
 						vmUpdateThread = null;
@@ -66,16 +65,16 @@ public class VMRunnable implements Runnable{
 						console.getKeyboard().putScancodes(vmKeyboardScancodes);
 						vmKeyboardScancodes.clear();
 					}
-					Holder<Long> width = new Holder<>();
-					Holder<Long> height = new Holder<>();
-					Holder<Long> bitsPP = new Holder<>();
-					Holder<Integer> xOrigin = new Holder<>();
-					Holder<Integer> yOrigin = new Holder<>();
-					Holder<GuestMonitorStatus> status = new Holder<>();
+					Holder<Long> width = new Holder<Long>();
+					Holder<Long> height = new Holder<Long>();
+					Holder<Long> bitsPP = new Holder<Long>();
+					Holder<Integer> xOrigin = new Holder<Integer>();
+					Holder<Integer> yOrigin = new Holder<Integer>();
+					Holder<GuestMonitorStatus> status = new Holder<GuestMonitorStatus>();
 					console.getDisplay().getScreenResolution(0L, width, height, bitsPP, xOrigin, yOrigin, status);
 					Long w = width.value;
 					Long h = height.value;
-					byte[] image;
+					byte[] image = null;
 					try {
 						image = console.getDisplay().takeScreenShotToArray(0L, w, h, BitmapFormat.PNG);
 					}catch(Exception ex) {
@@ -85,7 +84,7 @@ public class VMRunnable implements Runnable{
 					ns.unlockMachine();
 					vmTextureBytesSize = image.length;
 					vmTextureBytes = image;
-			}catch(Exception ignored) {} //TERRIBLE PRACTICE BTW
+			}catch(Exception ex) {} //TERRIBLE PRACTICE BTW
 		}
 	}
 

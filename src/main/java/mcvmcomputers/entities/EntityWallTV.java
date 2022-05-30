@@ -10,7 +10,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.ActionResult;
@@ -46,7 +46,7 @@ public class EntityWallTV extends Entity{
 		this.getDataTracker().set(LOOK_AT_POS_Z, (float)lookAt.z);
 		this.getDataTracker().set(OWNER_UUID, uuid);
 	}
-
+	
 	public Vec3d getLookAtPos() {
 		return new Vec3d(this.getDataTracker().get(LOOK_AT_POS_X),
 						 this.getDataTracker().get(LOOK_AT_POS_Y),
@@ -61,14 +61,14 @@ public class EntityWallTV extends Entity{
 		this.getDataTracker().startTracking(OWNER_UUID, "");
 	}
 	@Override
-	protected void readCustomDataFromNbt(NbtCompound tag) {
+	protected void readCustomDataFromTag(CompoundTag tag) {
 		this.getDataTracker().set(LOOK_AT_POS_X, tag.getFloat("LookAtX"));
 		this.getDataTracker().set(LOOK_AT_POS_Y, tag.getFloat("LookAtY"));
 		this.getDataTracker().set(LOOK_AT_POS_Z, tag.getFloat("LookAtZ"));
 		this.getDataTracker().set(OWNER_UUID, tag.getString("Owner"));
 	}
 	@Override
-	protected void writeCustomDataToNbt(NbtCompound tag) {
+	protected void writeCustomDataToTag(CompoundTag tag) {
 		tag.putFloat("LookAtX", this.getDataTracker().get(LOOK_AT_POS_X));
 		tag.putFloat("LookAtY", this.getDataTracker().get(LOOK_AT_POS_Y));
 		tag.putFloat("LookAtZ", this.getDataTracker().get(LOOK_AT_POS_Z));

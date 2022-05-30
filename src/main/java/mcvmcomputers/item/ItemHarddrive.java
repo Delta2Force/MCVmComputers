@@ -2,8 +2,8 @@ package mcvmcomputers.item;
 
 import mcvmcomputers.MainMod;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -17,6 +17,11 @@ public class ItemHarddrive extends OrderableItem{
 	}
 	
 	@Override
+	public boolean shouldSyncTagToClient() {
+		return true;
+	}
+	
+	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		if(world.isClient) {
 			MainMod.hardDriveClick.run();
@@ -26,9 +31,9 @@ public class ItemHarddrive extends OrderableItem{
 	
 	@Override
 	public Text getName(ItemStack stack) {
-		if(stack.getNbt() != null) {
-			if(stack.getNbt().contains("vhdfile")) {
-				return new TranslatableText("mcvmcomputers.hdd_item_name", stack.getNbt().getString("vhdfile")).formatted(Formatting.WHITE);
+		if(stack.getTag() != null) {
+			if(stack.getTag().contains("vhdfile")) {
+				return new TranslatableText("mcvmcomputers.hdd_item_name", stack.getTag().getString("vhdfile")).formatted(Formatting.WHITE);
 			}
 		}
 		return new TranslatableText("mcvmcomputers.hdd_item_name", new TranslatableText("mcvmcomputers.hdd_right_click").asString()).formatted(Formatting.WHITE);
@@ -36,9 +41,9 @@ public class ItemHarddrive extends OrderableItem{
 	
 	public static ItemStack createHardDrive(String fileName) {
 		ItemStack is = new ItemStack(ItemList.ITEM_HARDDRIVE);
-		NbtCompound ct = is.getOrCreateNbt();
+		CompoundTag ct = is.getOrCreateTag();
 		ct.putString("vhdfile", fileName);
-		is.setNbt(ct);
+		is.setTag(ct);
 		return is;
 	}
 

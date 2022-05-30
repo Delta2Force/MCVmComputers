@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "mcvmcomputers.mixins",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_8",
   "mixins": [
     "ServerMixin",
     "PlayerManagerMixin"

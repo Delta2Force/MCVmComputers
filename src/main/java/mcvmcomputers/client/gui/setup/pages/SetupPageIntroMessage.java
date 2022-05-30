@@ -31,15 +31,15 @@ public class SetupPageIntroMessage extends SetupPage{
 	public void init() {
 		if(!setupGui.loadedConfiguration) {
 			int buttonW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.nextButton"))+20;
-			setupGui.addChild(new ButtonWidget(setupGui.width/2 - (buttonW/2), setupGui.height - 40, buttonW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.nextButton")), (bw) -> this.setupGui.nextPage()));
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (buttonW/2), setupGui.height - 40, buttonW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.nextButton")), (bw) -> this.setupGui.nextPage()));
 		}else {
 			int useConfigW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.useConfig"))+20;
 			int redoSetupW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.redoSetup"))+20;
 			int w = useConfigW;
 			if(redoSetupW > useConfigW)
 				w = redoSetupW;
-			setupGui.addChild(new ButtonWidget(setupGui.width/2 - (w/2), setupGui.height / 2 - 25, w, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.useConfig")), (bw) -> this.setupGui.lastPage()));
-			setupGui.addChild(new ButtonWidget(setupGui.width/2 - (w/2), setupGui.height / 2 + 5, w, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.redoSetup")), (bw) -> this.delete()));
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (w/2), setupGui.height / 2 - 25, w, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.useConfig")), (bw) -> this.setupGui.lastPage()));
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (w/2), setupGui.height / 2 + 5, w, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.redoSetup")), (bw) -> this.delete()));
 		}
 	}
 	public void delete() {

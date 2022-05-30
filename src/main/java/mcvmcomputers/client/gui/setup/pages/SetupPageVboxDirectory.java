@@ -84,8 +84,8 @@ public class SetupPageVboxDirectory extends SetupPage{
 		vboxDirectory.setMaxLength(35565);
 		vboxDirectory.setText(dirText);
 		vboxDirectory.setChangedListener((s) -> checkDirectory(s));
-		setupGui.addChild(vboxDirectory);
-		setupGui.addChild(next);
+		setupGui.addElement(vboxDirectory);
+		setupGui.addButton(next);
 	}
 
 }

@@ -7,7 +7,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformation.Mode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -15,7 +14,7 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 
 public class ItemPreviewRender extends EntityRenderer<EntityItemPreview>{
-	public ItemPreviewRender(EntityRendererFactory.Context dispatcher) {
+	public ItemPreviewRender(EntityRenderDispatcher dispatcher) {
 		super(dispatcher);
 	}
 
@@ -41,7 +40,7 @@ public class ItemPreviewRender extends EntityRenderer<EntityItemPreview>{
 				matrices.translate(0, 0, -0.1);
 			}
 		}
-		MinecraftClient.getInstance().getItemRenderer().renderItem(entity.getPreviewedItemStack(), Mode.NONE, 200, 0, matrices, vertexConsumers, 0);
+		MinecraftClient.getInstance().getItemRenderer().renderItem(entity.getPreviewedItemStack(), Mode.NONE, 200, 0, matrices, vertexConsumers);
 		matrices.pop();
 		matrices.pop();
 	}

@@ -40,11 +40,22 @@ public class GuiSetup extends Screen{
 	public GuiSetup() {
 		super(new LiteralText("Setup"));
 	}
-
-	// :(
-	public <T extends net.minecraft.client.gui.Element & net.minecraft.client.gui.Drawable & net.minecraft.client.gui.Selectable> void addChild(T e) {this.addDrawableChild(e);}
-
-	public void clearChildren() {super.clearChildren();}
+	
+	public void addElement(Element e) {
+		this.children.add(e);
+	}
+	
+	public void clearElements() {
+		this.children.clear();
+	}
+	
+	public void clearButtons() {
+		this.buttons.clear();
+	}
+	
+	public void addButton(ButtonWidget bw) {
+		super.addButton(bw);
+	}
 	
 	public void nextPage() {
 		if(setupIndex < setupPages.size()) {
@@ -71,7 +82,8 @@ public class GuiSetup extends Screen{
 	}
 
 	public void firstPage() {
-		this.clearChildren();
+		this.clearButtons();
+		this.clearElements();
 		setupIndex = 0;
 		currentSetupPage = setupPages.get(0);
 		this.init();
@@ -121,7 +133,8 @@ public class GuiSetup extends Screen{
 			currentSetupPage = setupPages.get(0);
 			initialized = true;
 		}
-		this.clearChildren();
+		this.clearButtons();
+		this.clearElements();
 		currentSetupPage.init();
 	}
 	

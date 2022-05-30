@@ -86,8 +86,8 @@ public class SetupPageVMComputersDirectory extends SetupPage{
 		vmComputersDirectory.setMaxLength(35565);
 		vmComputersDirectory.setText(dirText);
 		vmComputersDirectory.setChangedListener((s) -> checkDirectory(s));
-		setupGui.addChild(vmComputersDirectory);
-		setupGui.addChild(next);
+		setupGui.addElement(vmComputersDirectory);
+		setupGui.addButton(next);
 	}
 
 }

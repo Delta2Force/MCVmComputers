@@ -42,7 +42,7 @@ public class PacketList {
 		}
 	}
 	
-	public static void removeHdd(EntityPC pc) {
+	public static void removeHdd(EntityPC pc, String uuid) {
 		if(!pc.getHardDriveFileName().isEmpty()) {
 			pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), ItemHarddrive.createHardDrive(pc.getHardDriveFileName())));
 			pc.setHardDriveFileName("");
@@ -51,7 +51,7 @@ public class PacketList {
 	
 	public static void removeCpu(EntityPC pc) {
 		if(pc.getCpuDividedBy() > 0) {
-			Item cpuItem;
+			Item cpuItem = null;
 			switch(pc.getCpuDividedBy()) {
 			case 2:
 				cpuItem = ItemList.ITEM_CPU2;
@@ -71,7 +71,7 @@ public class PacketList {
 	}
 	
 	public static void removeRam(EntityPC pc, int slot) {
-		Item ramStickItem;
+		Item ramStickItem = null;
 		if(slot == 0) {
 			if(pc.getGigsOfRamInSlot0() == 1024) {
 				ramStickItem = ItemList.ITEM_RAM1G;
@@ -91,6 +91,7 @@ public class PacketList {
 				return;
 			}
 			pc.setGigsOfRamInSlot0(0);
+			pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), new ItemStack(ramStickItem)));
 		}else {
 			if(pc.getGigsOfRamInSlot1() == 1024) {
 				ramStickItem = ItemList.ITEM_RAM1G;
@@ -110,7 +111,7 @@ public class PacketList {
 				return;
 			}
 			pc.setGigsOfRamInSlot1(0);
+			pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), new ItemStack(ramStickItem)));
 		}
-		pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), new ItemStack(ramStickItem)));
 	}
 }

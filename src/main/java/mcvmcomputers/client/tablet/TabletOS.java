@@ -17,9 +17,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.impl.networking.ClientSidePacketRegistryImpl;
 import org.lwjgl.glfw.GLFW;
 
 import io.netty.buffer.Unpooled;
@@ -43,7 +40,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
-@Environment(EnvType.CLIENT)
 public class TabletOS {
 	//Rendering variables
 	public NativeImage renderedImage;
@@ -83,22 +79,23 @@ public class TabletOS {
 	private float totalTimeRadar;
 	private BufferedImage lastRadarImage; //last rendered image for transition from radar to store
 	private boolean satelliteVisible = false;
-	public OrderingTabletModel orderingTabletModel;
+	public final OrderingTabletModel orderingTabletModel = new OrderingTabletModel();
 	
 	//General variables
 	private float deltaTime;
 	private long lastDeltaTimeTime;
 	public boolean tabletOn = false;
-	public Font font;
+	private final Font font;
 	public State tabletState = State.LOOKING_FOR_SATELLITE;
 	private MinecraftClient mcc = MinecraftClient.getInstance();
 	
-	public TabletOS() {
+	public TabletOS() throws FontFormatException, IOException {
 		radarSound = new TabletSoundInstance(SoundList.RADAR_SOUND);
 		shopIntroSound = new TabletSoundInstance(SoundList.SHOPINTRO_SOUND);
 		shopOutroSound = new TabletSoundInstance(SoundList.SHOPOUTRO_SOUND);
 		shopMusicSound = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_FAR, 0.6f, 0.2f);
 		displayOrderMusicSound = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_STRAD, 0.6f, 0.2f);
+		font = Font.createFont(Font.PLAIN, mcc.getResourceManager().getResource(new Identifier("mcvmcomputers", "font/tabletfont.ttf")).getInputStream());
 		radarRadius = new ArrayList<Float>();
 	}
 	
@@ -131,10 +128,6 @@ public class TabletOS {
 	}
 	
 	public void render() {
-		if(font == null) {
- 			return;
-		}
-
 		if(lastDeltaTimeTime == 0) {
 			lastDeltaTimeTime = System.currentTimeMillis();
 		}else {
@@ -598,7 +591,7 @@ public class TabletOS {
 		//System.out.println(mcc.getSoundManager().isPlaying(shopMusicSound));
 		
 		if(tabletOn) {
-			if(orderingTabletModel != null) orderingTabletModel.setButtons(pressed(GLFW.GLFW_KEY_UP), pressed(GLFW.GLFW_KEY_DOWN), pressed(GLFW.GLFW_KEY_LEFT), pressed(GLFW.GLFW_KEY_RIGHT), pressed(GLFW.GLFW_KEY_ENTER), mcc.getTickDelta());
+			orderingTabletModel.setButtons(pressed(GLFW.GLFW_KEY_UP), pressed(GLFW.GLFW_KEY_DOWN), pressed(GLFW.GLFW_KEY_LEFT), pressed(GLFW.GLFW_KEY_RIGHT), pressed(GLFW.GLFW_KEY_ENTER), mcc.getTickDelta());
 			if(tabletState == State.LOOKING_FOR_SATELLITE && satelliteVisible) {
 				if(pressed(GLFW.GLFW_KEY_ENTER)) {
 					totalTimeRadar = 0;
@@ -718,7 +711,7 @@ public class TabletOS {
 									for(OrderableItem i : shoppingCart) {
 										p.writeItemStack(new ItemStack(i));
 									}
-									ClientSidePacketRegistryImpl.INSTANCE.sendToServer(PacketList.C2S_ORDER, p);
+									ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ORDER, p);
 									
 									tabletState = State.SHOP_OUTRO;
 									totalTimeRadar = 0;
@@ -738,9 +731,9 @@ public class TabletOS {
 	
 	public void generateTexture() {
 		if(!tabletOn) {
-			if(orderingTabletModel != null)orderingTabletModel.rotateButtons(2F, deltaTime);
+			orderingTabletModel.rotateButtons(2F, deltaTime);
 		}else {
-			if(orderingTabletModel != null)orderingTabletModel.rotateButtons(-0.7854F, deltaTime/1.4f);
+			orderingTabletModel.rotateButtons(-0.7854F, deltaTime/1.4f);
 		}
 		if(!tabletOn) {
 			return;
