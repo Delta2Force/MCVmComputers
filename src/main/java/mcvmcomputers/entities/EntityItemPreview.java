@@ -8,7 +8,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.world.World;
@@ -42,7 +42,19 @@ public class EntityItemPreview extends Entity{
 			this.kill();
 		}
 	}
-	
+
+	@Override
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		if(nbt.contains("Item")) {
+			this.getDataTracker().set(PREVIEWED_STACK, ItemStack.fromNbt(nbt.getCompound("Item")));
+		}
+	}
+
+	@Override
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		nbt.put("Item", this.getDataTracker().get(PREVIEWED_STACK).getOrCreateNbt());
+	}
+
 	public void setItem(ItemStack is) {
 		this.getDataTracker().set(PREVIEWED_STACK, is);
 	}
@@ -54,18 +66,6 @@ public class EntityItemPreview extends Entity{
 	@Override
 	protected void initDataTracker() {
 		this.getDataTracker().startTracking(PREVIEWED_STACK, new ItemStack(Items.REDSTONE_BLOCK));
-	}
-
-	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		if(tag.contains("Item")) {
-			this.getDataTracker().set(PREVIEWED_STACK, ItemStack.fromTag(tag.getCompound("Item")));
-		}
-	}
-
-	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		tag.put("Item", this.getDataTracker().get(PREVIEWED_STACK).toTag(new CompoundTag()));
 	}
 
 	@Override

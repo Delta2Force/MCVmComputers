@@ -24,7 +24,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityPC;
-import mcvmcomputers.item.ItemHarddrive;
+import mcvmcomputers.item.ItemHardDrive;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.MVCUtils;
@@ -316,7 +316,7 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
 						for(ItemStack is : minecraft.player.inventory.main) {
-							if(is.getItem() instanceof ItemHarddrive) {
+							if(is.getItem() instanceof ItemHardDrive) {
 								if(is.getTag() != null){
 									if(is.getTag().contains("vhdfile")) {
 		    							String file = is.getTag().getString("vhdfile");

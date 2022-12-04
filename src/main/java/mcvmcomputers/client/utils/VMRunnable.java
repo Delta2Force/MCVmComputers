@@ -4,15 +4,15 @@ import static mcvmcomputers.client.ClientMod.*;
 
 import java.util.Arrays;
 
-import org.virtualbox_6_1.BitmapFormat;
-import org.virtualbox_6_1.GuestMonitorStatus;
-import org.virtualbox_6_1.Holder;
-import org.virtualbox_6_1.IConsole;
-import org.virtualbox_6_1.IMachine;
-import org.virtualbox_6_1.IProgress;
-import org.virtualbox_6_1.ISession;
-import org.virtualbox_6_1.LockType;
-import org.virtualbox_6_1.MachineState;
+import org.virtualbox_7_0.BitmapFormat;
+import org.virtualbox_7_0.GuestMonitorStatus;
+import org.virtualbox_7_0.Holder;
+import org.virtualbox_7_0.IConsole;
+import org.virtualbox_7_0.IMachine;
+import org.virtualbox_7_0.IProgress;
+import org.virtualbox_7_0.ISession;
+import org.virtualbox_7_0.LockType;
+import org.virtualbox_7_0.MachineState;
 
 import mcvmcomputers.client.gui.GuiFocus;
 import net.minecraft.client.MinecraftClient;

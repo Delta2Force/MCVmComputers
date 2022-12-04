@@ -1,6 +1,6 @@
 package mcvmcomputers.entities;
 
-import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -19,9 +19,8 @@ public class EntityList {
 	public static EntityType<Entity> DELIVERY_CHEST;
 
 	public static void init() {
-		ITEM_PREVIEW = Registry.register(Registry.ENTITY_TYPE,
-						new Identifier("mcvmcomputers", "item_preview"),
-						FabricEntityTypeBuilder.create(SpawnGroup.MISC, EntityItemPreview::new)
+		ITEM_PREVIEW = Registry.register(Registry.ENTITY_TYPE, new Identifier("mcvmcomputers", "item_preview"),
+				FabricEntityTypeBuilder.create(SpawnGroup.MISC, EntityItemPreview::new).build());
 						.size(new EntityDimensions(1,1, true)).trackable(60, 2,true).build());
 		KEYBOARD = Registry.register(Registry.ENTITY_TYPE, 
 					new Identifier("mcvmcomputers", "keyboard"),

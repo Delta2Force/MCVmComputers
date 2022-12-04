@@ -10,7 +10,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.ActionResult;
@@ -60,20 +60,6 @@ public class EntityFlatScreen extends Entity{
 		this.getDataTracker().startTracking(LOOK_AT_POS_Z, 0f);
 		this.getDataTracker().startTracking(OWNER_UUID, "");
 	}
-	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		this.getDataTracker().set(LOOK_AT_POS_X, tag.getFloat("LookAtX"));
-		this.getDataTracker().set(LOOK_AT_POS_Y, tag.getFloat("LookAtY"));
-		this.getDataTracker().set(LOOK_AT_POS_Z, tag.getFloat("LookAtZ"));
-		this.getDataTracker().set(OWNER_UUID, tag.getString("Owner"));
-	}
-	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		tag.putFloat("LookAtX", this.getDataTracker().get(LOOK_AT_POS_X));
-		tag.putFloat("LookAtY", this.getDataTracker().get(LOOK_AT_POS_Y));
-		tag.putFloat("LookAtZ", this.getDataTracker().get(LOOK_AT_POS_Z));
-		tag.putString("Owner", this.getDataTracker().get(OWNER_UUID));
-	}
 	
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
@@ -100,12 +86,28 @@ public class EntityFlatScreen extends Entity{
 			this.kill();
 		}
 	}
-	
+
 	@Override
-	public boolean collides() {
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		this.getDataTracker().set(LOOK_AT_POS_X, nbt.getFloat("LookAtX"));
+		this.getDataTracker().set(LOOK_AT_POS_Y, nbt.getFloat("LookAtY"));
+		this.getDataTracker().set(LOOK_AT_POS_Z, nbt.getFloat("LookAtZ"));
+		this.getDataTracker().set(OWNER_UUID, nbt.getString("Owner"));
+	}
+
+	@Override
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		nbt.putFloat("LookAtX", this.getDataTracker().get(LOOK_AT_POS_X));
+		nbt.putFloat("LookAtY", this.getDataTracker().get(LOOK_AT_POS_Y));
+		nbt.putFloat("LookAtZ", this.getDataTracker().get(LOOK_AT_POS_Z));
+		nbt.putString("Owner", this.getDataTracker().get(OWNER_UUID));
+	}
+
+	@Override
+	public boolean collidesWith(Entity other) {
 		return true;
 	}
-	
+
 	public String getOwnerUUID() {
 		return this.getDataTracker().get(OWNER_UUID);
 	}

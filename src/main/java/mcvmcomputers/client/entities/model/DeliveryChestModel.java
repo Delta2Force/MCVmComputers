@@ -17,23 +17,26 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
 public class DeliveryChestModel extends EntityModel<Entity> {
-	public final ModelPart model;
-	public final ModelPart opening;
-	public final ModelPart upleg0;
-	public final ModelPart uleg0;
-	public final ModelPart upleg1;
-	public final ModelPart uleg1;
-	public final ModelPart upleg2;
-	public final ModelPart uleg2;
-	public final ModelPart upleg3;
-	public final ModelPart uleg3;
-	public final ModelPart engine;
-	public final ModelPart fire;
+	public ModelPart model;
+	public ModelPart opening;
+	public ModelPart upleg0;
+	public ModelPart uleg0;
+	public ModelPart upleg1;
+	public ModelPart uleg1;
+	public ModelPart upleg2;
+	public ModelPart uleg2;
+	public ModelPart upleg3;
+	public ModelPart uleg3;
+	public ModelPart engine;
+	public ModelPart fire;
 	
-	private final NativeImage baseTexture;
-	private final MinecraftClient mcc;
+	private NativeImage baseTexture;
+	private MinecraftClient mcc;
 	
 	public static final Random TEX_RANDOM = new Random();
+
+	private static final int textureWidth = 64;
+	private static final int textureHeight = 64;
 	
 	private NativeImage ni;
 	private NativeImageBackedTexture nibt;
@@ -43,10 +46,7 @@ public class DeliveryChestModel extends EntityModel<Entity> {
 
 	public DeliveryChestModel() throws IOException {
 		this.mcc = MinecraftClient.getInstance();
-		this.baseTexture = NativeImage.read(mcc.getResourceManager().getResource(new Identifier("mcvmcomputers", "textures/entity/delivery_chest.png")).getInputStream());
-		
-		textureWidth = 64;
-		textureHeight = 64;
+		this.baseTexture = NativeImage.read(mcc.getResourceManager().getResource(new Identifier("mcvmcomputers", "textures/entity/delivery_chest.png")).stream().);
 
 		model = new ModelPart(this);
 		model.setPivot(0.0F, 7.0F, 0.0F);

@@ -17,6 +17,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformation.Mode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -33,8 +34,8 @@ public class WallTVRender extends EntityRenderer<EntityWallTV>{
 	   });
 	protected static final RenderPhase.Alpha ONE_TENTH_ALPHA = new RenderPhase.Alpha(0.003921569F);
 	
-	public WallTVRender(EntityRenderDispatcher dispatcher) {
-		super(dispatcher);
+	public WallTVRender(EntityRendererFactory.Context ctx) {
+		super(ctx);
 	}
 
 	@Override

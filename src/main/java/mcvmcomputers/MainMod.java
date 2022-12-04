@@ -1,7 +1,6 @@
 package mcvmcomputers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,13 +14,13 @@ import com.google.common.collect.UnmodifiableIterator;
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.entities.EntityList;
 import mcvmcomputers.entities.EntityPC;
-import mcvmcomputers.item.ItemHarddrive;
+import mcvmcomputers.item.ItemHardDrive;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.utils.TabletOrder;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -29,9 +28,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -41,10 +38,10 @@ public class MainMod implements ModInitializer{
 	public static Map<UUID, TabletOrder> orders;
 	public static Map<UUID, EntityPC> computers;
 	
-	public static Runnable hardDriveClick = new Runnable() { @Override public void run() {} };
-	public static Runnable deliveryChestSound = new Runnable() { @Override public void run() {} };
-	public static Runnable focus = new Runnable() { @Override public void run() {} };
-	public static Runnable pcOpenGui = new Runnable() { @Override public void run() {} };
+	public static Runnable hardDriveClick = () -> {};
+	public static Runnable deliveryChestSound = () -> {};
+	public static Runnable focus = () -> {};
+	public static Runnable pcOpenGui = () -> {};
 	
 	public void onInitialize() {
 		orders = new HashMap<UUID, TabletOrder>();
@@ -56,7 +53,7 @@ public class MainMod implements ModInitializer{
 	}
 	
 	public static void registerServerPackets() {
-		ServerSidePacketRegistry.INSTANCE.register(C2S_ORDER, (packetContext, attachedData) -> {
+		ServerPlayNetworking.registerReceiver(C2S_ORDER, (packetContext, attachedData) -> {
 			int arraySize = attachedData.readInt();
 			OrderableItem[] items = new OrderableItem[arraySize];
 			int price = 0;
@@ -70,7 +67,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				TabletOrder to = new TabletOrder();
 				to.items = new ArrayList<>();
-				to.items.addAll(Arrays.asList(items));
+				to.items.addAll(List.of(items));
 				to.price = pr;
 				to.orderUUID = packetContext.getPlayer().getUuid().toString();
 				MainMod.orders.put(packetContext.getPlayer().getUuid(), to);
@@ -103,8 +100,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Entity e = packetContext.getPlayer().world.getEntityById(pcEntityId);
 				if(e != null) {
-					if(e instanceof EntityPC) {
-						EntityPC pc = (EntityPC) e;
+					if(e instanceof EntityPC pc) {
 						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 							MainMod.computers.put(packetContext.getPlayer().getUuid(), (EntityPC) e);
 						}
@@ -121,9 +117,7 @@ public class MainMod implements ModInitializer{
 				watchingPlayers.forEach((player) -> {
 					ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_STOP_SCREEN, b);
 				});
-				if(MainMod.computers.containsKey(packetContext.getPlayer().getUuid())) {
-					MainMod.computers.remove(packetContext.getPlayer().getUuid());
-				}
+				MainMod.computers.remove(packetContext.getPlayer().getUuid());
 			});
 		});
 		
@@ -133,7 +127,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				for(ItemStack is : packetContext.getPlayer().getItemsHand()) {
 					if(is != null) {
-						if(is.getItem() instanceof ItemHarddrive) {
+						if(is.getItem() instanceof ItemHardDrive) {
 							CompoundTag ct = is.getOrCreateTag();
 							ct.putString("vhdfile", newHddName);
 							break;
@@ -153,8 +147,7 @@ public class MainMod implements ModInitializer{
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
-						if (e instanceof EntityPC) {
-							EntityPC pc = (EntityPC) e;
+						if (e instanceof EntityPC pc) {
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(!pc.getMotherboardInstalled()) {
 									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
@@ -178,8 +171,7 @@ public class MainMod implements ModInitializer{
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
-						if (e instanceof EntityPC) {
-							EntityPC pc = (EntityPC) e;
+						if (e instanceof EntityPC pc) {
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(!pc.getGpuInstalled()) {
 									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
@@ -204,8 +196,7 @@ public class MainMod implements ModInitializer{
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
-						if (e instanceof EntityPC) {
-							EntityPC pc = (EntityPC) e;
+						if (e instanceof EntityPC pc) {
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getCpuDividedBy() == 0) {
 									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
@@ -230,8 +221,7 @@ public class MainMod implements ModInitializer{
 				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
-						if (e instanceof EntityPC) {
-							EntityPC pc = (EntityPC) e;
+						if (e instanceof EntityPC pc) {
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getGigsOfRamInSlot0() == 0) {
 									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
@@ -254,12 +244,11 @@ public class MainMod implements ModInitializer{
 			int entityId = attachedData.readInt();
 			
 			packetContext.getTaskQueue().execute(() -> {
-				ItemStack lookingFor = ItemHarddrive.createHardDrive(vhdname);
+				ItemStack lookingFor = ItemHardDrive.createHardDrive(vhdname);
 				if(packetContext.getPlayer().inventory.contains(lookingFor)) {
 					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 					if(e != null) {
-						if (e instanceof EntityPC) {
-							EntityPC pc = (EntityPC) e;
+						if (e instanceof EntityPC pc) {
 							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 								if(pc.getHardDriveFileName().isEmpty()) {
 									removeStck(packetContext.getPlayer().inventory, lookingFor);
@@ -280,8 +269,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 				if(e != null) {
-					if (e instanceof EntityPC) {
-						EntityPC pc = (EntityPC) e;
+					if (e instanceof EntityPC pc) {
 						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 							if(pc.getMotherboardInstalled()) {
 								pc.setMotherboardInstalled(false);
@@ -308,8 +296,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 				if(e != null) {
-					if (e instanceof EntityPC) {
-						EntityPC pc = (EntityPC) e;
+					if (e instanceof EntityPC pc) {
 						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 							removeGpu(pc);
 						}
@@ -324,8 +311,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 				if(e != null) {
-					if (e instanceof EntityPC) {
-						EntityPC pc = (EntityPC) e;
+					if (e instanceof EntityPC pc) {
 						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 							removeHdd(pc, packetContext.getPlayer().getUuid().toString());
 						}
@@ -340,8 +326,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 				if(e != null) {
-					if (e instanceof EntityPC) {
-						EntityPC pc = (EntityPC) e;
+					if (e instanceof EntityPC pc) {
 						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 							removeCpu(pc);
 						}
@@ -357,8 +342,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 				if(e != null) {
-					if (e instanceof EntityPC) {
-						EntityPC pc = (EntityPC) e;
+					if (e instanceof EntityPC pc) {
 						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 							removeRam(pc, slot);
 						}
@@ -374,8 +358,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 				if(e != null) {
-					if (e instanceof EntityPC) {
-						EntityPC pc = (EntityPC) e;
+					if (e instanceof EntityPC pc) {
 						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 							if(pc.getIsoFileName().isEmpty()) {
 								pc.setIsoFileName(isoName);
@@ -392,8 +375,7 @@ public class MainMod implements ModInitializer{
 			packetContext.getTaskQueue().execute(() -> {
 				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
 				if(e != null) {
-					if (e instanceof EntityPC) {
-						EntityPC pc = (EntityPC) e;
+					if (e instanceof EntityPC pc) {
 						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
 							if(!pc.getIsoFileName().isEmpty()) {
 								pc.setIsoFileName("");
@@ -409,11 +391,11 @@ public class MainMod implements ModInitializer{
 		UnmodifiableIterator<DefaultedList<ItemStack>> var2 = ImmutableList.of(inv.main, inv.armor, inv.offHand).iterator();
 
 	      while(var2.hasNext()) {
-	         List<ItemStack> list = (List<ItemStack>)var2.next();
+	         List<ItemStack> list = var2.next();
 	         Iterator<ItemStack> var4 = list.iterator();
 
 	         while(var4.hasNext()) {
-	            ItemStack itemStack = (ItemStack)var4.next();
+	            ItemStack itemStack = var4.next();
 	            if (!itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(is)) {
 	            	itemStack.decrement(1);
 	            	return;

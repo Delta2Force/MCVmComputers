@@ -1,7 +1,7 @@
 package mcvmcomputers.networking;
 
 import mcvmcomputers.entities.EntityPC;
-import mcvmcomputers.item.ItemHarddrive;
+import mcvmcomputers.item.ItemHardDrive;
 import mcvmcomputers.item.ItemList;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
@@ -44,7 +44,7 @@ public class PacketList {
 	
 	public static void removeHdd(EntityPC pc, String uuid) {
 		if(!pc.getHardDriveFileName().isEmpty()) {
-			pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), ItemHarddrive.createHardDrive(pc.getHardDriveFileName())));
+			pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), ItemHardDrive.createHardDrive(pc.getHardDriveFileName())));
 			pc.setHardDriveFileName("");
 		}
 	}
