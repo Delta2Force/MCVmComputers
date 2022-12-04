@@ -11,4 +11,4 @@ jobs:
       with:
         java-version: 17
     - name: Build with Gradle
-      run: chmod +x ./gradlew && ./gradlew build
+      run: chmod +x ./gradlew & ./gradlew build
