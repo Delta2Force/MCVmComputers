@@ -1,8 +1,19 @@
-# VM Computers 
-###### I spent my whole quarantine working on this.
-#### Made with the SDK of and tested with VirtualBox 6.1.8, you need a VirtualBox version that starts with "6.1" for the mod to work.
-#### Install [Fabric](https://fabricmc.net/use/) for Minecraft 1.16.5 and [the Fabric API mod](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to load the mod .jar (.jar goes in .minecraft/mods)
-#### You can donate in BTC to the address 3GubEkHV69gCkjWhRgRWYqWqyjcWW3gxFF or in BCH to bitcoincash:qq6jttzlvgj68lvecnh75pt3znezj4vx6sysfvj3j5
+<p align="center"><img src="https://raw.githubusercontent.com/y2k04/MCVmComputers/master/src/main/resources/assets/mcvmcomputers/icon.png" height="320"></p>
+
+<details>
+	<summary>Donate to the original creator (<a href="https://github.com/Delta2Force">Delta2Force</a>)<br><sub><i>Note: Only accepts Bitcoin and BitcoinCash</i></sub></summary>
+<i>BTC:</i> <code>3GubEkHV69gCkjWhRgRWYqWqyjcWW3gxFF</code><br><i>BCH:</i> <code>bitcoincash:qq6jttzlvgj68lvecnh75pt3znezj4vx6sysfvj3j5</code>
+</details><hr>
+
+<h3>Dependencies</h3>
+<ul>
+	<li>Minecraft 1.19.2</li><ul>
+		<li><a href="https://fabricmc.net/use">Fabric</a></li>
+		<li><a href="https://curseforge.com/minecraft/mc-mods/fabric-api">Fabric API</a></li>
+	</ul>
+	<li><a href="https://virtualbox.org/wiki/Downloads">VirtualBox 7</a></li>
+</ul>
+
 ## How to use
 ### Ordering
 #### 1) Craft yourself an ordering tablet.
