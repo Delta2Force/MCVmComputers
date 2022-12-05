@@ -25,3 +25,7 @@
 | Increase GPU memory (for newer OS') |     | You can barely run Windows 10 in VirtualBox because of 1. Low memory, 2. Underpowered virtual CPU and 3. Lack of GPU memory. |
 | Cables |     | Only allow a certain radius for stuff to be connected to the computer, could repurpose the lead? |
 | Server racks |     | Linus Tech Tips style rack (his personal rig is a literal server rack) |
+
+Note to self:
+Try this when interfacing with VMWare and other virtualisation software that doesn't have a Java API
+https://github.com/java-native-access/jna
