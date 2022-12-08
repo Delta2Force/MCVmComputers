@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.virtualbox_6_1.IVirtualBox;
-import org.virtualbox_6_1.VirtualBoxManager;
+import org.virtualbox_7_0.IVirtualBox;
+import org.virtualbox_7_0.VirtualBoxManager;
 
 import com.google.gson.Gson;
 
@@ -19,7 +19,7 @@ import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class SetupPageMaxValues extends SetupPage{
 	private String statusMaxRam;
@@ -171,8 +171,7 @@ public class SetupPageMaxValues extends SetupPage{
 					}
 					ClientMod.vbManager = vm;
 					ClientMod.vb = vb;
-					minecraft.openScreen(new TitleScreen());
-					return;
+					minecraft.setScreenAndRender(new TitleScreen());
 				}catch(Exception ex) {
 					ex.printStackTrace();
 					for(int i = 5;i>=0;i--) {
@@ -221,10 +220,10 @@ public class SetupPageMaxValues extends SetupPage{
 			videoMemoryText = videoMemory.getText();
 		}
 		if(!onlyStatusMessage) {
-			maxRam = new TextFieldWidget(this.textRender, setupGui.width/2-160, setupGui.height/2-20, 150, 20, new LiteralText(""));
+			maxRam = new TextFieldWidget(this.textRender, setupGui.width/2-160, setupGui.height/2-20, 150, 20, Text.of(""));
 			maxRam.setText(maxRamText);
 			maxRam.setChangedListener((str) -> checkMaxRam(str));
-			videoMemory = new TextFieldWidget(this.textRender, setupGui.width/2+10, setupGui.height/2-20, 150, 20, new LiteralText(""));
+			videoMemory = new TextFieldWidget(this.textRender, setupGui.width/2+10, setupGui.height/2-20, 150, 20, Text.of(""));
 			videoMemory.setText(videoMemoryText);
 			videoMemory.setChangedListener((str) -> videoMemory(str));
 			checkMaxRam(maxRam.getText());
@@ -232,7 +231,7 @@ public class SetupPageMaxValues extends SetupPage{
 			setupGui.addElement(maxRam);
 			setupGui.addElement(videoMemory);
 			int confirmW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.confirmButton"))+40;
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (confirmW/2), setupGui.height - 40, confirmW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.confirmButton")), (btn) -> confirmButton(btn)));
+			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (confirmW/2), setupGui.height - 40, confirmW, 20, Text.translatable(setupGui.translation("mcvmcomputers.setup.confirmButton")), (btn) -> confirmButton(btn)));
 			
 			if(setupGui.startVb) {
 				confirmButton(null);

@@ -9,7 +9,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class SetupPageVMComputersDirectory extends SetupPage{
 	private TextFieldWidget vmComputersDirectory;
@@ -76,13 +76,13 @@ public class SetupPageVMComputersDirectory extends SetupPage{
 	@Override
 	public void init() {
 		int nextButtonW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.nextButton"))+40;
-		next = new ButtonWidget(setupGui.width/2 - (nextButtonW/2), setupGui.height - 40, nextButtonW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.nextButton")), (bw) -> this.next(bw));
+		next = new ButtonWidget(setupGui.width/2 - (nextButtonW/2), setupGui.height - 40, nextButtonW, 20, Text.translatable(setupGui.translation("mcvmcomputers.setup.nextButton")), (bw) -> this.next(bw));
 		String dirText = ClientMod.vhdDirectory.getParentFile().getAbsolutePath();
 		if(vmComputersDirectory != null) {
 			dirText = vmComputersDirectory.getText();
 		}
 		this.checkDirectory(dirText);
-		vmComputersDirectory = new TextFieldWidget(this.textRender, setupGui.width/2 - 160, setupGui.height/2 - 10, 320, 20, new LiteralText(""));
+		vmComputersDirectory = new TextFieldWidget(this.textRender, setupGui.width/2 - 160, setupGui.height/2 - 10, 320, 20, Text.of(""));
 		vmComputersDirectory.setMaxLength(35565);
 		vmComputersDirectory.setText(dirText);
 		vmComputersDirectory.setChangedListener((s) -> checkDirectory(s));

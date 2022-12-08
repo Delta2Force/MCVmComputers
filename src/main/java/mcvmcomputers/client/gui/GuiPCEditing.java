@@ -5,18 +5,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import net.minecraft.util.math.random.RandomSeed;
 import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.glfw.GLFW;
-import org.virtualbox_6_1.AccessMode;
-import org.virtualbox_6_1.DeviceType;
-import org.virtualbox_6_1.IMachine;
-import org.virtualbox_6_1.IMedium;
-import org.virtualbox_6_1.IProgress;
-import org.virtualbox_6_1.ISession;
-import org.virtualbox_6_1.LockType;
-import org.virtualbox_6_1.MachineState;
-import org.virtualbox_6_1.StorageBus;
-import org.virtualbox_6_1.VBoxException;
+import org.objectweb.asm.tree.InsnList;
+import org.virtualbox_7_0.*;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -28,7 +21,7 @@ import mcvmcomputers.item.ItemHardDrive;
 import mcvmcomputers.item.ItemList;
 import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.MVCUtils;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -41,8 +34,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Language;
 
@@ -65,12 +57,24 @@ public class GuiPCEditing extends Screen{
 	private static final ItemStack HARD_DRIVE = new ItemStack(ItemList.ITEM_HARDDRIVE);
 
 	private final Object vmTurningON = new Object();
+	private InsnList buttons;
+	private InsnList children;
 
 	public GuiPCEditing(EntityPC pc_case) {
-		super(new TranslatableText("text.pc_editor.title"));
+		super(Text.translatable("text.pc_editor.title"));
 		this.pc_case = pc_case;
 		minecraft = MinecraftClient.getInstance();
 	}
+
+	// TODO Need to substitute these RenderSystem functions because they don't exist anymore:
+	// 		pushMatrix
+	//		popMatrix
+	//		enable/disableRescaleNormal
+	//		enable/disableAlphaTest
+	//		defaultAlphaFunc
+	//		color4f
+	// 		translatef
+	//		rotatef
 	
 	public void renderBackgroundAndMobo(MatrixStack ms) {
 		this.fillGradient(ms, 0, 0, this.width, this.height, new Color(0f,0f,0f,Math.max(0.5f*introScale,0)).getRGB(), new Color(0f,0f,0f,0.5f*introScale).getRGB());
@@ -151,14 +155,14 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	private void renderItem(ItemStack stack) {
-		BakedModel mdll = minecraft.getItemRenderer().getHeldItemModel(stack, null, null);
-	    VertexConsumerProvider.Immediate immediatee = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+		BakedModel mdll = minecraft.getItemRenderer().getModel(stack, null, null, (int)RandomSeed.getSeed());
+	    VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
 	    boolean ble = !mdll.isSideLit();
 	      if (ble) {
 	         DiffuseLighting.disableGuiDepthLighting();
 	      }
-	    this.minecraft.getItemRenderer().renderItem(stack, Mode.NONE, false, new MatrixStack(), immediatee, 15728640, OverlayTexture.DEFAULT_UV, mdll);
-		immediatee.draw();
+	    this.minecraft.getItemRenderer().renderItem(stack, Mode.NONE, false, new MatrixStack(), immediate, 15728640, OverlayTexture.DEFAULT_UV, mdll);
+		immediate.draw();
 		RenderSystem.enableDepthTest();
 	      if (ble) {
 	         DiffuseLighting.enableGuiDepthLighting();
@@ -169,59 +173,59 @@ public class GuiPCEditing extends Screen{
 	private void addMotherboard(boolean sixtyFour) {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeBoolean(sixtyFour);
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_MOBO, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_ADD_MOBO, b);
 	}
 	
 	private void removeMotherboard() {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_MOBO, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_REMOVE_MOBO, b);
 	}
 	
 	private void addCPU(Item cpuItem, int dividedBy) {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeInt(dividedBy);
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_CPU, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_ADD_CPU, b);
 	}
 	
 	private void addGPU() {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_GPU, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_ADD_GPU, b);
 	}
 	
 	private void addHardDrive(String fileName) {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeString(fileName);
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_HARD_DRIVE, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_ADD_HARD_DRIVE, b);
 	}
 	
 	private void removeHardDrive() {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_HARD_DRIVE, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_REMOVE_HARD_DRIVE, b);
 	}
 	
 	private void addRamStick(Item ramItem, int megs) {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeInt(megs);
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_RAM, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_ADD_RAM, b);
 	}
 	
 	private void removeRamStick(int slot) {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeInt(slot);
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_RAM, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_REMOVE_RAM, b);
 	}
 	private void removeCPU() {
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_CPU, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_REMOVE_CPU, b);
 	}
 	
 	@Override
@@ -237,7 +241,7 @@ public class GuiPCEditing extends Screen{
 		this.children.clear();
 		if(introScale > 0.99f) {
 			if(openCase) {
-				if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
+				if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getId()) {
 					openCase = false;
 				}
 				if(SystemUtils.IS_OS_MAC) {
@@ -254,7 +258,7 @@ public class GuiPCEditing extends Screen{
 					}
 				}
 				if(pc_case.getMotherboardInstalled()) {
-					this.addButton(new ButtonWidget(this.width/2-70, this.height / 2 - 70, 10, 10, new LiteralText("x"), (btn) -> this.removeMotherboard()));
+					this.addDrawable(new ButtonWidget(this.width/2-70, this.height / 2 - 70, 10, 10, Text.of("x"), (btn) -> this.removeMotherboard()));
 					RenderSystem.disableDepthTest();
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef(0, 0, 200);
@@ -273,23 +277,23 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
 						int addCpuWidth = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "6"));
-						ButtonWidget div2 = new ButtonWidget(this.width/2 - (addCpuWidth+59), this.height / 2 - 31, addCpuWidth+4, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "2")), (btn) -> this.addCPU(ItemList.ITEM_CPU2, 2));
-						ButtonWidget div4 = new ButtonWidget(this.width/2 - (addCpuWidth+59), this.height / 2 - 18, addCpuWidth+4, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "4")), (btn) -> this.addCPU(ItemList.ITEM_CPU4, 4));
-						ButtonWidget div6 = new ButtonWidget(this.width/2 - (addCpuWidth+59), this.height / 2 - 5, addCpuWidth+4, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "6")), (btn) -> this.addCPU(ItemList.ITEM_CPU6, 6));
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_CPU2))) {
+						ButtonWidget div2 = new ButtonWidget(this.width/2 - (addCpuWidth+59), this.height / 2 - 31, addCpuWidth+4, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "2")), (btn) -> this.addCPU(ItemList.ITEM_CPU2, 2));
+						ButtonWidget div4 = new ButtonWidget(this.width/2 - (addCpuWidth+59), this.height / 2 - 18, addCpuWidth+4, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "4")), (btn) -> this.addCPU(ItemList.ITEM_CPU4, 4));
+						ButtonWidget div6 = new ButtonWidget(this.width/2 - (addCpuWidth+59), this.height / 2 - 5, addCpuWidth+4, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_cpu_btn").replace("%s", "6")), (btn) -> this.addCPU(ItemList.ITEM_CPU6, 6));
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_CPU2))) {
 							div2.active = false;
 						}
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_CPU4))) {
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_CPU4))) {
 							div4.active = false;
 						}
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_CPU6))) {
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_CPU6))) {
 							div6.active = false;
 						}
-						this.addButton(div2);
-						this.addButton(div4);
-						this.addButton(div6);
+						this.addDrawable(div2);
+						this.addDrawable(div4);
+						this.addDrawable(div6);
 					}else {
-						this.addButton(new ButtonWidget(this.width/2-43, this.height / 2 - 16, 10, 10, new LiteralText("x"), (btn) -> this.removeCPU()));
+						this.addDrawable(new ButtonWidget(this.width/2-43, this.height / 2 - 16, 10, 10, Text.of("x"), (btn) -> this.removeCPU()));
 						RenderSystem.disableDepthTest();
 						RenderSystem.pushMatrix();
 						RenderSystem.translatef(0, 0, 200);
@@ -299,10 +303,10 @@ public class GuiPCEditing extends Screen{
 					}
 					if(!pc_case.getGpuInstalled()) {
 						int addGpuWidth = this.textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.add_gpu"));
-						ButtonWidget bw = new ButtonWidget(this.width/2 - 64, this.height / 2 + 33, addGpuWidth+4, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_gpu")), (btn) -> this.addGPU());
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_GPU)))
+						ButtonWidget bw = new ButtonWidget(this.width/2 - 64, this.height / 2 + 33, addGpuWidth+4, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_gpu")), (btn) -> this.addGPU());
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_GPU)))
 							bw.active = false;
-						this.addButton(bw);
+						this.addDrawable(bw);
 					}
 					if(pc_case.getHardDriveFileName().isEmpty()) {
 						int lastYOffset = 0;
@@ -315,14 +319,14 @@ public class GuiPCEditing extends Screen{
 						this.textRenderer.draw(ms, lang.get("mcvmcomputers.pc_editing.add_vhds"), this.width/2 + 20, this.height/2 + 30, -1);
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
-						for(ItemStack is : minecraft.player.inventory.main) {
+						for(ItemStack is : minecraft.player.getInventory().main) {
 							if(is.getItem() instanceof ItemHardDrive) {
-								if(is.getTag() != null){
-									if(is.getTag().contains("vhdfile")) {
-		    							String file = is.getTag().getString("vhdfile");
+								if(is.getNbt() != null){
+									if(is.getNbt().contains("vhdfile")) {
+		    							String file = is.getNbt().getString("vhdfile");
 		    							if(new File(ClientMod.vhdDirectory, file).exists()) {
 		    								int w = Math.max(50, this.textRenderer.getWidth(file)+4);
-		    								this.addButton(new ButtonWidget(this.width/2 + 20 + lastXOffset, this.height / 2 + 40 + lastYOffset, Math.max(50, this.textRenderer.getWidth(file)+4), 12, new LiteralText(file), (btn) -> this.addHardDrive(file)));
+		    								this.addDrawable(new ButtonWidget(this.width/2 + 20 + lastXOffset, this.height / 2 + 40 + lastYOffset, Math.max(50, this.textRenderer.getWidth(file)+4), 12, Text.of(file), (btn) -> this.addHardDrive(file)));
 		    								lastXOffset += w+1;
 											xOffCount += 1;
 											if(xOffCount >= 3) {
@@ -345,7 +349,7 @@ public class GuiPCEditing extends Screen{
 							RenderSystem.enableDepthTest();
 						}
 					}else {
-						this.addButton(new ButtonWidget(this.width/2+30, this.height / 2 + 55, 10, 10, new LiteralText("x"), (btn) -> this.removeHardDrive()));
+						this.addDrawable(new ButtonWidget(this.width/2+30, this.height / 2 + 55, 10, 10, Text.of("x"), (btn) -> this.removeHardDrive()));
 						RenderSystem.disableDepthTest();
 						RenderSystem.pushMatrix();
 						RenderSystem.translatef(0, 0, 200);
@@ -361,41 +365,41 @@ public class GuiPCEditing extends Screen{
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
 						int addMBRamWidth = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "512"))+4;
-						ButtonWidget sixfourM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 64, addMBRamWidth, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "64")), (btn) -> this.addRamStick(ItemList.ITEM_RAM64M, 64));
-						ButtonWidget oneM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 51, addMBRamWidth, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "128")), (btn) -> this.addRamStick(ItemList.ITEM_RAM128M, 128));
-						ButtonWidget twoM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 38, addMBRamWidth, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "256")), (btn) -> this.addRamStick(ItemList.ITEM_RAM256M, 256));
-						ButtonWidget fiveM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 25, addMBRamWidth, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "512")), (btn) -> this.addRamStick(ItemList.ITEM_RAM512M, 512));
-						ButtonWidget oneG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 12, addMBRamWidth, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "1")), (btn) -> this.addRamStick(ItemList.ITEM_RAM1G, 1024));
-						ButtonWidget twoG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 1, addMBRamWidth, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "2")), (btn) -> this.addRamStick(ItemList.ITEM_RAM2G, 2048));
-						ButtonWidget fourG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 14, addMBRamWidth, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "4")), (btn) -> this.addRamStick(ItemList.ITEM_RAM4G, 4096));
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM64M))) {
+						ButtonWidget sixfourM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 64, addMBRamWidth, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "64")), (btn) -> this.addRamStick(ItemList.ITEM_RAM64M, 64));
+						ButtonWidget oneM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 51, addMBRamWidth, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "128")), (btn) -> this.addRamStick(ItemList.ITEM_RAM128M, 128));
+						ButtonWidget twoM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 38, addMBRamWidth, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "256")), (btn) -> this.addRamStick(ItemList.ITEM_RAM256M, 256));
+						ButtonWidget fiveM = new ButtonWidget(this.width/2 + 50, this.height / 2 - 25, addMBRamWidth, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_mbram_btn").replace("%s", "512")), (btn) -> this.addRamStick(ItemList.ITEM_RAM512M, 512));
+						ButtonWidget oneG = new ButtonWidget(this.width/2 + 50, this.height / 2 - 12, addMBRamWidth, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "1")), (btn) -> this.addRamStick(ItemList.ITEM_RAM1G, 1024));
+						ButtonWidget twoG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 1, addMBRamWidth, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "2")), (btn) -> this.addRamStick(ItemList.ITEM_RAM2G, 2048));
+						ButtonWidget fourG = new ButtonWidget(this.width/2 + 50, this.height / 2 + 14, addMBRamWidth, 12, Text.of(lang.get("mcvmcomputers.pc_editing.add_ram_btn").replace("%s", "4")), (btn) -> this.addRamStick(ItemList.ITEM_RAM4G, 4096));
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_RAM64M))) {
 							sixfourM.active = false;
 						}
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM128M))) {
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_RAM128M))) {
 							oneM.active = false;
 						}
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM256M))) {
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_RAM256M))) {
 							twoM.active = false;
 						}
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM512M))) {
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_RAM512M))) {
 							fiveM.active = false;
 						}
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM1G))) {
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_RAM1G))) {
 							oneG.active = false;
 						}
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM2G))) {
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_RAM2G))) {
 							twoG.active = false;
 						}
-						if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_RAM4G))) {
+						if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_RAM4G))) {
 							fourG.active = false;
 						}
-						this.addButton(sixfourM);
-						this.addButton(oneM);
-						this.addButton(twoM);
-						this.addButton(fiveM);
-						this.addButton(oneG);
-						this.addButton(twoG);
-						this.addButton(fourG);
+						this.addDrawable(sixfourM);
+						this.addDrawable(oneM);
+						this.addDrawable(twoM);
+						this.addDrawable(fiveM);
+						this.addDrawable(oneG);
+						this.addDrawable(twoG);
+						this.addDrawable(fourG);
 					}
 					if(pc_case.getGigsOfRamInSlot0() > 0) {
 						RenderSystem.disableDepthTest();
@@ -410,7 +414,7 @@ public class GuiPCEditing extends Screen{
 						}
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
-						this.addButton(new ButtonWidget(this.width/2+21, this.height / 2 - 70, 10, 10, new LiteralText("x"), (btn) -> this.removeRamStick(0)));
+						this.addDrawable(new ButtonWidget(this.width/2+21, this.height / 2 - 70, 10, 10, Text.of("x"), (btn) -> this.removeRamStick(0)));
 					}
 					if(pc_case.getGigsOfRamInSlot1() > 0) {
 						RenderSystem.disableDepthTest();
@@ -423,7 +427,7 @@ public class GuiPCEditing extends Screen{
 						}
 						RenderSystem.popMatrix();
 						RenderSystem.enableDepthTest();
-						this.addButton(new ButtonWidget(this.width/2 + 37, this.height / 2 - 70, 10, 10, new LiteralText("x"), (btn) -> this.removeRamStick(1)));
+						this.addDrawable(new ButtonWidget(this.width/2 + 37, this.height / 2 - 70, 10, 10, Text.of("x"), (btn) -> this.removeRamStick(1)));
 					}
 				}else {
 					int thirtytwow = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.add_32bit_mobo"))+4;
@@ -431,24 +435,24 @@ public class GuiPCEditing extends Screen{
 					int sixtyfourw = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.add_64bit_mobo"))+4;
 					ButtonWidget sixtyfour = new ButtonWidget(this.width/2 - (sixtyfourw/2), this.height / 2 - 7, sixtyfourw, 14, new LiteralText(lang.get("mcvmcomputers.pc_editing.add_64bit_mobo")), (btn) -> this.addMotherboard(true));
 					
-					if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_MOTHERBOARD))) {
+					if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_MOTHERBOARD))) {
 						thirtytwo.active = false;
 					}
-					if(!minecraft.player.inventory.contains(new ItemStack(ItemList.ITEM_MOTHERBOARD64))) {
+					if(!minecraft.player.getInventory().contains(new ItemStack(ItemList.ITEM_MOTHERBOARD64))) {
 						sixtyfour.active = false;
 					}
 					
-					this.addButton(thirtytwo);
-					this.addButton(sixtyfour);
+					this.addDrawable(thirtytwo);
+					this.addDrawable(sixtyfour);
 				}
 			}else {
-				boolean turnedOn = (ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getEntityId()) || (ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getEntityId());
+				boolean turnedOn = (ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getId()) || (ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getId());
 				if(turnedOn) {
 					int buttonW = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.turn_off"))+4;
-					this.addButton(new ButtonWidget((this.width/2 + 103) - buttonW, this.height / 2 - 80, buttonW, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.turn_off")), (btn) -> this.turnOffPC(btn)));
+					this.addDrawable(new ButtonWidget((this.width/2 + 103) - buttonW, this.height / 2 - 80, buttonW, 12, Text.of(lang.get("mcvmcomputers.pc_editing.turn_off")), (btn) -> this.turnOffPC(btn)));
 				}else {
 					int buttonW = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.turn_on"))+4;
-					this.addButton(new ButtonWidget((this.width/2 + 103) - buttonW, this.height / 2 - 80, buttonW, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.turn_on")), (btn) -> this.turnOnPC(btn)));
+					this.addDrawable(new ButtonWidget((this.width/2 + 103) - buttonW, this.height / 2 - 80, buttonW, 12, Text.of(lang.get("mcvmcomputers.pc_editing.turn_on")), (btn) -> this.turnOnPC(btn)));
 				}
 				
 				if(ClientMod.vmSession != null) {
@@ -478,7 +482,7 @@ public class GuiPCEditing extends Screen{
 								offX = 0;
 								offY += 14;
 							}
-							this.addButton(new ButtonWidget(this.width/2 - 75 + offX, this.height / 2 - 62 + offY, this.textRenderer.getWidth(f.getName())+8, 12, new LiteralText(f.getName()), (btn) -> insertISO(f.getName())));
+							this.addButton(new ButtonWidget(this.width/2 - 75 + offX, this.height / 2 - 62 + offY, this.textRenderer.getWidth(f.getName())+8, 12, Text.of(f.getName()), (btn) -> insertISO(f.getName())));
 							offX += this.textRenderer.getWidth(f.getName())+10;
 						}
 					}
@@ -491,12 +495,12 @@ public class GuiPCEditing extends Screen{
 					RenderSystem.popMatrix();
 					RenderSystem.enableDepthTest();
 					int ejectW = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.eject"));
-					this.addButton(new ButtonWidget(this.width/2 - 75, this.height / 2 - 50, ejectW+4, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.eject")), (btn) -> removeISO()));
+					this.addDrawable(new ButtonWidget(this.width/2 - 75, this.height / 2 - 50, ejectW+4, 12, Text.of(lang.get("mcvmcomputers.pc_editing.eject")), (btn) -> removeISO()));
 				}
 				int openCaseW = textRenderer.getWidth(lang.get("mcvmcomputers.pc_editing.open_case"));
-				ButtonWidget bw = new ButtonWidget(this.width/2 - 82, this.height / 2 + 65, openCaseW+4, 12, new LiteralText(lang.get("mcvmcomputers.pc_editing.open_case")), (btn) -> openCase = true);
+				ButtonWidget bw = new ButtonWidget(this.width/2 - 82, this.height / 2 + 65, openCaseW+4, 12, Text.of(lang.get("mcvmcomputers.pc_editing.open_case")), (btn) -> openCase = true);
 				bw.active = !turnedOn;
-				this.addButton(bw);
+				this.addDrawable(bw);
 			}
 		}
 		RenderSystem.disableDepthTest();
@@ -507,23 +511,23 @@ public class GuiPCEditing extends Screen{
 	}
 	
 	private void removeISO() {
-		if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getEntityId()) {
+		if((ClientMod.vmTurningOn || ClientMod.vmTurnedOn) && ClientMod.vmEntityID == pc_case.getId()) {
 			try {
 				ClientMod.vmSession.getMachine().unmountMedium("IDE Controller", 1, 0, true);
 			}catch(VBoxException ex) {}
 		}
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_REMOVE_ISO, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_REMOVE_ISO, b);
 	}
 	
 	private void insertISO(String name) {
-		if(ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getEntityId()) {
+		if(ClientMod.vmTurnedOn && ClientMod.vmEntityID == pc_case.getId()) {
 			IMedium m = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, name).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
 			ClientMod.vmSession.getMachine().mountMedium("IDE Controller", 1, 0, m, true);
 		}
-		if(ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getEntityId()) {
-			minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.waitingforvmtostart").formatted(Formatting.YELLOW), false);
+		if(ClientMod.vmTurningOn && ClientMod.vmEntityID == pc_case.getId()) {
+			minecraft.player.sendMessage(Text.translatable("mcvmcomputers.waitingforvmtostart").formatted(Formatting.YELLOW), false);
 			synchronized (vmTurningON) {
 				try {
 					vmTurningON.wait();
@@ -534,15 +538,15 @@ public class GuiPCEditing extends Screen{
 		}
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 		b.writeString(name);
-		b.writeInt(this.pc_case.getEntityId());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ADD_ISO, b);
+		b.writeInt(this.pc_case.getId());
+		ClientPlayNetworking.send(PacketList.C2S_ADD_ISO, b);
 	}
 	
 	public void turnOffPC(ButtonWidget wdgt) {
 		ClientMod.vmTurningOff = true;
 		ClientMod.vmTurnedOn = false;
 		PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_TURN_OFF_PC, b);
+		ClientPlayNetworking.send(PacketList.C2S_TURN_OFF_PC, b);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -566,13 +570,13 @@ public class GuiPCEditing extends Screen{
 		if(pc_case.getCpuDividedBy() > 0 && pc_case.getGpuInstalled() && pc_case.getMotherboardInstalled() && (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1()) >= 1) {
 			if(!pc_case.getHardDriveFileName().isEmpty()) {
 				if(!new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
-					minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.hdd_doesnt_exist").formatted(Formatting.RED), false);
+					minecraft.player.sendMessage(Text.translatable("mcvmcomputers.hdd_doesnt_exist").formatted(Formatting.RED), false);
 					return;
 				}
 			}
 			if(!pc_case.getIsoFileName().isEmpty()) {
 				if(!new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
-					minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.iso_doesnt_exist").formatted(Formatting.RED), false);
+					minecraft.player.sendMessage(Text.translatable("mcvmcomputers.iso_doesnt_exist").formatted(Formatting.RED), false);
 					return;
 				}
 			}
@@ -581,149 +585,145 @@ public class GuiPCEditing extends Screen{
 				return;
 			}
 			ClientMod.vmTurningOn = true;
-			ClientMod.vmEntityID = pc_case.getEntityId();
+			ClientMod.vmEntityID = pc_case.getId();
 			PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-			b.writeInt(pc_case.getEntityId());
-			ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_TURN_ON_PC, b);
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					ArrayList<ISession> usedSessions = new ArrayList<>();
+			b.writeInt(pc_case.getId());
+			ClientPlayNetworking.send(PacketList.C2S_TURN_ON_PC, b);
+			new Thread(() -> {
+				ArrayList<ISession> usedSessions = new ArrayList<>();
+				try {
+					IMachine found = null;
 					try {
-						IMachine found = null;
-						try {
-							found = ClientMod.vb.findMachine("VmComputersVm");
-						}catch(VBoxException e) {}
-						
-						if(found != null) {
-							if(found.getState() == MachineState.Running) {
-								ISession sess = ClientMod.vbManager.getSessionObject();
-								found.lockMachine(sess, LockType.Shared);
-								IProgress ip = sess.getConsole().powerDown();
-								ip.waitForCompletion(-1);
-								sess.unlockMachine();
-							}
+						found = ClientMod.vb.findMachine("VmComputersVm");
+					}catch(VBoxException e) {}
+
+					if(found != null) {
+						if(found.getState() == MachineState.Running) {
 							ISession sess = ClientMod.vbManager.getSessionObject();
-							found.lockMachine(sess, LockType.Write);
-							usedSessions.add(sess);
-							IMachine edit = sess.getMachine();
-							String OSType = edit.getOSTypeId();
-							if(pc_case.get64Bit()) {
-								if(!OSType.endsWith("_64"))
-									OSType += "_64";
-							}else {
-								OSType = OSType.replace("_64","");
-							}
-							edit.setOSTypeId(OSType);
-							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
-							edit.setCPUCount(Math.max(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()));
-							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
-							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
-							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
-							try{
-								edit.removeStorageController("IDE Controller");
-							}catch (VBoxException ex){}
-							edit.addStorageController("IDE Controller", StorageBus.IDE);
-							if(!pc_case.getHardDriveFileName().isEmpty()) {
-								if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
-									IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
-									edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
-								}
-							}
-							if(!pc_case.getIsoFileName().isEmpty()) {
-								if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
-									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-									try {
-										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
-									}catch(VBoxException ex) {}
-								}else if(pc_case.getIsoFileName().equals("Additions")) {
-									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-									try {
-										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
-									}catch(VBoxException ex) {}
-								}
-							}
-							if(pc_case.getIsoFileName().isEmpty()) {
-								edit.attachDevice("IDE Controller",1,0,DeviceType.DVD,null);
-							}
-							edit.saveSettings();
+							found.lockMachine(sess, LockType.Shared);
+							IProgress ip = sess.getConsole().powerDown();
+							ip.waitForCompletion(-1);
 							sess.unlockMachine();
-							usedSessions.remove(sess);
-						}else {
-							String OSType = "Other";
-							if(pc_case.get64Bit()) {
+						}
+						ISession sess = ClientMod.vbManager.getSessionObject();
+						found.lockMachine(sess, LockType.Write);
+						usedSessions.add(sess);
+						IMachine edit = sess.getMachine();
+						String OSType = edit.getOSTypeId();
+						if(pc_case.get64Bit()) {
+							if(!OSType.endsWith("_64"))
 								OSType += "_64";
-							}
-							IMachine machine = ClientMod.vb.createMachine("", "VmComputersVm", null, OSType, "");
-							ClientMod.vb.registerMachine(machine);
-							ISession sess = ClientMod.vbManager.getSessionObject();
-							machine.lockMachine(sess, LockType.Write);
-							usedSessions.add(sess);
-							IMachine edit = sess.getMachine();
-							edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
-							edit.setCPUCount(Math.min(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()));
-							edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
-							edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
-							edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
-							edit.addStorageController("IDE Controller", StorageBus.IDE);
-							if(!pc_case.getHardDriveFileName().isEmpty()) {
-								if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
-									IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
-									edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
-								}
-							}
-							if(!pc_case.getIsoFileName().isEmpty()) {
-								if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
-									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-									try {
-										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
-									}catch(VBoxException ex) {}
-								}else if(pc_case.getIsoFileName().equals("Additions")) {
-									IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
-									try {
-										edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
-									}catch(VBoxException ex) {}
-								}
-							}
-							if(pc_case.getIsoFileName().isEmpty()) {
-								edit.attachDevice("IDE Controller",1,0,DeviceType.DVD,null);
-							}
-							edit.saveSettings();
-							sess.unlockMachine();
-							usedSessions.remove(sess);
+						}else {
+							OSType = OSType.replace("_64","");
 						}
-						
-						IMachine machine = ClientMod.vb.findMachine("VmComputersVm");
-						ClientMod.vmSession = ClientMod.vbManager.getSessionObject();
-						IProgress pr = machine.launchVMProcess(ClientMod.vmSession, "headless", Arrays.asList());
-						pr.waitForCompletion(-1);
-						ClientMod.vmTurningOn = false;
-						ClientMod.vmTurnedOn = true;
-						synchronized (vmTurningON) {
-							vmTurningON.notify();
+						edit.setOSTypeId(OSType);
+						edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
+						edit.setCPUCount(Math.max(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()));
+						edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
+						edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
+						edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
+						try{
+							edit.removeStorageController("IDE Controller");
+						}catch (VBoxException ex){}
+						edit.addStorageController("IDE Controller", StorageBus.IDE);
+						if(!pc_case.getHardDriveFileName().isEmpty()) {
+							if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
+								IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
+								edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
+							}
 						}
-					}catch(Exception ex) {
-						for(ISession is : usedSessions) {
-							try {
-								is.unlockMachine();
-							}catch(Exception exx) {}
+						if(!pc_case.getIsoFileName().isEmpty()) {
+							if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
+								IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+								try {
+									edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+								}catch(VBoxException ex) {}
+							}else if(pc_case.getIsoFileName().equals("Additions")) {
+								IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+								try {
+									edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+								}catch(VBoxException ex) {}
+							}
 						}
-						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.failed_to_start", ex.getMessage()).formatted(Formatting.RED), false);
-						minecraft.player.sendMessage(new TranslatableText("mcvmcomputers.contact_me").formatted(Formatting.RED), false);
-						ClientMod.vmTurningOn = false;
-						ClientMod.vmTurnedOn = false;
-						
-						PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-						ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_TURN_OFF_PC, b);
+						if(pc_case.getIsoFileName().isEmpty()) {
+							edit.attachDevice("IDE Controller",1,0,DeviceType.DVD,null);
+						}
+						edit.saveSettings();
+						sess.unlockMachine();
+						usedSessions.remove(sess);
+					}else {
+						String OSType = "Other";
+						if(pc_case.get64Bit()) {
+							OSType += "_64";
+						}
+						IMachine machine = ClientMod.vb.createMachine("", "VmComputersVm", null, OSType, "", "", "", "");
+						ClientMod.vb.registerMachine(machine);
+						ISession sess = ClientMod.vbManager.getSessionObject();
+						machine.lockMachine(sess, LockType.Write);
+						usedSessions.add(sess);
+						IMachine edit = sess.getMachine();
+						edit.setMemorySize((long) Math.min(ClientMod.maxRam, (pc_case.getGigsOfRamInSlot0() + pc_case.getGigsOfRamInSlot1())));
+						edit.setCPUCount(Math.min(1, ClientMod.vb.getHost().getProcessorCount() / pc_case.getCpuDividedBy()));
+						edit.getGraphicsAdapter().setAccelerate2DVideoEnabled(true);
+						edit.getGraphicsAdapter().setAccelerate3DEnabled(true);
+						edit.getGraphicsAdapter().setVRAMSize((long)ClientMod.videoMem);
+						edit.addStorageController("IDE Controller", StorageBus.IDE);
+						if(!pc_case.getHardDriveFileName().isEmpty()) {
+							if(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).exists()) {
+								IMedium medium = ClientMod.vb.openMedium(new File(ClientMod.vhdDirectory, pc_case.getHardDriveFileName()).getPath(), DeviceType.HardDisk, AccessMode.ReadWrite, true);
+								edit.attachDevice("IDE Controller", 0, 0, DeviceType.HardDisk, medium);
+							}
+						}
+						if(!pc_case.getIsoFileName().isEmpty()) {
+							if(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).exists()) {
+								IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.isoDirectory, pc_case.getIsoFileName()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+								try {
+									edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+								}catch(VBoxException ex) {}
+							}else if(pc_case.getIsoFileName().equals("Additions")) {
+								IMedium cd = ClientMod.vb.openMedium(new File(ClientMod.vb.getSystemProperties().getDefaultAdditionsISO()).getPath(), DeviceType.DVD, AccessMode.ReadOnly, true);
+								try {
+									edit.attachDevice("IDE Controller", 1, 0, DeviceType.DVD, cd);
+								}catch(VBoxException ex) {}
+							}
+						}
+						if(pc_case.getIsoFileName().isEmpty()) {
+							edit.attachDevice("IDE Controller",1,0,DeviceType.DVD,null);
+						}
+						edit.saveSettings();
+						sess.unlockMachine();
+						usedSessions.remove(sess);
 					}
+
+					IMachine machine = ClientMod.vb.findMachine("VmComputersVm");
+					ClientMod.vmSession = ClientMod.vbManager.getSessionObject();
+					IProgress pr = machine.launchVMProcess(ClientMod.vmSession, "headless", Arrays.asList());
+					pr.waitForCompletion(-1);
+					ClientMod.vmTurningOn = false;
+					ClientMod.vmTurnedOn = true;
+					synchronized (vmTurningON) {
+						vmTurningON.notify();
+					}
+				}catch(Exception ex) {
+					for(ISession is : usedSessions) {
+						try {
+							is.unlockMachine();
+						}catch(Exception exx) {}
+					}
+					minecraft.player.sendMessage(Text.translatable("mcvmcomputers.failed_to_start", ex.getMessage()).formatted(Formatting.RED), false);
+					minecraft.player.sendMessage(Text.translatable("mcvmcomputers.contact_me").formatted(Formatting.RED), false);
+					ClientMod.vmTurningOn = false;
+					ClientMod.vmTurnedOn = false;
+
+					PacketByteBuf b1 = new PacketByteBuf(Unpooled.buffer());
+					ClientPlayNetworking.send(PacketList.C2S_TURN_OFF_PC, b1);
 				}
 			}, "Turn on PC").start();
 		}
 	}
-	
+
 	@Override
-	public boolean isPauseScreen() {
+	public boolean shouldPause() {
 		return false;
 	}
-	
 }

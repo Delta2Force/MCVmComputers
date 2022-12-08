@@ -34,7 +34,7 @@ import mcvmcomputers.client.entities.render.ItemPreviewRender;
 import mcvmcomputers.client.entities.render.KeyboardRender;
 import mcvmcomputers.client.entities.render.MouseRender;
 import mcvmcomputers.client.entities.render.PCRender;
-import mcvmcomputers.client.gui.GuiCreateHarddrive;
+import mcvmcomputers.client.gui.GuiCreateHardDrive;
 import mcvmcomputers.client.gui.GuiFocus;
 import mcvmcomputers.client.gui.GuiPCEditing;
 import mcvmcomputers.client.tablet.TabletOS;
@@ -346,7 +346,7 @@ public class ClientMod implements ClientModInitializer{
 		MinecraftClient client = MinecraftClient.getInstance();
 
 		MainMod.pcOpenGui = () -> client.setScreen(new GuiPCEditing(currentPC));
-		MainMod.hardDriveClick = () -> client.setScreen(new GuiCreateHarddrive());
+		MainMod.hardDriveClick = () -> client.setScreen(new GuiCreateHardDrive());
 		MainMod.focus = () -> client.setScreen(new GuiFocus());
 		MainMod.deliveryChestSound = () -> {
 			if(client.getSoundManager().isPlaying(currentDeliveryChest.rocketSound))

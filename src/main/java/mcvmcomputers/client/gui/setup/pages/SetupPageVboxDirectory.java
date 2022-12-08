@@ -9,7 +9,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class SetupPageVboxDirectory extends SetupPage{
 	private TextFieldWidget vboxDirectory;
@@ -74,13 +74,13 @@ public class SetupPageVboxDirectory extends SetupPage{
 	@Override
 	public void init() {
 		int nextButtonW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.nextButton"))+40;
-		next = new ButtonWidget(setupGui.width/2 - (nextButtonW/2), setupGui.height - 40, nextButtonW, 20, new LiteralText(setupGui.translation("mcvmcomputers.setup.nextButton")), (bw) -> this.next(bw));
+		next = new ButtonWidget(setupGui.width/2 - (nextButtonW/2), setupGui.height - 40, nextButtonW, 20, Text.translatable(setupGui.translation("mcvmcomputers.setup.nextButton")), (bw) -> this.next(bw));
 		String dirText = this.setupGui.virtualBoxDirectory;
 		if(vboxDirectory != null) {
 			dirText = vboxDirectory.getText();
 		}
 		this.checkDirectory(dirText);
-		vboxDirectory = new TextFieldWidget(this.textRender, setupGui.width/2 - 160, setupGui.height/2 - 10, 320, 20, new LiteralText(""));
+		vboxDirectory = new TextFieldWidget(this.textRender, setupGui.width/2 - 160, setupGui.height/2 - 10, 320, 20, Text.of(""));
 		vboxDirectory.setMaxLength(35565);
 		vboxDirectory.setText(dirText);
 		vboxDirectory.setChangedListener((s) -> checkDirectory(s));

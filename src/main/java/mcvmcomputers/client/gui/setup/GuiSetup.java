@@ -23,8 +23,10 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Language;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.InsnList;
 
 public class GuiSetup extends Screen{
 	private List<SetupPage> setupPages;
@@ -36,13 +38,15 @@ public class GuiSetup extends Screen{
 	public String virtualBoxDirectory = "";
 	private Language language = Language.getInstance();
 	private MinecraftClient minecraft = MinecraftClient.getInstance();
-	
+	private InsnList children;
+	private InsnList buttons;
+
 	public GuiSetup() {
-		super(new LiteralText("Setup"));
+		super(Text.of("Setup"));
 	}
 	
 	public void addElement(Element e) {
-		this.children.add(e);
+		this.children.add((AbstractInsnNode) e);
 	}
 	
 	public void clearElements() {
@@ -54,7 +58,7 @@ public class GuiSetup extends Screen{
 	}
 	
 	public void addButton(ButtonWidget bw) {
-		super.addButton(bw);
+		addButton(bw);
 	}
 	
 	public void nextPage() {

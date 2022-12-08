@@ -6,29 +6,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.virtualbox_6_1.AccessMode;
-import org.virtualbox_6_1.DeviceType;
-import org.virtualbox_6_1.IMedium;
-import org.virtualbox_6_1.IProgress;
-import org.virtualbox_6_1.MediumVariant;
+import org.objectweb.asm.tree.InsnList;
+import org.spongepowered.asm.util.PrettyPrinter;
+import org.virtualbox_7_0.AccessMode;
+import org.virtualbox_7_0.DeviceType;
+import org.virtualbox_7_0.IMedium;
+import org.virtualbox_7_0.IProgress;
+import org.virtualbox_7_0.MediumVariant;
 
 import io.netty.buffer.Unpooled;
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.MVCUtils;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Language;
 
-public class GuiCreateHarddrive extends Screen{
+public class GuiCreateHardDrive extends Screen{
 	private TextFieldWidget hddSize;
 	private String status;
 	private State currentState = State.MENU;
@@ -38,7 +41,9 @@ public class GuiCreateHarddrive extends Screen{
 	private ButtonWidget AA;
 	private ButtonWidget BB;
 	private MinecraftClient minecraft = MinecraftClient.getInstance();
-	
+	private PrettyPrinter children;
+	private InsnList buttons;
+
 	public enum State{
 		MENU,
 		CREATE_NEW,
@@ -50,8 +55,8 @@ public class GuiCreateHarddrive extends Screen{
 		vmdk
 	}
 	
-	public GuiCreateHarddrive() {
-		super(new TranslatableText("Create Harddrive"));
+	public GuiCreateHardDrive() {
+		super(Text.of("Create Hard Drive"));
 	}
 	
 	public String translation(String in) {
@@ -65,23 +70,25 @@ public class GuiCreateHarddrive extends Screen{
 			if(hddSize != null) {
 				s = hddSize.getText();
 			}
-			hddSize = new TextFieldWidget(this.textRenderer, this.width/2-150, this.height/2-10, 300, 20, new LiteralText(""));
+			hddSize = new TextFieldWidget(this.textRenderer, this.width/2-150, this.height/2-10, 300, 20, Text.of(""));
 			hddSize.setText(s);
 			hddSize.setChangedListener((st) -> hddSizeUpdate(st));
 			this.children.add(hddSize);
 			this.hddSizeUpdate(hddSize.getText());
-			AA = this.addButton(new ButtonWidget(this.width/2-150, this.height/2+25, 50, 20, new LiteralText("vdi"), (wdgt) -> extset(Ext.vdi)));
+			AA = new ButtonWidget(this.width/2-150, this.height/2+25, 50, 20, Text.of("vdi"), (wdgt) -> extset(Ext.vdi));
 			AA.active = false;
-			BB = this.addButton(new ButtonWidget(this.width/2-96, this.height/2+25, 50, 20, new LiteralText("vmdk"), (wdgt) -> extset(Ext.vmdk)));
+			this.createNew(AA);
+			BB = new ButtonWidget(this.width/2-96, this.height/2+25, 50, 20, Text.of("vmdk"), (wdgt) -> extset(Ext.vmdk));
+			this.createNew(BB);
 			int newvhdWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.newvhd"))+40;
-			this.addButton(new ButtonWidget(this.width/2-(newvhdWidth/2), this.height/2+50, newvhdWidth, 20, new LiteralText(translation("mcvmcomputers.vhd_setup.newvhd")), (wdgt) -> createNew(wdgt)));
+			this.addDrawable(new ButtonWidget(this.width/2-(newvhdWidth/2), this.height/2+50, newvhdWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.newvhd")), (wdgt) -> createNew(wdgt)));
 			int menuWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.menu"))+40;
-			this.addButton(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, new LiteralText(translation("mcvmcomputers.vhd_setup.menu")), (wdgt) -> switchState(State.MENU)));
+			this.addDrawable(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.menu")), (wdgt) -> switchState(State.MENU)));
 		}else if(currentState == State.MENU) {
 			int newvhdWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.newvhd"))+40;
-			this.addButton(new ButtonWidget(this.width/2 - (newvhdWidth/2), this.height/2 - 12, newvhdWidth, 20, new LiteralText(translation("mcvmcomputers.vhd_setup.newvhd")), (wdgt) -> switchState(State.CREATE_NEW)));
+			this.addDrawable(new ButtonWidget(this.width/2 - (newvhdWidth/2), this.height/2 - 12, newvhdWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.newvhd")), (wdgt) -> switchState(State.CREATE_NEW)));
 			int oldvhdWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.oldvhd"))+40;
-			this.addButton(new ButtonWidget(this.width/2 - (oldvhdWidth/2), this.height/2 + 12, oldvhdWidth, 20, new LiteralText(translation("mcvmcomputers.vhd_setup.oldvhd")), (wdgt) -> switchState(State.SELECT_OLD)));
+			this.addDrawable(new ButtonWidget(this.width/2 - (oldvhdWidth/2), this.height/2 + 12, oldvhdWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.oldvhd")), (wdgt) -> switchState(State.SELECT_OLD)));
 		}else {
 			int lastY = 60;
 			ArrayList<File> files = new ArrayList<>();
@@ -97,13 +104,13 @@ public class GuiCreateHarddrive extends Screen{
 				}
 			});
 			for(File f : files) {
-				this.addButton(new ButtonWidget(this.width/2 - 90, lastY, 180, 14, new LiteralText((f.getName() + " | " + ((float)f.length()/1024f/1024f) + " " + translation("mcvmcomputers.vhd_setup.mb_used"))), (wdgt) -> selectOld(wdgt)));
-				this.addButton(new ButtonWidget(this.width/2 + 92, lastY, 14, 14, new LiteralText("x"), (wdgt) -> removevhd(f.getName())));
+				this.addDrawable(new ButtonWidget(this.width/2 - 90, lastY, 180, 14, Text.translatable((f.getName() + " | " + ((float)f.length()/1024f/1024f) + " " + translation("mcvmcomputers.vhd_setup.mb_used"))), (wdgt) -> selectOld(wdgt)));
+				this.addDrawable(new ButtonWidget(this.width/2 + 92, lastY, 14, 14, Text.translatable("x"), (wdgt) -> removevhd(f.getName())));
 				lastY += 16;
 			}
 			
 			int menuWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.menu"))+40;
-			this.addButton(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, new LiteralText(translation("mcvmcomputers.vhd_setup.menu")), (wdgt) -> switchState(State.MENU)));
+			this.addDrawable(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.menu")), (wdgt) -> switchState(State.MENU)));
 		}
 	}
 
@@ -121,17 +128,17 @@ public class GuiCreateHarddrive extends Screen{
 
 	private void switchState(State newState) {
 		this.buttons.clear();
-		this.children.clear();
+		this.children = new PrettyPrinter();
 		currentState = newState;
 		this.init();
 	}
 	
 	private void selectOld(ButtonWidget wdgt) {
-		String fileName = wdgt.getMessage().asString().split(" | ")[0];
+		String fileName = wdgt.getMessage().getString().split(" | ")[0];
 		PacketByteBuf pb = new PacketByteBuf(Unpooled.buffer());
 		pb.writeString(fileName);
-		ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_CHANGE_HDD, pb);
-		minecraft.openScreen(null);
+		ClientPlayNetworking.send(PacketList.C2S_CHANGE_HDD, pb);
+		minecraft.setScreen(null);
 	}
 	
 	private void createNew(ButtonWidget wdgt) {
@@ -156,14 +163,14 @@ public class GuiCreateHarddrive extends Screen{
 			
 			PacketByteBuf pb = new PacketByteBuf(Unpooled.buffer());
 			pb.writeString(vhd.getName());
-			ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_CHANGE_HDD, pb);
-			minecraft.openScreen(null);
+			ClientPlayNetworking.send(PacketList.C2S_CHANGE_HDD, pb);
+			minecraft.setScreen(null);
 		}
 	}
 	
 	private void removevhd(String name) {
 		new File(ClientMod.vhdDirectory, name).delete();
-		minecraft.openScreen(null);
+		minecraft.setScreen(null);
 	}
 	
 	private void hddSizeUpdate(String in) {
