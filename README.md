@@ -56,7 +56,6 @@
 
 <h2>Contributing</h2>
 <p>If you'd like to contribute to this project, please fork the master branch, make your changes and create a pull request to have the changes reviewed. If you plan to contribute larger changes, please create a issue to discuss the major changes that you were planning to make.</p>
-<br>
 <p>I don't like rules, but to keep consistency and readability of the code please follow these guidelines:</p>
 <ol>
 	<li>Use lambda expressions when appropriate</li>
