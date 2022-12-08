@@ -55,7 +55,9 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	}
 	
 	private void applyRotations(EntityDeliveryChest entity) {
-		deliveryChestModel.setRotationAngle(deliveryChestModel.upleg0, 0, 0, entity.upLeg01Rot);
+		// TODO Yeah this is gonna need some work because of how I rewrote the model... Sorry!
+		//  	- Y2K4
+		/*deliveryChestModel.setRotationAngle(deliveryChestModel.upleg0, 0, 0, entity.upLeg01Rot);
 		deliveryChestModel.setRotationAngle(deliveryChestModel.upleg1, 0, 0, entity.upLeg01Rot);
 		deliveryChestModel.setRotationAngle(deliveryChestModel.upleg2, 0, 0, entity.upLeg23Rot);
 		deliveryChestModel.setRotationAngle(deliveryChestModel.upleg3, 0, 0, entity.upLeg23Rot);
@@ -65,7 +67,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 		deliveryChestModel.setRotationAngle(deliveryChestModel.uleg2, 0, 0, entity.uLeg23Rot);
 		deliveryChestModel.setRotationAngle(deliveryChestModel.uleg3, 0, 0, entity.uLeg23Rot);
 		
-		deliveryChestModel.setRotationAngle(deliveryChestModel.opening, entity.openingRot, 0, 0);
+		deliveryChestModel.setRotationAngle(deliveryChestModel.opening, entity.openingRot, 0, 0);*/
 		
 		deliveryChestModel.fireYes = entity.fire;
 	}
@@ -180,11 +182,11 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	private void smokeParticle(World w, Vec3d pos, int amount) {
 		for(int i = 0;i<amount;i++) {
 			if(amount == 3) {
-				w.addParticle(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, (DeliveryChestModel.TEX_RANDOM.nextFloat()*0.5f)-.25f, DeliveryChestModel.TEX_RANDOM.nextFloat()*-.3F, (DeliveryChestModel.TEX_RANDOM.nextFloat()*.5f)-.25f);
+				w.addParticle(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, (Random.create().nextFloat()*0.5f)-.25f, Random.create().nextFloat()*-.3F, (Random.create().nextFloat()*.5f)-.25f);
 			}else if(amount==6){
-				w.addParticle(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, (DeliveryChestModel.TEX_RANDOM.nextFloat()*0.5f)-.25f, DeliveryChestModel.TEX_RANDOM.nextFloat()*-.3F, (DeliveryChestModel.TEX_RANDOM.nextFloat()*.5f)-.25f);
+				w.addParticle(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, (Random.create().nextFloat()*0.5f)-.25f, Random.create().nextFloat()*-.3F, (Random.create().nextFloat()*.5f)-.25f);
 			}else {
-				w.addParticle(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, (DeliveryChestModel.TEX_RANDOM.nextFloat()*2f)-1f, DeliveryChestModel.TEX_RANDOM.nextFloat()*.3F, (DeliveryChestModel.TEX_RANDOM.nextFloat()*2f)-1f);
+				w.addParticle(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, (Random.create().nextFloat()*2f)-1f, Random.create().nextFloat()*.3F, (Random.create().nextFloat()*2f)-1f);
 			}
 		}
 	}
