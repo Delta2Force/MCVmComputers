@@ -52,7 +52,7 @@
 
 <h3>Using the computer</h3>
 <p>To turn on the computer, press the Power On button in the PC case menu. To interact with the computer, press the use button (right-click) on the monitor.<br><sub>Note: Pressing Alt+F4 will close the game, not the window you are on in the virtual machine.</sub><br><br>To stop interacting with the computer, press the keys mentioned in the top-right corner of the screen when interacting with the monitor.</p>
-<hr><hr>
+<hr>
 
 <h2>Contributing</h2>
 <p>If you'd like to contribute to this project, please fork the master branch, make your changes and create a pull request to have the changes reviewed. If you plan to contribute larger changes, please create a issue to discuss the major changes that you were planning to make.</p>
