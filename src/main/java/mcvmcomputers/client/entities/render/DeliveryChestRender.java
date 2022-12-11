@@ -9,11 +9,9 @@ import mcvmcomputers.entities.EntityDeliveryChest;
 import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.sound.MovingSoundInstance;
@@ -32,7 +30,7 @@ import static mcvmcomputers.utils.MVCUtils.*;
 
 public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	private DeliveryChestModel deliveryChestModel;
-	private MinecraftClient mcc;
+	private final MinecraftClient mcc;
 	
 	public DeliveryChestRender(EntityRendererFactory.Context ctx) {
 		super(ctx);
@@ -55,19 +53,17 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 	}
 	
 	private void applyRotations(EntityDeliveryChest entity) {
-		// TODO Yeah this is gonna need some work because of how I rewrote the model... Sorry!
-		//  	- Y2K4
-		/*deliveryChestModel.setRotationAngle(deliveryChestModel.upleg0, 0, 0, entity.upLeg01Rot);
-		deliveryChestModel.setRotationAngle(deliveryChestModel.upleg1, 0, 0, entity.upLeg01Rot);
-		deliveryChestModel.setRotationAngle(deliveryChestModel.upleg2, 0, 0, entity.upLeg23Rot);
-		deliveryChestModel.setRotationAngle(deliveryChestModel.upleg3, 0, 0, entity.upLeg23Rot);
+		deliveryChestModel.setRotationAngle("upleg0", 0, 0, entity.upLeg01Rot);
+		deliveryChestModel.setRotationAngle("upleg1", 0, 0, entity.upLeg01Rot);
+		deliveryChestModel.setRotationAngle("upleg2", 0, 0, entity.upLeg23Rot);
+		deliveryChestModel.setRotationAngle("upleg3", 0, 0, entity.upLeg23Rot);
 		
-		deliveryChestModel.setRotationAngle(deliveryChestModel.uleg0, 0, 0, entity.uLeg01Rot);
-		deliveryChestModel.setRotationAngle(deliveryChestModel.uleg1, 0, 0, entity.uLeg01Rot);
-		deliveryChestModel.setRotationAngle(deliveryChestModel.uleg2, 0, 0, entity.uLeg23Rot);
-		deliveryChestModel.setRotationAngle(deliveryChestModel.uleg3, 0, 0, entity.uLeg23Rot);
+		deliveryChestModel.setRotationAngle("upleg0.uleg0", 0, 0, entity.uLeg01Rot);
+		deliveryChestModel.setRotationAngle("upleg1.uleg1", 0, 0, entity.uLeg01Rot);
+		deliveryChestModel.setRotationAngle("upleg2.uleg2", 0, 0, entity.uLeg23Rot);
+		deliveryChestModel.setRotationAngle("upleg3.uleg3", 0, 0, entity.uLeg23Rot);
 		
-		deliveryChestModel.setRotationAngle(deliveryChestModel.opening, entity.openingRot, 0, 0);*/
+		deliveryChestModel.setRotationAngle("opening", entity.openingRot, 0, 0);
 		
 		deliveryChestModel.fireYes = entity.fire;
 	}
@@ -83,6 +79,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 					@Override
 					public void tick() {
 						Vec3d v = new Vec3d(entity.getX(), entity.getY() + entity.renderOffY, entity.getZ() + entity.renderOffZ);
+						assert mcc.player != null;
 						double dist = v.distanceTo(mcc.player.getPos());
 						if(dist < 0) {
 							dist = -dist;
@@ -99,10 +96,6 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 					@Override
 					public AttenuationType getAttenuationType() {
 						return AttenuationType.LINEAR;
-					}
-
-					public boolean isLooping() {
-						return true;
 					}
 					
 					@Override
@@ -137,12 +130,8 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 			prog = -prog;
 			
 			entity.renderRot = (float) (90f + (45f * prog));
-			
-			if(dist > 25) {
-				entity.fire = false;
-			}else {
-				entity.fire = true;
-			}
+
+			entity.fire = !(dist > 25);
 			
 			if(dist < 3) {
 				entity.upLeg01Rot = lerp(entity.upLeg01Rot, 0f, deltaTime);
@@ -204,7 +193,7 @@ public class DeliveryChestRender extends EntityRenderer<EntityDeliveryChest>{
 		}
 		
 		if(dist < 5) {
-			if(dist > 4 && dist < 5) {
+			if(dist > 4) {
 				smokeParticle(entity.world, ground, 1);
 			}
 			else if(dist > 3 && dist < 4) {
