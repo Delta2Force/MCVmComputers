@@ -21,11 +21,10 @@ import static mcvmcomputers.client.utils.ModelPartBuilderEx.createMPB;
 import mcvmcomputers.client.utils.ModelPartBuilderEx.*;
 
 public class DeliveryChestModel extends EntityModel<Entity> {
-	private final ModelPartData model;
-	private final ModelPartBuilder base, opening, upleg0, uleg0, upleg1, uleg1, upleg2, uleg2, upleg3, uleg3, engine, fire;
+	private final ModelPart modelRender;
 
-	private int textureWidth = 64;
-	private int textureHeight = 64;
+	private final static int textureWidth = 64;
+	private final static int textureHeight = 64;
 
 	private final NativeImage baseTexture;
 	private final MinecraftClient mcc;
@@ -42,51 +41,51 @@ public class DeliveryChestModel extends EntityModel<Entity> {
 		mcc = MinecraftClient.getInstance();
 
 		baseTexture = NativeImage.read((InputStream) mcc.getResourceManager().getResource(new Identifier("mcvmcomputers", "textures/entity/delivery_chest.png")).stream());
-		model = new ModelData().getRoot();
+		ModelPartData model = new ModelData().getRoot();
 
-		base = createMPB(-6f, -5f, -6f, 12f, 8f, 12f, false);
+		ModelPartBuilder base = createMPB(-6f, -5f, -6f, 12f, 8f, 12f, false);
 		model.addChild("model", base, ModelTransform.pivot(0f, 7f, 0f));
-		
-		opening = createMPB(-6f, -2f, -12f, 12f, 2f, 12f, false, 0, 20);
+
+		ModelPartBuilder opening = createMPB(-6f, -2f, -12f, 12f, 2f, 12f, false, 0, 20);
 		model.getChild("model").addChild("opening", opening, ModelTransform.of(0f, -5f, 6f, -1.1345f, 0f, 0f));
 
-		upleg0 = createMPB(-6f, 3f, 6f, 2f, 7f, 1f, false, 24, 34);
-		model.getChild("opening").addChild("upleg0", upleg0, ModelTransform.rotation(0f, 0.7854f, 0f));
+		ModelPartBuilder upleg0 = createMPB(-6f, 3f, 6f, 2f, 7f, 1f, false, 24, 34);
+		model.addChild("upleg0", upleg0, ModelTransform.rotation(0f, 0.7854f, 0f));
 
-		uleg0 = createMPB(new MPB[] {
+		ModelPartBuilder uleg0 = createMPB(new MPB[] {
 				new MPB(-1.9828f, 7f, -0.0571f, 2f, 6f, 1f, false, 0, 46),
 				new MPB(-2.4696f, 13f, -1.5303f, 3f, 1f, 3f, false, 0, 20)
 		});
 		model.getChild("upleg0").addChild("uleg0", uleg0, ModelTransform.pivot(-0.9828f, 7f, -0.0071f));
 
-		upleg1 = createMPB(-1f, 0f, -0.5f, 2f, 7f, 1f, false, 0, 34);
-		model.getChild("uleg0").addChild("upleg1", upleg1, ModelTransform.of(-6f, 3f, -6f, 0f, -0.7854f, 0f));
+		ModelPartBuilder upleg1 = createMPB(-1f, 0f, -0.5f, 2f, 7f, 1f, false, 0, 34);
+		model.addChild("upleg1", upleg1, ModelTransform.of(-6f, 3f, -6f, 0f, -0.7854f, 0f));
 
-		uleg1 = createMPB(new MPB[] {
+		ModelPartBuilder uleg1 = createMPB(new MPB[] {
 				new MPB(-1f, 0f, -0.5f, 2f, 6f, 1f, false, 44, 44),
 				new MPB(-1.4868f, 6f, -1.5232f, 3f, 1f, 3f, false, 0, 8)
 		});
 		model.getChild("upleg1").addChild("uleg1", uleg1, ModelTransform.pivot(-0.9828f, 7f, -0.0071f));
 
-		upleg2 = createMPB(-1f, 0f, -0.5f, 2f, 7f, 1f, false, 6, 24);
-		model.getChild("uleg1").addChild("upleg2", upleg2, ModelTransform.of(6f, 3f, -6f, 0f, -2.3562f, 0f));
+		ModelPartBuilder upleg2 = createMPB(-1f, 0f, -0.5f, 2f, 7f, 1f, false, 6, 24);
+		model.addChild("upleg2", upleg2, ModelTransform.of(6f, 3f, -6f, 0f, -2.3562f, 0f));
 
-		uleg2 = createMPB(new MPB[] {
+		ModelPartBuilder uleg2 = createMPB(new MPB[] {
 				new MPB(-1f, 0f, -0.5f, 2f, 6f, 1f, false, 38, 43),
 				new MPB(-1.4868f, 6f, -1.5232f, 3f, 1f, 3f, false, 0, 4)
 		});
 		model.getChild("upleg2").addChild("uleg2", uleg2, ModelTransform.pivot(-0.9828f, 7f, -0.0071f));
 
-		upleg3 = createMPB(-1f, 0f, -0.5f, 2f, 7f, 1f, false, 0, 24);
+		ModelPartBuilder upleg3 = createMPB(-1f, 0f, -0.5f, 2f, 7f, 1f, false, 0, 24);
 		model.addChild("upleg3", upleg3, ModelTransform.of(6f, 3f, 6f, 0f, 2.3562f, 0f));
 
-		uleg3 = createMPB(new MPB[] {
+		ModelPartBuilder uleg3 = createMPB(new MPB[] {
 				new MPB(-1f, 0f, -0.5f, 2f, 6f, 1f, false, 32, 43),
 				new MPB(-1.4868f, 6f, -1.5232f, 3f, 1f, 3f, false, 0, 0)
 		});
 		model.getChild("upleg3").addChild("uleg3", uleg3, ModelTransform.pivot(-0.9828f, 7f, -0.0071f));
 
-		engine = createMPB(new MPB[] {
+		ModelPartBuilder engine = createMPB(new MPB[] {
 				new MPB(-4f, 8f, -4f, 8f, 4f, 8f, false, 0, 34),
 				new MPB(-3f, 5f, -3f, 6f, 3f, 6f, false, 36, 0),
 				new MPB(-2f, 3f, -2f, 4f, 2f, 4f, false, 36, 20),
@@ -97,8 +96,10 @@ public class DeliveryChestModel extends EntityModel<Entity> {
 		});
 		model.addChild("engine", engine, ModelTransform.NONE);
 
-		fire = createMPB(-3f, -1f, -3f, 6f, 3f, 6f, false, 32, 32);
+		ModelPartBuilder fire = createMPB(-3f, -1f, -3f, 6f, 3f, 6f, false, 32, 32);
 		model.getChild("engine").addChild("fire", fire, ModelTransform.pivot(0f, 13f, 0f));
+
+		modelRender = model.createPart(textureWidth, textureHeight);
 	}
 
 	private void generateTexture() {
@@ -142,11 +143,26 @@ public class DeliveryChestModel extends EntityModel<Entity> {
 
 	@Override
 	public void render(MatrixStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		model.createPart(textureWidth, textureHeight).render(matrixStack, buffer, packedLight, packedOverlay);
+		modelRender.render(matrixStack, buffer, packedLight, packedOverlay);
 	}
 
 	public void render(MatrixStack matrixStack, VertexConsumerProvider provider, int packedLight, int packedOverlay){
 		this.generateTexture();
-		model.createPart(textureWidth, textureHeight).render(matrixStack, provider.getBuffer(RenderLayer.getText(texId)), packedLight, packedOverlay);
+		modelRender.render(matrixStack, provider.getBuffer(RenderLayer.getText(texId)), packedLight, packedOverlay);
+	}
+
+	public void setRotationAngle(String identifier, float pitch, float yaw, float roll) {
+		ModelPart part = modelRender;
+
+		if(!identifier.isEmpty()) {
+			String[] pathElements = identifier.split("\\.");
+			for (String element : pathElements) {
+				part = part.getChild(element);
+			}
+		}
+
+		part.pitch = pitch;
+		part.yaw = yaw;
+		part.roll = roll;
 	}
 }
