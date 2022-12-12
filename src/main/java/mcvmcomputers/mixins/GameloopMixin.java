@@ -13,12 +13,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.virtualbox_6_1.IMachine;
-import org.virtualbox_6_1.IProgress;
-import org.virtualbox_6_1.ISession;
-import org.virtualbox_6_1.LockType;
-import org.virtualbox_6_1.MachineState;
-import org.virtualbox_6_1.VBoxException;
+import org.virtualbox_7_0.IMachine;
+import org.virtualbox_7_0.IProgress;
+import org.virtualbox_7_0.ISession;
+import org.virtualbox_7_0.LockType;
+import org.virtualbox_7_0.MachineState;
+import org.virtualbox_7_0.VBoxException;
 
 import mcvmcomputers.client.gui.setup.GuiSetup;
 import mcvmcomputers.client.tablet.TabletOS;
@@ -64,7 +64,7 @@ public class GameloopMixin {
 	@Inject(at = @At("HEAD"), method = "run")
 	private void run(CallbackInfo info) {
 		MinecraftClient mcc = MinecraftClient.getInstance();
-		mcc.openScreen(new GuiSetup());
+		mcc.setScreen(new GuiSetup());
 		vhdDirectory = new File(mcc.runDirectory, "vm_computers/vhds");
 		vhdDirectory.mkdirs();
 		isoDirectory = new File(mcc.runDirectory, "vm_computers/isos");
@@ -147,7 +147,7 @@ public class GameloopMixin {
 		if(player != null) {
 			if(player.getActiveItem() != null) {
 				boolean tabletOut = false;
-				for(ItemStack is : player.getItemsHand()) {
+				for(ItemStack is : player.getInventory().main) {
 					if(is.getItem() != null) {
 						if(is.getItem() instanceof ItemOrderingTablet) {
 							tabletOut = true;
@@ -166,7 +166,7 @@ public class GameloopMixin {
 					}
 				}
 				
-				for(ItemStack is : player.getItemsHand()) {
+				for(ItemStack is : player.getInventory().main) {
 					if(is.getItem() != null) {
 						if(ItemList.PLACABLE_ITEMS.contains(is.getItem())) {
 							if(thePreviewEntity != null) {

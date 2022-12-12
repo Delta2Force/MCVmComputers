@@ -17,7 +17,7 @@ import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.networking.PacketList;
 import mcvmcomputers.utils.TabletOrder;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -86,7 +86,7 @@ public class ServerMixin {
 			}
 			pb.writeInt(order.price);
 			pb.writeInt(order.currentStatus.ordinal());
-			ServerSidePacketRegistry.INSTANCE.sendToPlayer(playerManager.getPlayer(UUID.fromString(order.orderUUID)), PacketList.S2C_SYNC_ORDER, pb);
+			ServerPlayNetworking.send(playerManager.getPlayer(UUID.fromString(order.orderUUID)), PacketList.S2C_SYNC_ORDER, pb);
 		}
 	}
 }

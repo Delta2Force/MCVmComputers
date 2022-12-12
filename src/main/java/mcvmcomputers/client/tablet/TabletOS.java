@@ -29,7 +29,7 @@ import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.sound.TabletSoundInstance;
 import mcvmcomputers.utils.MVCUtils;
 import mcvmcomputers.utils.TabletOrder.OrderStatus;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
@@ -90,13 +90,13 @@ public class TabletOS {
 	private MinecraftClient mcc = MinecraftClient.getInstance();
 	
 	public TabletOS() throws FontFormatException, IOException {
-		radarSound = new TabletSoundInstance(SoundList.RADAR_SOUND);
-		shopIntroSound = new TabletSoundInstance(SoundList.SHOPINTRO_SOUND);
-		shopOutroSound = new TabletSoundInstance(SoundList.SHOPOUTRO_SOUND);
+		radarSound = new TabletSoundInstance(SoundList.RADAR_SOUND.getId(), null, null);
+		shopIntroSound = new TabletSoundInstance(SoundList.SHOPINTRO_SOUND.getId(), null, null);
+		shopOutroSound = new TabletSoundInstance(SoundList.SHOPOUTRO_SOUND.getId(), null, null);
 		shopMusicSound = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_FAR, 0.6f, 0.2f);
 		displayOrderMusicSound = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_STRAD, 0.6f, 0.2f);
-		font = Font.createFont(Font.PLAIN, mcc.getResourceManager().getResource(new Identifier("mcvmcomputers", "font/tabletfont.ttf")).getInputStream());
-		radarRadius = new ArrayList<Float>();
+		font = Font.createFont(Font.PLAIN, mcc.getResourceManager().getResource(new Identifier("mcvmcomputers", "font/tabletfont.ttf")).get().getInputStream());
+		radarRadius = new ArrayList<>();
 	}
 	
 	public void tabletTakenOut() {
@@ -711,7 +711,7 @@ public class TabletOS {
 									for(OrderableItem i : shoppingCart) {
 										p.writeItemStack(new ItemStack(i));
 									}
-									ClientSidePacketRegistry.INSTANCE.sendToServer(PacketList.C2S_ORDER, p);
+									ClientPlayNetworking.send(PacketList.C2S_ORDER, p);
 									
 									tabletState = State.SHOP_OUTRO;
 									totalTimeRadar = 0;

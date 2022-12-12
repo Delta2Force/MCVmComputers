@@ -1,12 +1,6 @@
 package mcvmcomputers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Stream;
+import java.util.*;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.UnmodifiableIterator;
@@ -20,15 +14,17 @@ import mcvmcomputers.item.OrderableItem;
 import mcvmcomputers.sound.SoundList;
 import mcvmcomputers.utils.TabletOrder;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -44,8 +40,8 @@ public class MainMod implements ModInitializer{
 	public static Runnable pcOpenGui = () -> {};
 	
 	public void onInitialize() {
-		orders = new HashMap<UUID, TabletOrder>();
-		computers = new HashMap<UUID, EntityPC>();
+		orders = new HashMap<>();
+		computers = new HashMap<>();
 		ItemList.init();
 		EntityList.init();
 		SoundList.init();
@@ -53,355 +49,286 @@ public class MainMod implements ModInitializer{
 	}
 	
 	public static void registerServerPackets() {
-		ServerPlayNetworking.registerReceiver(C2S_ORDER, (packetContext, attachedData) -> {
-			int arraySize = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_ORDER, (server, player, handler, buf, responseSender) -> {
+			int arraySize = buf.readInt();
 			OrderableItem[] items = new OrderableItem[arraySize];
 			int price = 0;
-			for(int i = 0;i<arraySize;i++) {
-				items[i] = (OrderableItem) attachedData.readItemStack().getItem();
+			for(int i = 0; i < arraySize; i++) {
+				items[i] = (OrderableItem) buf.readItemStack().getItem();
 				price += items[i].getPrice();
 			}
-			
-			final int pr = price;
-			
-			packetContext.getTaskQueue().execute(() -> {
+			int finalPrice = price;
+			server.execute(()->{
 				TabletOrder to = new TabletOrder();
 				to.items = new ArrayList<>();
 				to.items.addAll(List.of(items));
-				to.price = pr;
-				to.orderUUID = packetContext.getPlayer().getUuid().toString();
-				MainMod.orders.put(packetContext.getPlayer().getUuid(), to);
+				to.price = finalPrice;
+				to.orderUUID = player.getUuidAsString();
+				MainMod.orders.put(player.getUuid(), to);
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_SCREEN, (packetContext, attachedData) -> {
-			byte[] screen = attachedData.readByteArray();
-			int compressedDataSize = attachedData.readInt();
-			int dataSize = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_SCREEN, (server, player, handler, buf, responseSender) -> {
+			byte[] screen = buf.readByteArray();
+			int compressedDataSize = buf.readInt();
+			int dataSize = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				if(MainMod.computers.containsKey(packetContext.getPlayer().getUuid())) {
-					Stream<PlayerEntity> watchingPlayers = PlayerStream.watching(MainMod.computers.get(packetContext.getPlayer().getUuid()));
+			server.execute(() -> {
+				if(MainMod.computers.containsKey(player.getUuid())) {
+					Collection<ServerPlayerEntity> watchingPlayers = PlayerLookup.tracking(MainMod.computers.get(player.getUuid()));
 					PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
 					b.writeByteArray(screen);
 					b.writeInt(compressedDataSize);
 					b.writeInt(dataSize);
-					b.writeUuid(packetContext.getPlayer().getUuid());
-					watchingPlayers.forEach((player) -> {
-						ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_SCREEN, b);
-					});
+					b.writeUuid(player.getUuid());
+					watchingPlayers.forEach(p -> ServerPlayNetworking.send(p, S2C_SCREEN, b));
 				}
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_TURN_ON_PC, (packetContext, attachedData) -> {
-			int pcEntityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_TURN_ON_PC, (server, player, handler, buf, responseSender) -> {
+			int pcEntityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				Entity e = packetContext.getPlayer().world.getEntityById(pcEntityId);
-				if(e != null) {
-					if(e instanceof EntityPC pc) {
-						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-							MainMod.computers.put(packetContext.getPlayer().getUuid(), (EntityPC) e);
-						}
-					}
-				}
+			server.execute(() -> {
+				Entity e = player.world.getEntityById(pcEntityId);
+				if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()))
+					MainMod.computers.put(player.getUuid(), (EntityPC) e);
 			});
 		});
-		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_TURN_OFF_PC, (packetContext, attachedData) -> {
-			packetContext.getTaskQueue().execute(() -> {
-				Stream<PlayerEntity> watchingPlayers = PlayerStream.watching(MainMod.computers.get(packetContext.getPlayer().getUuid()));
+
+		ServerPlayNetworking.registerGlobalReceiver(C2S_TURN_ON_PC, (server, player, handler, buf, responseSender) -> {
+			server.execute(() -> {
+				Collection<ServerPlayerEntity> watchingPlayers = PlayerLookup.tracking(MainMod.computers.get(player.getUuid()));
 				PacketByteBuf b = new PacketByteBuf(Unpooled.buffer());
-				b.writeUuid(packetContext.getPlayer().getUuid());
-				watchingPlayers.forEach((player) -> {
-					ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_STOP_SCREEN, b);
-				});
-				MainMod.computers.remove(packetContext.getPlayer().getUuid());
+				b.writeUuid(player.getUuid());
+				watchingPlayers.forEach(p -> ServerPlayNetworking.send(p, S2C_STOP_SCREEN, b));
+				MainMod.computers.remove(player.getUuid());
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_CHANGE_HDD, (packetContext, attachedData) -> {
-			String newHddName = attachedData.readString(32767);
+		ServerPlayNetworking.registerGlobalReceiver(C2S_CHANGE_HDD, (server, player, handler, buf, responseSender) -> {
+			String newHddName = buf.readString(32767);
 			
-			packetContext.getTaskQueue().execute(() -> {
-				for(ItemStack is : packetContext.getPlayer().getItemsHand()) {
-					if(is != null) {
+			server.execute(() -> {
+				for(ItemStack is : player.getHandItems()) {
+					if(is != null)
 						if(is.getItem() instanceof ItemHardDrive) {
-							CompoundTag ct = is.getOrCreateTag();
-							ct.putString("vhdfile", newHddName);
+							NbtCompound nc = is.getOrCreateNbt();
+							nc.putString("vhdfile", newHddName);
 							break;
 						}
-					}
 				}
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_ADD_MOBO, (packetContext, attachedData) -> {
-			boolean x64 = attachedData.readBoolean();
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_ADD_MOBO, (server, player, handler, buf, responseSender) -> {
+			boolean x64 = buf.readBoolean();
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				Item lookingFor = null;
-				if(x64) {lookingFor = ItemList.ITEM_MOTHERBOARD64;} else {lookingFor = ItemList.ITEM_MOTHERBOARD;}
-				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-					if(e != null) {
-						if (e instanceof EntityPC pc) {
-							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-								if(!pc.getMotherboardInstalled()) {
-									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
-									pc.setMotherboardInstalled(true);
-									pc.set64Bit(x64);
-								}
-							}
-						}
+			server.execute(() -> {
+				Item lookingFor;
+				if (x64)
+					lookingFor = ItemList.ITEM_MOTHERBOARD64;
+				else
+					lookingFor = ItemList.ITEM_MOTHERBOARD;
+
+				if(player.getInventory().contains(new ItemStack(lookingFor))) {
+					Entity e = player.world.getEntityById(entityId);
+					if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()) && !pc.getMotherboardInstalled()) {
+						removeStick(player.getInventory(), new ItemStack(lookingFor));
+						pc.setMotherboardInstalled(true);
+						pc.set64Bit(x64);
 					}
-				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.motherboard_not_present").formatted(Formatting.RED), false);
-				}
+				} else
+					player.sendMessage(Text.translatable("mcvmcomputers.motherboard_not_present").formatted(Formatting.RED), false);
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_ADD_GPU, (packetContext, attachedData) -> {
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_ADD_GPU, (server, player, handler, buf, responseSender) -> {
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
+			server.execute(() -> {
 				Item lookingFor = ItemList.ITEM_GPU;
-				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-					if(e != null) {
-						if (e instanceof EntityPC pc) {
-							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-								if(!pc.getGpuInstalled()) {
-									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
-									pc.setGpuInstalled(true);
-								}
-							}
-						}
+				if(player.getInventory().contains(new ItemStack(lookingFor))) {
+					Entity e = player.world.getEntityById(entityId);
+					if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()) && !pc.getGpuInstalled()) {
+						removeStick(player.getInventory(), new ItemStack(lookingFor));
+						pc.setGpuInstalled(true);
 					}
-				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.gpu_not_present").formatted(Formatting.RED), false);
-				}
+				} else
+					player.sendMessage(Text.translatable("mcvmcomputers.gpu_not_present").formatted(Formatting.RED), false);
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_ADD_CPU, (packetContext, attachedData) -> {
-			int dividedBy = attachedData.readInt();
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_ADD_CPU, (server, player, handler, buf, responseSender) -> {
+			int dividedBy = buf.readInt();
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				Item lookingFor = null;
-				if(dividedBy == 2) {lookingFor = ItemList.ITEM_CPU2;} else if(dividedBy == 4) {lookingFor = ItemList.ITEM_CPU4;} else if(dividedBy == 6) {lookingFor = ItemList.ITEM_CPU6;}
-				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-					if(e != null) {
-						if (e instanceof EntityPC pc) {
-							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-								if(pc.getCpuDividedBy() == 0) {
-									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
-									pc.setCpuDividedBy(dividedBy);
-								}
-							}
-						}
+			server.execute(() -> {
+				Item lookingFor = switch (dividedBy) {
+					case 2 -> ItemList.ITEM_CPU2;
+					case 4 -> ItemList.ITEM_CPU4;
+					case 6 -> ItemList.ITEM_CPU6;
+					default -> null;
+				};
+
+				if(player.getInventory().contains(new ItemStack(lookingFor))) {
+					Entity e = player.world.getEntityById(entityId);
+					if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()) && pc.getCpuDividedBy() == 0) {
+						removeStick(player.getInventory(), new ItemStack(lookingFor));
+						pc.setCpuDividedBy(dividedBy);
 					}
-				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present").formatted(Formatting.RED), false);
-				}
+				} else
+					player.sendMessage(Text.translatable("mcvmcomputers.cpu_not_present").formatted(Formatting.RED), false);
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_ADD_RAM, (packetContext, attachedData) -> {
-			int mb = attachedData.readInt();
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_ADD_RAM, (server, player, handler, buf, responseSender) -> {
+			int mb = buf.readInt();
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				Item lookingFor = null;
-				if(mb == 64) {lookingFor = ItemList.ITEM_RAM64M;} else if(mb == 128) {lookingFor = ItemList.ITEM_RAM128M;} else if(mb == 256) {lookingFor = ItemList.ITEM_RAM256M;} else if(mb == 512) {lookingFor = ItemList.ITEM_RAM512M;} else if(mb == 1024) {lookingFor = ItemList.ITEM_RAM1G;} else if(mb == 2048) {lookingFor = ItemList.ITEM_RAM2G;} else if(mb == 4096) {lookingFor = ItemList.ITEM_RAM4G;}
-				if(packetContext.getPlayer().inventory.contains(new ItemStack(lookingFor))) {
-					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
+			server.execute(() -> {
+				Item lookingFor = switch (mb) {
+					case 64 -> ItemList.ITEM_RAM64M;
+					case 128 -> ItemList.ITEM_RAM128M;
+					case 256 -> ItemList.ITEM_RAM256M;
+					case 512 -> ItemList.ITEM_RAM512M;
+					case 1024 -> ItemList.ITEM_RAM1G;
+					case 2048 -> ItemList.ITEM_RAM2G;
+					case 4096 -> ItemList.ITEM_RAM4G;
+					default -> null;
+				};
+
+				if(player.getInventory().contains(new ItemStack(lookingFor))) {
+					Entity e = player.world.getEntityById(entityId);
 					if(e != null) {
 						if (e instanceof EntityPC pc) {
-							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
+							if(pc.getOwner().equals(player.getUuidAsString())) {
 								if(pc.getGigsOfRamInSlot0() == 0) {
-									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
+									removeStick(player.getInventory(), new ItemStack(lookingFor));
 									pc.setGigsOfRamInSlot0(mb);
 								} else if(pc.getGigsOfRamInSlot1() == 0) {
-									removeStck(packetContext.getPlayer().inventory, new ItemStack(lookingFor));
+									removeStick(player.getInventory(), new ItemStack(lookingFor));
 									pc.setGigsOfRamInSlot1(mb);
 								}
 							}
 						}
 					}
-				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present").formatted(Formatting.RED), false);
+				} else
+					player.sendMessage(Text.translatable("mcvmcomputers.cpu_not_present").formatted(Formatting.RED), false);
+			});
+		});
+		
+		ServerPlayNetworking.registerGlobalReceiver(C2S_ADD_HARD_DRIVE, (server, player, handler, buf, responseSender) -> {
+			String vhdName = buf.readString(32767);
+			int entityId = buf.readInt();
+			
+			server.execute(() -> {
+				ItemStack lookingFor = ItemHardDrive.createHardDrive(vhdName);
+				if(player.getInventory().contains(lookingFor)) {
+					Entity e = player.world.getEntityById(entityId);
+					if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()) && pc.getHardDriveFileName().isEmpty()) {
+						removeStick(player.getInventory(), lookingFor);
+						pc.setHardDriveFileName(vhdName);
+					}
+				} else
+					player.sendMessage(Text.translatable("mcvmcomputers.cpu_not_present").formatted(Formatting.RED), false);
+			});
+		});
+		
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REMOVE_MOBO, (server, player, handler, buf, responseSender) -> {
+			int entityId = buf.readInt();
+			
+			server.execute(() -> {
+				Entity e = player.world.getEntityById(entityId);
+				if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()) && pc.getMotherboardInstalled()) {
+					pc.setMotherboardInstalled(false);
+					if(pc.get64Bit())
+						pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), new ItemStack(ItemList.ITEM_MOTHERBOARD64)));
+					else
+						pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), new ItemStack(ItemList.ITEM_MOTHERBOARD)));
+
+					removeCpu(pc);
+					removeGpu(pc);
+					removeHdd(pc, player.getUuidAsString());
+					removeRam(pc, 0);
+					removeRam(pc, 1);
 				}
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_ADD_HARD_DRIVE, (packetContext, attachedData) -> {
-			String vhdname = attachedData.readString(32767);
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REMOVE_GPU, (server, player, handler, buf, responseSender) -> {
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				ItemStack lookingFor = ItemHardDrive.createHardDrive(vhdname);
-				if(packetContext.getPlayer().inventory.contains(lookingFor)) {
-					Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-					if(e != null) {
-						if (e instanceof EntityPC pc) {
-							if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-								if(pc.getHardDriveFileName().isEmpty()) {
-									removeStck(packetContext.getPlayer().inventory, lookingFor);
-									pc.setHardDriveFileName(vhdname);
-								}
-							}
-						}
-					}
-				}else {
-					packetContext.getPlayer().sendMessage(new TranslatableText("mcvmcomputers.cpu_not_present").formatted(Formatting.RED), false);
-				}
+			server.execute(() -> {
+				Entity e = player.world.getEntityById(entityId);
+				if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()))
+					removeGpu(pc);
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_REMOVE_MOBO, (packetContext, attachedData) -> {
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REMOVE_HARD_DRIVE, (server, player, handler, buf, responseSender) -> {
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-				if(e != null) {
-					if (e instanceof EntityPC pc) {
-						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-							if(pc.getMotherboardInstalled()) {
-								pc.setMotherboardInstalled(false);
-								if(pc.get64Bit()) {
-									pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), new ItemStack(ItemList.ITEM_MOTHERBOARD64)));
-								}else {
-									pc.world.spawnEntity(new ItemEntity(pc.world, pc.getX(), pc.getY(), pc.getZ(), new ItemStack(ItemList.ITEM_MOTHERBOARD)));
-								}
-								removeCpu(pc);
-								removeGpu(pc);
-								removeHdd(pc, packetContext.getPlayer().getUuid().toString());
-								removeRam(pc, 0);
-								removeRam(pc, 1);
-							}
-						}
-					}
-				}
+			server.execute(() -> {
+				Entity e = player.world.getEntityById(entityId);
+				if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()))
+					removeHdd(pc, player.getUuidAsString());
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_REMOVE_GPU, (packetContext, attachedData) -> {
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REMOVE_CPU, (server, player, handler, buf, responseSender) -> {
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-				if(e != null) {
-					if (e instanceof EntityPC pc) {
-						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-							removeGpu(pc);
-						}
-					}
-				}
+			server.execute(() -> {
+				Entity e = player.world.getEntityById(entityId);
+				if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()))
+					removeCpu(pc);
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_REMOVE_HARD_DRIVE, (packetContext, attachedData) -> {
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REMOVE_RAM, (server, player, handler, buf, responseSender) -> {
+			int slot = buf.readInt();
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-				if(e != null) {
-					if (e instanceof EntityPC pc) {
-						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-							removeHdd(pc, packetContext.getPlayer().getUuid().toString());
-						}
-					}
-				}
+			server.execute(() -> {
+				Entity e = player.world.getEntityById(entityId);
+				if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()))
+					removeRam(pc, slot);
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_REMOVE_CPU, (packetContext, attachedData) -> {
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_ADD_ISO, (server, player, handler, buf, responseSender) -> {
+			String isoName = buf.readString(32767);
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-				if(e != null) {
-					if (e instanceof EntityPC pc) {
-						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-							removeCpu(pc);
-						}
-					}
-				}
+			server.execute(() -> {
+				Entity e = player.world.getEntityById(entityId);
+				if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()) && pc.getIsoFileName().isEmpty())
+					pc.setIsoFileName(isoName);
 			});
 		});
 		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_REMOVE_RAM, (packetContext, attachedData) -> {
-			int slot = attachedData.readInt();
-			int entityId = attachedData.readInt();
+		ServerPlayNetworking.registerGlobalReceiver(C2S_REMOVE_ISO, (server, player, handler, buf, responseSender) -> {
+			int entityId = buf.readInt();
 			
-			packetContext.getTaskQueue().execute(() -> {
-				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-				if(e != null) {
-					if (e instanceof EntityPC pc) {
-						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-							removeRam(pc, slot);
-						}
-					}
-				}
-			});
-		});
-		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_ADD_ISO, (packetContext, attachedData) -> {
-			String isoName = attachedData.readString(32767);
-			int entityId = attachedData.readInt();
-			
-			packetContext.getTaskQueue().execute(() -> {
-				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-				if(e != null) {
-					if (e instanceof EntityPC pc) {
-						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-							if(pc.getIsoFileName().isEmpty()) {
-								pc.setIsoFileName(isoName);
-							}
-						}
-					}
-				}
-			});
-		});
-		
-		ServerSidePacketRegistry.INSTANCE.register(C2S_REMOVE_ISO, (packetContext, attachedData) -> {
-			int entityId = attachedData.readInt();
-			
-			packetContext.getTaskQueue().execute(() -> {
-				Entity e = packetContext.getPlayer().world.getEntityById(entityId);
-				if(e != null) {
-					if (e instanceof EntityPC pc) {
-						if(pc.getOwner().equals(packetContext.getPlayer().getUuid().toString())) {
-							if(!pc.getIsoFileName().isEmpty()) {
-								pc.setIsoFileName("");
-							}
-						}
-					}
-				}
+			server.execute(() -> {
+				Entity e = player.world.getEntityById(entityId);
+				if(e instanceof EntityPC pc && pc.getOwner().equals(player.getUuidAsString()) && !pc.getIsoFileName().isEmpty())
+					pc.setIsoFileName("");
 			});
 		});
 	}
 	
-	private static void removeStck(PlayerInventory inv, ItemStack is) {
-		UnmodifiableIterator<DefaultedList<ItemStack>> var2 = ImmutableList.of(inv.main, inv.armor, inv.offHand).iterator();
-
-	      while(var2.hasNext()) {
-	         List<ItemStack> list = var2.next();
-	         Iterator<ItemStack> var4 = list.iterator();
-
-	         while(var4.hasNext()) {
-	            ItemStack itemStack = var4.next();
-	            if (!itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(is)) {
-	            	itemStack.decrement(1);
-	            	return;
-	            }
-	         }
-	      }
+	private static void removeStick(PlayerInventory inv, ItemStack is) {
+		for (List<ItemStack> list : ImmutableList.of(inv.main, inv.armor, inv.offHand)) {
+			for (ItemStack itemStack : list) {
+				if (!itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(is)) {
+					itemStack.decrement(1);
+					return;
+				}
+			}
+		}
 		throw new RuntimeException("Doesn't contain item!");
 	}
 }

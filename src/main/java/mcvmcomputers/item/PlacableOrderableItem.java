@@ -66,4 +66,8 @@ public class PlacableOrderableItem extends OrderableItem{
 		return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, user.getStackInHand(hand));
 	}
 
+	@Override
+	public boolean shouldSyncTagToClient() {
+		return false;
+	}
 }

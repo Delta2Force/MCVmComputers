@@ -2,7 +2,7 @@ package mcvmcomputers.item;
 
 import net.minecraft.item.Item;
 
-public abstract class OrderableItem extends Item{
+public class OrderableItem extends Item{
 	private final int price;
 	
 	public OrderableItem(Settings settings, int price) {
@@ -17,5 +17,7 @@ public abstract class OrderableItem extends Item{
 		return price;
 	}
 
-    public abstract boolean shouldSyncTagToClient();
+    public boolean shouldSyncTagToClient() {
+		return !super.isNbtSynced();
+	}
 }
