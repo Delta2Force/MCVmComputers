@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Selectable;
 import org.apache.commons.lang3.SystemUtils;
 
 import com.google.gson.Gson;
@@ -38,27 +40,16 @@ public class GuiSetup extends Screen{
 	public String virtualBoxDirectory = "";
 	private Language language = Language.getInstance();
 	private MinecraftClient minecraft = MinecraftClient.getInstance();
-	private InsnList children;
-	private InsnList buttons;
-
 	public GuiSetup() {
 		super(Text.of("Setup"));
 	}
 	
-	public void addElement(Element e) {
-		this.children.add((AbstractInsnNode) e);
+	public <T extends Element & Drawable & Selectable> void addElement(T e) {
+		this.addDrawableChild(e);
 	}
 	
 	public void clearElements() {
-		this.children.clear();
-	}
-	
-	public void clearButtons() {
-		this.buttons.clear();
-	}
-	
-	public void addButton(ButtonWidget bw) {
-		addButton(bw);
+		this.clearChildren();
 	}
 	
 	public void nextPage() {
@@ -86,7 +77,6 @@ public class GuiSetup extends Screen{
 	}
 
 	public void firstPage() {
-		this.clearButtons();
 		this.clearElements();
 		setupIndex = 0;
 		currentSetupPage = setupPages.get(0);
@@ -137,7 +127,6 @@ public class GuiSetup extends Screen{
 			currentSetupPage = setupPages.get(0);
 			initialized = true;
 		}
-		this.clearButtons();
 		this.clearElements();
 		currentSetupPage.init();
 	}

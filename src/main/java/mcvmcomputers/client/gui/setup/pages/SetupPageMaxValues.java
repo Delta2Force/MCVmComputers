@@ -131,7 +131,6 @@ public class SetupPageMaxValues extends SetupPage{
 			}
 		}
 		this.setupGui.clearElements();
-		this.setupGui.clearButtons();
 		onlyStatusMessage = true;
 		ClientMod.maxRam = Integer.parseInt(maxRam.getText());
 		ClientMod.videoMem = Integer.parseInt(videoMemory.getText());
@@ -171,7 +170,8 @@ public class SetupPageMaxValues extends SetupPage{
 					}
 					ClientMod.vbManager = vm;
 					ClientMod.vb = vb;
-					minecraft.setScreenAndRender(new TitleScreen());
+
+					minecraft.execute(() -> minecraft.setScreenAndRender(new TitleScreen()));
 				}catch(Exception ex) {
 					ex.printStackTrace();
 					for(int i = 5;i>=0;i--) {
@@ -231,7 +231,7 @@ public class SetupPageMaxValues extends SetupPage{
 			setupGui.addElement(maxRam);
 			setupGui.addElement(videoMemory);
 			int confirmW = textRender.getWidth(setupGui.translation("mcvmcomputers.setup.confirmButton"))+40;
-			setupGui.addButton(new ButtonWidget(setupGui.width/2 - (confirmW/2), setupGui.height - 40, confirmW, 20, Text.translatable(setupGui.translation("mcvmcomputers.setup.confirmButton")), (btn) -> confirmButton(btn)));
+			setupGui.addElement(new ButtonWidget(setupGui.width/2 - (confirmW/2), setupGui.height - 40, confirmW, 20, Text.translatable(setupGui.translation("mcvmcomputers.setup.confirmButton")), (btn) -> confirmButton(btn)));
 			
 			if(setupGui.startVb) {
 				confirmButton(null);

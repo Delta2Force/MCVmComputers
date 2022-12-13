@@ -87,7 +87,7 @@ public class SetupPageVMComputersDirectory extends SetupPage{
 		vmComputersDirectory.setText(dirText);
 		vmComputersDirectory.setChangedListener((s) -> checkDirectory(s));
 		setupGui.addElement(vmComputersDirectory);
-		setupGui.addButton(next);
+		setupGui.addElement(next);
 	}
 
 }
