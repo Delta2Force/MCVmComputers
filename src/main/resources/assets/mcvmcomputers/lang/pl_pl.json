@@ -84,7 +84,7 @@
     "mcvmcomputers.focus.lose": "Naciśnij %s by cofnąć przechwycenie",
     "mcvmcomputers.setup.title": "VM Computers: %clUstawienia",
     "mcvmcomputers.setup.page": "Strona %s/%s",
-    "mcvmcomputers.setup.intro_message": "Musisz zainstalować VirtualBox (wersja 6.1.*) żeby ten mod działał.\nJeśli tego jeszcze nie zrobiłeś/aś to pobierz go z %clvirtualbox.org\n lub twojego menedżera pakietów. Jeśli musisz zrestartować, zrób to, i wróć.\n\nUWAGA! To może uszkodzić twoją konfigurację VirtualBoxa, przez co będzie trzeba\nzrestartować swoje ustawienia. (Jeśli to się wydarzy, wyszukaj jak to zrobić w googlu)",
+    "mcvmcomputers.setup.intro_message": "Musisz zainstalować VirtualBox (wersja 7.0.*) żeby ten mod działał.\nJeśli tego jeszcze nie zrobiłeś/aś to pobierz go z %clvirtualbox.org\n lub twojego menedżera pakietów. Jeśli musisz zrestartować, zrób to, i wróć.\n\nUWAGA! To może uszkodzić twoją konfigurację VirtualBoxa, przez co będzie trzeba\nzrestartować swoje ustawienia. (Jeśli to się wydarzy, wyszukaj jak to zrobić w googlu)",
     "mcvmcomputers.setup.max_ram_input": "Maksymakny RAM używany przez WM:",
     "mcvmcomputers.setup.vram_input": "Pamięć wideo WM:",
     "mcvmcomputers.setup.ram_input_help": "Ustaw tą wartość w %clmegabytes.%cr 1 GB = 1024 MB. NaN = nie jest liczbą.",

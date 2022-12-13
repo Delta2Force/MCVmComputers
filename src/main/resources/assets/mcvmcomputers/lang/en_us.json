@@ -84,7 +84,7 @@
     "mcvmcomputers.focus.lose": "Press %s to lose focus",
     "mcvmcomputers.setup.title": "VM Computers: %clSetup",
     "mcvmcomputers.setup.page": "Page %s/%s",
-    "mcvmcomputers.setup.intro_message": "You need to install VirtualBox (version 6.1.*) for this mod to work.\nIf you haven't done it yet, download and install it from %clvirtualbox.org\nor your package manager. If you need to restart, do it and come back.\n\nWARNING! This might cause VirtualBox to stop working, resulting in you having\nto reset your preferences. (If that happens, just google how to reset)",
+    "mcvmcomputers.setup.intro_message": "You need to install VirtualBox (version 7.0.*) for this mod to work.\nIf you haven't done it yet, download and install it from %clvirtualbox.org\nor your package manager. If you need to restart, do it and come back.\n\nWARNING! This might cause VirtualBox to stop working, resulting in you having\nto reset your preferences. (If that happens, just google how to reset)",
     "mcvmcomputers.setup.max_ram_input": "Maximum RAM used by VM:",
     "mcvmcomputers.setup.vram_input": "VM Video Memory:",
     "mcvmcomputers.setup.ram_input_help": "Set these values in %clmegabytes.%cr 1 GB = 1024 MB. NaN = Not a Number.",

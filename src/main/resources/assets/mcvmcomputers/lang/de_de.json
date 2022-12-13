@@ -64,7 +64,7 @@
     "mcvmcomputers.screen_ok_mp": "Andere können wieder deinen Bildschirm sehen.",
     "mcvmcomputers.setup.title": "VM Computers: %clEinrichtung",
     "mcvmcomputers.setup.page": "Seite %s/%s",
-    "mcvmcomputers.setup.intro_message": "Du musst VirtualBox (version 6.1.*) installieren damit diese Mod funktioniert.\nFalls du es noch nicht getan hast, lade es herunter von %clvirtualbox.org\noder deinem Paketmanager. Falls du neustarten musst, tu es, und komm wieder!\n\nACHTUNG! VirtualBox könnte hiernach nicht mehr funktionieren,\nfalls etwas passiert musst du deine Einstellungen zurücksetzen.\n(Google einfach wie es geht :))",
+    "mcvmcomputers.setup.intro_message": "Du musst VirtualBox (version 7.0.*) installieren damit diese Mod funktioniert.\nFalls du es noch nicht getan hast, lade es herunter von %clvirtualbox.org\noder deinem Paketmanager. Falls du neustarten musst, tu es, und komm wieder!\n\nACHTUNG! VirtualBox könnte hiernach nicht mehr funktionieren,\nfalls etwas passiert musst du deine Einstellungen zurücksetzen.\n(Google einfach wie es geht :))",
     "mcvmcomputers.setup.max_ram_input": "Maximal benutzter RAM:",
     "mcvmcomputers.setup.vram_input": "Grafikspeicher der VM:",
     "mcvmcomputers.setup.ram_input_help": "Setze diese Werte in %clMegabyte.%cr 1 GB = 1024 MB. NaN = Keine Nummer.",

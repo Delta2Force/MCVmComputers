@@ -84,7 +84,7 @@
     "mcvmcomputers.focus.lose": "Premi %s per smettere di interagire con la VM",
     "mcvmcomputers.setup.title": "VM Computers: %clSetup",
     "mcvmcomputers.setup.page": "Pagina %s/%s",
-    "mcvmcomputers.setup.intro_message": "Devi installare VirtualBox (versione 6.1.*) Per permettere a questa mod di funzionare.\nSe non l'hai ancora fatto, scarica VirtualBox da qui %clvirtualbox.org\no dal tuo software dei pacchetti. Se devi riavviare, fallo e torna qui\n\nATTENZIONE! Questo potrebbe far smettere di funzionare VirtualBox, obbligandoti quindi a \nripristinare le impostazioni predefinite. (Se succede, cerca su Google come ripristinare)",
+    "mcvmcomputers.setup.intro_message": "Devi installare VirtualBox (versione 7.0.*) Per permettere a questa mod di funzionare.\nSe non l'hai ancora fatto, scarica VirtualBox da qui %clvirtualbox.org\no dal tuo software dei pacchetti. Se devi riavviare, fallo e torna qui\n\nATTENZIONE! Questo potrebbe far smettere di funzionare VirtualBox, obbligandoti quindi a \nripristinare le impostazioni predefinite. (Se succede, cerca su Google come ripristinare)",
     "mcvmcomputers.setup.max_ram_input": "Massima RAM utilizzabile",
     "mcvmcomputers.setup.vram_input": "Memoria Video delle macchine virtuali:",
     "mcvmcomputers.setup.ram_input_help": "Imposta questi valori in %clmegabytes.%cr 1 GB = 1024 MB. NaN = Non è un numero.",
