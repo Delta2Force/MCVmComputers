@@ -48,6 +48,7 @@ tasks.remapJar.dependsOn shadowJar
 
 processResources {
 	inputs.property "version", project.version
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 	from(sourceSets.main.resources.srcDirs) {
 		include "fabric.mod.json"
