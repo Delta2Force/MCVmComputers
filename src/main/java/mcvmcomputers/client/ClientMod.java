@@ -239,7 +239,7 @@ public class ClientMod implements ClientModInitializer{
 	}
 	
 	public static void registerClientPackets() {
-		ClientPlayNetworking.registerReceiver(PacketList.S2C_SCREEN, (client, handler, buf, responseSender) -> {
+		ClientPlayNetworking.registerGlobalReceiver(PacketList.S2C_SCREEN, (client, handler, buf, responseSender) -> {
 			byte[] screen = buf.readByteArray();
 			int compressedDataSize = buf.readInt();
 			int dataSize = buf.readInt();
@@ -285,7 +285,7 @@ public class ClientMod implements ClientModInitializer{
 			});
 		});
 
-		ClientPlayNetworking.registerReceiver(PacketList.S2C_STOP_SCREEN, (client, handler, buf, responseSender) -> {
+		ClientPlayNetworking.registerGlobalReceiver(PacketList.S2C_STOP_SCREEN, (client, handler, buf, responseSender) -> {
 			UUID pcOwner = buf.readUuid();
 			UUID clientUUID = client.player.getUuid();
 			
@@ -307,7 +307,7 @@ public class ClientMod implements ClientModInitializer{
 			});
 		});
 
-		ClientPlayNetworking.registerReceiver(PacketList.S2C_SYNC_ORDER, (client, handler, buf, responseSender) -> {
+		ClientPlayNetworking.registerGlobalReceiver(PacketList.S2C_SYNC_ORDER, (client, handler, buf, responseSender) -> {
 			int arraySize = buf.readInt();
 			int price = buf.readInt();
 

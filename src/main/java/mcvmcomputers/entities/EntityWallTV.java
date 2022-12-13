@@ -113,6 +113,11 @@ public class EntityWallTV extends Entity{
 		return true;
 	}
 
+	@Override
+	public boolean canHit() {
+		return true;
+	}
+
 	public String getOwnerUUID() {
 		return this.getDataTracker().get(OWNER_UUID);
 	}

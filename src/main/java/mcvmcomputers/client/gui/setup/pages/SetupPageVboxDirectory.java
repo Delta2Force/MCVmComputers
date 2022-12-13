@@ -85,7 +85,7 @@ public class SetupPageVboxDirectory extends SetupPage{
 		vboxDirectory.setText(dirText);
 		vboxDirectory.setChangedListener((s) -> checkDirectory(s));
 		setupGui.addElement(vboxDirectory);
-		setupGui.addButton(next);
+		setupGui.addElement(next);
 	}
 
 }
