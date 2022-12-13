@@ -209,6 +209,11 @@ public class EntityDeliveryChest extends Entity{
 	}
 
 	@Override
+	public boolean canHit() {
+		return true;
+	}
+
+	@Override
 	public void remove(RemovalReason reason) {
 		super.remove(reason);
 		if(world.isClient) {

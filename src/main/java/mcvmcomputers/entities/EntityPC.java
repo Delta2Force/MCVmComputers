@@ -239,6 +239,11 @@ public class EntityPC extends Entity{
 	}
 
 	@Override
+	public boolean canHit() {
+		return true;
+	}
+
+	@Override
 	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this);
 	}
