@@ -17,6 +17,11 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	implementation 'jakarta.xml.ws:jakarta.xml.ws-api:2.3.3'
+	implementation 'com.sun.xml.ws:jaxws-rt:2.3.2'
+	implementation 'com.sun.xml.ws:rt:2.3.2'
+
+
 	implementation files('lib/vboxjws.jar')
 	shadow files('lib/vboxjws.jar')
 }
