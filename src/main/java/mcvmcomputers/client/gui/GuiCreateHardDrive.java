@@ -41,8 +41,6 @@ public class GuiCreateHardDrive extends Screen{
 	private ButtonWidget AA;
 	private ButtonWidget BB;
 	private MinecraftClient minecraft = MinecraftClient.getInstance();
-	private PrettyPrinter children;
-	private InsnList buttons;
 
 	public enum State{
 		MENU,
@@ -73,7 +71,7 @@ public class GuiCreateHardDrive extends Screen{
 			hddSize = new TextFieldWidget(this.textRenderer, this.width/2-150, this.height/2-10, 300, 20, Text.of(""));
 			hddSize.setText(s);
 			hddSize.setChangedListener((st) -> hddSizeUpdate(st));
-			this.children.add(hddSize);
+			this.addDrawableChild(hddSize);
 			this.hddSizeUpdate(hddSize.getText());
 			AA = new ButtonWidget(this.width/2-150, this.height/2+25, 50, 20, Text.of("vdi"), (wdgt) -> extset(Ext.vdi));
 			AA.active = false;
@@ -81,14 +79,14 @@ public class GuiCreateHardDrive extends Screen{
 			BB = new ButtonWidget(this.width/2-96, this.height/2+25, 50, 20, Text.of("vmdk"), (wdgt) -> extset(Ext.vmdk));
 			this.createNew(BB);
 			int newvhdWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.newvhd"))+40;
-			this.addDrawable(new ButtonWidget(this.width/2-(newvhdWidth/2), this.height/2+50, newvhdWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.newvhd")), (wdgt) -> createNew(wdgt)));
+			this.addDrawableChild(new ButtonWidget(this.width/2-(newvhdWidth/2), this.height/2+50, newvhdWidth, 20, Text.translatable("mcvmcomputers.vhd_setup.newvhd"), (wdgt) -> createNew(wdgt)));
 			int menuWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.menu"))+40;
-			this.addDrawable(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.menu")), (wdgt) -> switchState(State.MENU)));
+			this.addDrawableChild(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, Text.translatable("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
 		}else if(currentState == State.MENU) {
 			int newvhdWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.newvhd"))+40;
-			this.addDrawable(new ButtonWidget(this.width/2 - (newvhdWidth/2), this.height/2 - 12, newvhdWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.newvhd")), (wdgt) -> switchState(State.CREATE_NEW)));
+			this.addDrawableChild(new ButtonWidget(this.width/2 - (newvhdWidth/2), this.height/2 - 12, newvhdWidth, 20, Text.translatable("mcvmcomputers.vhd_setup.newvhd"), (wdgt) -> switchState(State.CREATE_NEW)));
 			int oldvhdWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.oldvhd"))+40;
-			this.addDrawable(new ButtonWidget(this.width/2 - (oldvhdWidth/2), this.height/2 + 12, oldvhdWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.oldvhd")), (wdgt) -> switchState(State.SELECT_OLD)));
+			this.addDrawableChild(new ButtonWidget(this.width/2 - (oldvhdWidth/2), this.height/2 + 12, oldvhdWidth, 20, Text.translatable("mcvmcomputers.vhd_setup.oldvhd"), (wdgt) -> switchState(State.SELECT_OLD)));
 		}else {
 			int lastY = 60;
 			ArrayList<File> files = new ArrayList<>();
@@ -104,13 +102,13 @@ public class GuiCreateHardDrive extends Screen{
 				}
 			});
 			for(File f : files) {
-				this.addDrawable(new ButtonWidget(this.width/2 - 90, lastY, 180, 14, Text.translatable((f.getName() + " | " + ((float)f.length()/1024f/1024f) + " " + translation("mcvmcomputers.vhd_setup.mb_used"))), (wdgt) -> selectOld(wdgt)));
-				this.addDrawable(new ButtonWidget(this.width/2 + 92, lastY, 14, 14, Text.translatable("x"), (wdgt) -> removevhd(f.getName())));
+				this.addDrawableChild(new ButtonWidget(this.width/2 - 90, lastY, 180, 14, Text.literal((f.getName() + " | " + ((float)f.length()/1024f/1024f) + " " + translation("mcvmcomputers.vhd_setup.mb_used"))), (wdgt) -> selectOld(wdgt)));
+				this.addDrawableChild(new ButtonWidget(this.width/2 + 92, lastY, 14, 14, Text.literal("x"), (wdgt) -> removevhd(f.getName())));
 				lastY += 16;
 			}
 			
 			int menuWidth = textRenderer.getWidth(translation("mcvmcomputers.vhd_setup.menu"))+40;
-			this.addDrawable(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, Text.translatable(translation("mcvmcomputers.vhd_setup.menu")), (wdgt) -> switchState(State.MENU)));
+			this.addDrawableChild(new ButtonWidget(this.width - (menuWidth+10), this.height - 30, menuWidth, 20, Text.translatable("mcvmcomputers.vhd_setup.menu"), (wdgt) -> switchState(State.MENU)));
 		}
 	}
 
@@ -127,8 +125,7 @@ public class GuiCreateHardDrive extends Screen{
 	}
 
 	private void switchState(State newState) {
-		this.buttons.clear();
-		this.children = new PrettyPrinter();
+		this.clearChildren();
 		currentState = newState;
 		this.init();
 	}
