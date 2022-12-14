@@ -36,7 +36,7 @@ public class ItemHardDrive extends OrderableItem{
 				return Text.translatable("mcvmcomputers.hdd_item_name", stack.getNbt().getString("vhdfile")).formatted(Formatting.WHITE);
 			}
 		}
-		return Text.translatable("mcvmcomputers.hdd_item_name", Text.translatable("mcvmcomputers.hdd_right_click").toString()).formatted(Formatting.WHITE);
+		return Text.translatable("mcvmcomputers.hdd_item_name", Text.translatable("mcvmcomputers.hdd_right_click")).formatted(Formatting.WHITE);
 	}
 	
 	public static ItemStack createHardDrive(String fileName) {
