@@ -4,6 +4,7 @@ import java.util.List;
 
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityPC;
+import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -33,9 +34,8 @@ public class ItemPCCaseSidepanel extends OrderableItem{
 									hr.getPos().getX(),
 									hr.getPos().getY(),
 									hr.getPos().getZ(),
-									new Vec3d(user.getPos().x,
-												hr.getPos().getY(),
-												user.getPos().z), user.getUuid(), true, user.getStackInHand(hand).getNbt());
+									MVCUtils.lookAt(hr.getPos(), new Vec3d(user.getPos().x, hr.getPos().y, user.getPos().z)),
+									user.getUuid(), true, user.getStackInHand(hand).getNbt());
 			world.spawnEntity(ek);
 		}
 		

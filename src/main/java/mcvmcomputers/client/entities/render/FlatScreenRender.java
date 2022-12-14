@@ -48,8 +48,7 @@ public class FlatScreenRender extends EntityRenderer<EntityFlatScreen>{
 		
 		matrices.push();
 		matrices.translate(0, 0.5, 0);
-		Quaternion look = MVCUtils.lookAt(entity.getPos(), entity.getLookAtPos());
-		matrices.multiply(look);
+		matrices.multiply(entity.getOrientation());
 		MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemList.ITEM_FLATSCREEN), Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, (int)RandomSeed.getSeed());
 		if(ClientMod.vmScreenTextures.containsKey(UUID.fromString(entity.getOwnerUUID()))) {
 			matrices.push();

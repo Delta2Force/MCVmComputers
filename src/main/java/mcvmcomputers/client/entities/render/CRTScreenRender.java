@@ -28,8 +28,7 @@ public class CRTScreenRender extends EntityRenderer<EntityCRTScreen> {
 	      RenderSystem.enableBlend();
 	      RenderSystem.defaultBlendFunc();
 	   }, RenderSystem::disableBlend);
-	protected static final float ONE_TENTH_ALPHA = 0.003921569f;
-	
+
 	public CRTScreenRender(EntityRendererFactory.Context ctx) {
 		super(ctx);
 	}
@@ -48,8 +47,7 @@ public class CRTScreenRender extends EntityRenderer<EntityCRTScreen> {
 		
 		matrices.push();
 		matrices.translate(0, 0.5, 0);
-		Quaternion look = MVCUtils.lookAt(entity.getPos(), entity.getLookAtPos());
-		matrices.multiply(look);
+		matrices.multiply(entity.getOrientation());
 		MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemList.ITEM_CRTSCREEN), Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, (int)RandomSeed.getSeed());
 		if(ClientMod.vmScreenTextures.containsKey(UUID.fromString(entity.getOwnerUUID()))) {
 			matrices.push();

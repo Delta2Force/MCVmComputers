@@ -33,8 +33,7 @@ public class KeyboardRender extends EntityRenderer<EntityKeyboard> {
 			VertexConsumerProvider vertexConsumers, int light) {
 		matrices.push();
 		matrices.translate(0, 0.5, 0);
-		Quaternion look = MVCUtils.lookAt(entity.getPos(), entity.getLookAtPos());
-		matrices.multiply(look);
+		matrices.multiply(entity.getOrientation());
 		MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(ItemList.ITEM_KEYBOARD), Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, (int)RandomSeed.getSeed());
 		matrices.pop();
 	}

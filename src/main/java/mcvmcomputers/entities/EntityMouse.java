@@ -14,15 +14,18 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityMouse extends Entity{
-	private static final TrackedData<Float> LOOK_AT_POS_X =
+	private static final TrackedData<Float> ORIENTATION_X =
 			DataTracker.registerData(EntityMouse.class, TrackedDataHandlerRegistry.FLOAT);
-	private static final TrackedData<Float> LOOK_AT_POS_Y =
+	private static final TrackedData<Float> ORIENTATION_Y =
 			DataTracker.registerData(EntityMouse.class, TrackedDataHandlerRegistry.FLOAT);
-	private static final TrackedData<Float> LOOK_AT_POS_Z =
+	private static final TrackedData<Float> ORIENTATION_Z =
+			DataTracker.registerData(EntityMouse.class, TrackedDataHandlerRegistry.FLOAT);
+	private static final TrackedData<Float> ORIENTATION_W =
 			DataTracker.registerData(EntityMouse.class, TrackedDataHandlerRegistry.FLOAT);
 	
 	public EntityMouse(EntityType<?> type, World world) {
@@ -34,37 +37,44 @@ public class EntityMouse extends Entity{
 		this.updatePosition(x, y, z);
 	}
 	
-	public EntityMouse(World world, Double x, Double y, Double z, Vec3d lookAt, String uuid) {
+	public EntityMouse(World world, Double x, Double y, Double z, Quaternion quaternion, String uuid) {
 		this(EntityList.MOUSE, world);
 		this.updatePosition(x, y, z);
-		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
-		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);
-		this.getDataTracker().set(LOOK_AT_POS_Z, (float)lookAt.z);
+		this.getDataTracker().set(ORIENTATION_X, quaternion.getX());
+		this.getDataTracker().set(ORIENTATION_Y, quaternion.getY());
+		this.getDataTracker().set(ORIENTATION_Z, quaternion.getZ());
+		this.getDataTracker().set(ORIENTATION_W, quaternion.getW());
 	}
-	
-	public Vec3d getLookAtPos() {
-		return new Vec3d(this.getDataTracker().get(LOOK_AT_POS_X), this.getDataTracker().get(LOOK_AT_POS_Y), this.getDataTracker().get(LOOK_AT_POS_Z));
+
+	public Quaternion getOrientation() {
+		return new Quaternion(this.getDataTracker().get(ORIENTATION_X),
+				this.getDataTracker().get(ORIENTATION_Y),
+				this.getDataTracker().get(ORIENTATION_Z),
+				this.getDataTracker().get(ORIENTATION_W));
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(LOOK_AT_POS_X, 0f);
-		this.getDataTracker().startTracking(LOOK_AT_POS_Y, 0f);
-		this.getDataTracker().startTracking(LOOK_AT_POS_Z, 0f);
+		this.getDataTracker().startTracking(ORIENTATION_X, 0f);
+		this.getDataTracker().startTracking(ORIENTATION_Y, 0f);
+		this.getDataTracker().startTracking(ORIENTATION_Z, 0f);
+		this.getDataTracker().startTracking(ORIENTATION_W, 0f);
 	}
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		this.getDataTracker().set(LOOK_AT_POS_X, nbt.getFloat("LookAtX"));
-		this.getDataTracker().set(LOOK_AT_POS_Y, nbt.getFloat("LookAtY"));
-		this.getDataTracker().set(LOOK_AT_POS_Z, nbt.getFloat("LookAtZ"));
+		this.getDataTracker().set(ORIENTATION_X, nbt.getFloat("OrientationX"));
+		this.getDataTracker().set(ORIENTATION_Y, nbt.getFloat("OrientationY"));
+		this.getDataTracker().set(ORIENTATION_Z, nbt.getFloat("OrientationZ"));
+		this.getDataTracker().set(ORIENTATION_W, nbt.getFloat("OrientationW"));
 	}
 
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
-		nbt.putFloat("LookAtX", this.getDataTracker().get(LOOK_AT_POS_X));
-		nbt.putFloat("LookAtY", this.getDataTracker().get(LOOK_AT_POS_Y));
-		nbt.putFloat("LookAtZ", this.getDataTracker().get(LOOK_AT_POS_Z));
+		nbt.putFloat("OrientationX", this.getDataTracker().get(ORIENTATION_X));
+		nbt.putFloat("OrientationY", this.getDataTracker().get(ORIENTATION_Y));
+		nbt.putFloat("OrientationZ", this.getDataTracker().get(ORIENTATION_Z));
+		nbt.putFloat("OrientationW", this.getDataTracker().get(ORIENTATION_W));
 	}
 	
 	@Override

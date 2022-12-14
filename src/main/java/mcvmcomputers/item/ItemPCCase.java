@@ -5,6 +5,7 @@ import java.util.List;
 import mcvmcomputers.MainMod;
 import mcvmcomputers.client.ClientMod;
 import mcvmcomputers.entities.EntityPC;
+import mcvmcomputers.utils.MVCUtils;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -17,6 +18,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -34,14 +36,13 @@ public class ItemPCCase extends OrderableItem{
 									hr.getPos().getX(),
 									hr.getPos().getY(),
 									hr.getPos().getZ(),
-									new Vec3d(user.getPos().x,
-												hr.getPos().getY(),
-												user.getPos().z), user.getUuid(), user.getStackInHand(hand).getNbt());
+									MVCUtils.lookAt(hr.getPos(), new Vec3d(user.getPos().x, hr.getPos().y, user.getPos().z)),
+									user.getUuid(), user.getStackInHand(hand).getNbt());
 			world.spawnEntity(ek);
 			MainMod.computers.put(user.getUuid(), ek);
 		}
 		
-		if(world.isClient) {
+		if(world.isClient && ClientMod.thePreviewEntity != null) {
 			world.playSound(ClientMod.thePreviewEntity.getX(),
 							ClientMod.thePreviewEntity.getY(),
 							ClientMod.thePreviewEntity.getZ(),

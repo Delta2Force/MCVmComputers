@@ -20,6 +20,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -30,12 +31,14 @@ public class EntityPC extends Entity{
 			DataTracker.registerData(EntityPC.class, TrackedDataHandlerRegistry.STRING);
 	private static final TrackedData<String> OWNER_UUID =
 			DataTracker.registerData(EntityPC.class, TrackedDataHandlerRegistry.STRING);
-	
-	private static final TrackedData<Float> LOOK_AT_POS_X =
+
+	private static final TrackedData<Float> ORIENTATION_X =
 			DataTracker.registerData(EntityPC.class, TrackedDataHandlerRegistry.FLOAT);
-	private static final TrackedData<Float> LOOK_AT_POS_Y =
+	private static final TrackedData<Float> ORIENTATION_Y =
 			DataTracker.registerData(EntityPC.class, TrackedDataHandlerRegistry.FLOAT);
-	private static final TrackedData<Float> LOOK_AT_POS_Z =
+	private static final TrackedData<Float> ORIENTATION_Z =
+			DataTracker.registerData(EntityPC.class, TrackedDataHandlerRegistry.FLOAT);
+	private static final TrackedData<Float> ORIENTATION_W =
 			DataTracker.registerData(EntityPC.class, TrackedDataHandlerRegistry.FLOAT);
 	
 	private static final TrackedData<Integer> CPU_DIVIDED_BY =
@@ -63,12 +66,13 @@ public class EntityPC extends Entity{
 		this.updatePosition(x, y, z);
 	}
 	
-	public EntityPC(World world, double x, double y, double z, Vec3d lookAt, UUID owner, NbtCompound nbt) {
+	public EntityPC(World world, Double x, Double y, Double z, Quaternion quaternion, UUID owner, NbtCompound nbt) {
 		this(EntityList.PC, world);
 		this.updatePosition(x, y, z);
-		this.getDataTracker().set(LOOK_AT_POS_X, (float)lookAt.x);
-		this.getDataTracker().set(LOOK_AT_POS_Y, (float)lookAt.y);
-		this.getDataTracker().set(LOOK_AT_POS_Z, (float)lookAt.z);
+		this.getDataTracker().set(ORIENTATION_X, quaternion.getX());
+		this.getDataTracker().set(ORIENTATION_Y, quaternion.getY());
+		this.getDataTracker().set(ORIENTATION_Z, quaternion.getZ());
+		this.getDataTracker().set(ORIENTATION_W, quaternion.getW());
 		this.getDataTracker().set(OWNER_UUID, owner.toString());
 		
 		if(nbt != null) {
@@ -91,13 +95,16 @@ public class EntityPC extends Entity{
 		}
 	}
 	
-	public EntityPC(World world, double x, double y, double z, Vec3d lookAt, UUID owner, boolean glassSidepanel, NbtCompound nbt) {
-		this(world, x, y, z, lookAt, owner, nbt);
+	public EntityPC(World world, double x, double y, double z, Quaternion quaternion, UUID owner, boolean glassSidepanel, NbtCompound nbt) {
+		this(world, x, y, z, quaternion, owner, nbt);
 		this.getDataTracker().set(GLASS_SIDEPANEL, glassSidepanel);
 	}
-	
-	public Vec3d getLookAtPos() {
-		return new Vec3d(this.getDataTracker().get(LOOK_AT_POS_X), this.getDataTracker().get(LOOK_AT_POS_Y), this.getDataTracker().get(LOOK_AT_POS_Z));
+
+	public Quaternion getOrientation() {
+		return new Quaternion(this.getDataTracker().get(ORIENTATION_X),
+				this.getDataTracker().get(ORIENTATION_Y),
+				this.getDataTracker().get(ORIENTATION_Z),
+				this.getDataTracker().get(ORIENTATION_W));
 	}
 
 	@Override
@@ -105,9 +112,10 @@ public class EntityPC extends Entity{
 		this.getDataTracker().startTracking(HARD_DRIVE_FILE_NAME, "");
 		this.getDataTracker().startTracking(ISO_FILE_NAME, "");
 		this.getDataTracker().startTracking(OWNER_UUID, "");
-		this.getDataTracker().startTracking(LOOK_AT_POS_X, 0f);
-		this.getDataTracker().startTracking(LOOK_AT_POS_Y, 0f);
-		this.getDataTracker().startTracking(LOOK_AT_POS_Z, 0f);
+		this.getDataTracker().startTracking(ORIENTATION_X, 0f);
+		this.getDataTracker().startTracking(ORIENTATION_Y, 0f);
+		this.getDataTracker().startTracking(ORIENTATION_Z, 0f);
+		this.getDataTracker().startTracking(ORIENTATION_W, 0f);
 		this.getDataTracker().startTracking(GB_OF_RAM_IN_SLOT_0, 0);
 		this.getDataTracker().startTracking(GB_OF_RAM_IN_SLOT_1, 0);
 		this.getDataTracker().startTracking(CPU_DIVIDED_BY, 0);
@@ -119,9 +127,10 @@ public class EntityPC extends Entity{
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		this.getDataTracker().set(LOOK_AT_POS_X, nbt.getFloat("LookAtX"));
-		this.getDataTracker().set(LOOK_AT_POS_Y, nbt.getFloat("LookAtY"));
-		this.getDataTracker().set(LOOK_AT_POS_Z, nbt.getFloat("LookAtZ"));
+		this.getDataTracker().set(ORIENTATION_X, nbt.getFloat("OrientationX"));
+		this.getDataTracker().set(ORIENTATION_Y, nbt.getFloat("OrientationY"));
+		this.getDataTracker().set(ORIENTATION_Z, nbt.getFloat("OrientationZ"));
+		this.getDataTracker().set(ORIENTATION_W, nbt.getFloat("OrientationW"));
 
 		if(nbt.contains("Owner")){
 			this.getDataTracker().set(OWNER_UUID, nbt.getString("Owner"));
@@ -167,9 +176,10 @@ public class EntityPC extends Entity{
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		nbt.putBoolean("X64", this.getDataTracker().get(SIXTY_FOUR_BIT));
-		nbt.putFloat("LookAtX", this.getDataTracker().get(LOOK_AT_POS_X));
-		nbt.putFloat("LookAtY", this.getDataTracker().get(LOOK_AT_POS_Y));
-		nbt.putFloat("LookAtZ", this.getDataTracker().get(LOOK_AT_POS_Z));
+		nbt.putFloat("OrientationX", this.getDataTracker().get(ORIENTATION_X));
+		nbt.putFloat("OrientationY", this.getDataTracker().get(ORIENTATION_Y));
+		nbt.putFloat("OrientationZ", this.getDataTracker().get(ORIENTATION_Z));
+		nbt.putFloat("OrientationW", this.getDataTracker().get(ORIENTATION_W));
 		nbt.putInt("CpuDividedBy", this.getDataTracker().get(CPU_DIVIDED_BY));
 		nbt.putString("IsoFileName", this.getDataTracker().get(ISO_FILE_NAME));
 		nbt.putInt("GbRamSlot0", this.getDataTracker().get(GB_OF_RAM_IN_SLOT_0));
