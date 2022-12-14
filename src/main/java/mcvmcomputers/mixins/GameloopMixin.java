@@ -147,7 +147,7 @@ public class GameloopMixin {
 		if(player != null) {
 			if(player.getActiveItem() != null) {
 				boolean tabletOut = false;
-				for(ItemStack is : player.getInventory().main) {
+				for(ItemStack is : player.getHandItems()) {
 					if(is.getItem() != null) {
 						if(is.getItem() instanceof ItemOrderingTablet) {
 							tabletOut = true;
@@ -166,7 +166,7 @@ public class GameloopMixin {
 					}
 				}
 				
-				for(ItemStack is : player.getInventory().main) {
+				for(ItemStack is : player.getHandItems()) {
 					if(is.getItem() != null) {
 						if(ItemList.PLACABLE_ITEMS.contains(is.getItem())) {
 							if(thePreviewEntity != null) {

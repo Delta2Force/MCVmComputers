@@ -65,36 +65,6 @@ public class OrderingTabletModel extends EntityModel<Entity> {
 		leftPart.pivotY = MVCUtils.lerp(leftPart.pivotY, left ? -0.5F : -0.9F, deltaTime);
 		rightPart.pivotY = MVCUtils.lerp(rightPart.pivotY, right ? -0.5F : -0.9F, deltaTime);
 		enterPart.pivotY = MVCUtils.lerp(enterPart.pivotY, enter ? -0.5F : -1.12F, deltaTime);
-
-		/*if(up) {
-			this.up.pivotY = MVCUtils.lerp(this.up.pivotY, -0.5F, deltaTime);
-		}else {
-			this.up.pivotY = MVCUtils.lerp(this.up.pivotY, -0.9F, deltaTime);
-		}
-		
-		if(down) {
-			this.down.pivotY = MVCUtils.lerp(this.down.pivotY, -0.4393F, deltaTime);
-		}else {
-			this.down.pivotY = MVCUtils.lerp(this.down.pivotY, -0.8393F, deltaTime);
-		}
-		
-		if(left) {
-			this.left.pivotY = MVCUtils.lerp(this.left.pivotY, -0.4393F, deltaTime);
-		}else {
-			this.left.pivotY = MVCUtils.lerp(this.left.pivotY, -0.8393F, deltaTime);
-		}
-		
-		if(right) {
-			this.right.pivotY = MVCUtils.lerp(this.right.pivotY, -0.4393F, deltaTime);
-		}else {
-			this.right.pivotY = MVCUtils.lerp(this.right.pivotY, -0.8393F, deltaTime);
-		}
-		
-		if(enter) {
-			this.enter.pivotY = MVCUtils.lerp(this.enter.pivotY, -0.5F, deltaTime);
-		}else {
-			this.enter.pivotY = MVCUtils.lerp(this.enter.pivotY, -1.1222F, deltaTime);
-		}*/
 	}
 	
 	public void rotateButtons(float rotX, float deltaTime) {
