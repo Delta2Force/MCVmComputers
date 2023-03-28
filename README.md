@@ -14,7 +14,7 @@
 		<li><a href="https://fabricmc.net/use">Fabric</a></li>
 		<li><a href="https://curseforge.com/minecraft/mc-mods/fabric-api">Fabric API</a></li>
 	</ul>
-	<li><a href="https://virtualbox.org/wiki/Downloads">VirtualBox 6.1</a></li>
+	<li><a href="https://www.virtualbox.org/wiki/Download_Old_Builds_6_1">VirtualBox 6.1</a></li>
 </ul>
 
 <h2>How to use</h2>
