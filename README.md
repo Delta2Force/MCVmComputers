@@ -1,6 +1,6 @@
 # VM Computers
 
-[MCVmComputers Discord Server](https://discord.gg/gNgaxZa4yX)
+[Join the MCVmComputers Discord Server!](https://discord.gg/gNgaxZa4yX)
 
 ###### I spent my whole quarantine working on this.
 #### Made with the SDK of and tested with VirtualBox 6.1.8, you need a VirtualBox version that starts with "6.1" for the mod to work.
