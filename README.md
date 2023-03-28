@@ -1,4 +1,7 @@
-# VM Computers 
+# VM Computers
+
+[MCVmComputers Discord Server](https://discord.gg/gNgaxZa4yX)
+
 ###### I spent my whole quarantine working on this.
 #### Made with the SDK of and tested with VirtualBox 6.1.8, you need a VirtualBox version that starts with "6.1" for the mod to work.
 #### Install [Fabric](https://fabricmc.net/use/) for Minecraft 1.16.5 and [the Fabric API mod](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to load the mod .jar (.jar goes in .minecraft/mods)
