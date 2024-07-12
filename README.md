@@ -19,7 +19,7 @@
 		<li><a href="https://fabricmc.net/use">Fabric</a></li>
 		<li><a href="https://modrinth.com/mod/fabric-api/version/0.42.0+1.16">Fabric API <i>(0.42.0+1.16)</i></a></li>
 	</ul>
-	<li><a href="https://www.virtualbox.org/wiki/Download_Old_Builds_6_1">VirtualBox 6.1</a></li>
+	<li><a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox 6.1 or greater</a></li>
 </ul>
 
 <h2>How to use</h2>
